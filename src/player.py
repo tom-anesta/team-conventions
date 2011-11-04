@@ -13,8 +13,8 @@ class Player(Unit):
 		
 		self.controlScheme = controlScheme
 		
-		self.magnetPower = 4
-		self.magnetWeapon = NARROW
+		self.magnetPower = 300
+		self.magnetWeapon = AREA
 		self.cooldown = 0
 		self.score = 0
 		
@@ -22,7 +22,7 @@ class Player(Unit):
 		self.switching = False
 		self.shooting = False
 		
-		self.extraForwardAccel = 2
+		self.extraForwardAccel = 2.2
 		self.accelMultiplier *= 1.2
 		self.maxTurnRate = 720
 		
@@ -107,13 +107,22 @@ class Player(Unit):
 		pass
 	
 	def areaAttack(self, action, game):
-		direction = -1 if action==PUSH else 1
+		if action == PUSH:
+			force = -self.magnetPower
+		else:
+			force = self.magnetPower
 		
 		for enemy in game.enemies:
-			enemy.applyForceFrom(direction*self.magnetPower*(1/2), self.position)
+			distSquared = (self.position - enemy.position).lengthSquared()
+			if action == PULL:
+				distSquared = max(130, distSquared)
+			else:
+				distSquared = max(80, distSquared)
+			
+			enemy.applyForceFrom(force / distSquared, self.position)
 	
 	def switchWeapon(self):
-		if self.magnetWeapon==NARROW:
+		if self.magnetWeapon == NARROW:
 			self.magnetWeapon = AREA
-		elif self.magnetWeapon==AREA:
+		elif self.magnetWeapon == AREA:
 			self.magnetWeapon = NARROW

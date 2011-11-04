@@ -55,7 +55,7 @@ class Game(ShowBase):
 		#load and render the environment model
 		self.environment = self.loader.loadModel("models/environment")
 		self.environment.reparentTo(self.render)
-		self.environment.setScale(0.25, 0.25, 0.25)
+		self.environment.setScale(0.35, 0.35, 0.35)
 		self.environment.setPos(-8, 42, 0)
 		
 		#place the player in the environment
@@ -105,9 +105,7 @@ class Game(ShowBase):
 		self.previousFrameTime = task.time
 		
 		if self.controlScheme.keyDown(QUIT):
-				print "we are exiting"
 				exit(0)
-				print "exiting has occured"
 				
 		if not self.paused:
 			self.updateCamera(elapsedTime)
