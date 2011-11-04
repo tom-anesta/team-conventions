@@ -43,6 +43,15 @@ class ControlScheme(DirectObject):
 		self.addKeys(PULL, [MouseButton.three()])
 		self.addKeys(QUIT, [KeyboardButton.asciiKey('q')])
 		
+		#print all our keys, testing for why quit isn't working
+		'''
+		for keygroup in self.keyMap.iterkeys():
+			print keygroup
+			for keyval in self.keyMap[keygroup].keys:
+				print keyval.getAsciiEquivalent()
+		'''
+		#end testing code
+		
 		#in case the mouse leaves the window
 		self.mouseX = 0
 		self.mouseY = 0
@@ -87,6 +96,12 @@ class ControlScheme(DirectObject):
 		
 		if not self.window.movePointer(0, self.centerX, self.mouseY):
 			self.prevMouseX = self.mouseX
+			return False
+		
+		return True
+		
+	def ignoreMouseChanges(self):
+		if not self.window.movePointer(0, self.centerX, self.mouseY):# we want to reset the pointer to the position of the mouse and in the middle of the screen
 			return False
 		
 		return True

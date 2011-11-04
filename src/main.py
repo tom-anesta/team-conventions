@@ -104,25 +104,26 @@ class Game(ShowBase):
 		elapsedTime = task.time - self.previousFrameTime
 		self.previousFrameTime = task.time
 		
+		if self.controlScheme.keyDown(QUIT):
+				print "we are exiting"
+				exit(0)
+				print "exiting has occured"
+				
 		if not self.paused:
 			self.updateCamera(elapsedTime)
 			self.player.move(elapsedTime, self.camera)
 			for enemy in self.enemies:
 				enemy.move(elapsedTime)
 			self.player.detectActions()
-		else:
-			if self.controlScheme.keyDown(QUIT):
-				sys.exit(0)
-		
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
+				print "pause was pressed"
 				self.paused = not self.paused
+				if not self.controlScheme.ignoreMouseChanges():#ignore all changes to mouse position that occur during pause
+					print "mouse problem"
 				self.pauseWasPressed = True
 		else:
 			self.pauseWasPressed = False
-		
-		
-		
 		
 		return task.cont
 	

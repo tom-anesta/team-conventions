@@ -30,7 +30,7 @@ class Enemy(Unit):
 	def move(self, time):
 		newTime = time*1000000
 		
-		print math.floor(newTime % self.randomMovementMax)
+		#print math.floor(newTime % self.randomMovementMax)
 		
 		if math.floor(newTime % self.randomMovementMax) == 0:
 			self.accel.setX(random.choice(range(-self.maxRandomVel, -self.minRandomVel)+range(self.minRandomVel, self.maxRandomVel+1)))

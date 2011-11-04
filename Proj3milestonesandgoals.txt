@@ -1,0 +1,307 @@
+Tom Anesta, Ryan Anderson, Joseph Cloutier, Marshall Hendrick, Evan Minto
+Game Development Project 3, “Direct Competition: Predatory Business Practices in Space”, milestones and goals document (to-do-list)
+
+When a goal is complete please declare it to be complete.  If you need to open a goal again because of some bug please declare it to be reopened under where it was completed.  please do not delete goals after completion so that we can keep accurate track of our accomplishments.
+
+Please record who is working toward which goal and/or who has completed which goal to avoid confusion.  This information will be transferred to the contributions document before presentation/submission
+
+If you want to declare a goal do not place it in chronological order, place it under whatever milestone we agree it is necessary for
+
+MILESTONE_1: CONCEPT FLESHED OUT, GAME MECHANICS DECIDED ON, ETC 
+[milestone declared 4:18pm, 11/3]
+[notes: see design document for details]
+[milestone achieved as of 4:19pm, 11/3]
+[contributions: Tom, Joseph, Ryan, Marshall, Evan]
+
+GOAL_1: Player Object Responds to movement key input.  Camera responds to mouse movement
+[goal declared 4:18pm, 11/3]
+[notes: 
+
+Bug Report: 11:52pm 11/3
+1) on exiting from pause, game takes mouse movements into account
+2) esc key acts in the same manner as pause button
+3) player model has a tendency to jerk on movement (slowing down) and has jerky turning
+
+bug 2 fixed by moving check for exit key is down out of if-else block involving pause
+bug 2 has become unfixed, 12:53am 11/4.  for some reason the quit is not registered and is again treated as a pause.  key down on quit does not return true but returns true for pause.  waiting to commit changes until this works properly
+
+bug 1 seems better as of 10:23am 11/4.  no mouse movement will affect the camera.  what does seem to happen to the camera regarding mouse movement is that it rotates 180 degrees horizontally each time the game is unpaused.  it probably has something to do with the rotate camera function.  committing changes because it is at least no worse than it was.
+bug 1 has been fixed as of 2:56pm, 11/4.  the key was to reset the pointer to the center of the screen because the camera took an x location other than the center as signaling it needed to turn.  
+
+revise to bug 3: this only occurs on startup.  movement quickly smooths out.  bug 3 considered to be non-issue as of 2:56pm, 11/4
+
+bug 2 is fine, it seems that the control scheme has been changed so that only q is for quit now.  bug resolved as of 3:31pm 11/4
+
+]
+[goal considered to be completed to safisfaction as of ]
+[notes:
+
+]
+
+GOAL_2: Interactive(collidable) terrain is achieved (DR. MARC DEFINED REQUIREMENT, see Roaming-Ralph)
+[goal declared 4:28pm, 11/3]
+[notes:
+Development: 
+
+8:41, 11/3: The roaming Ralph code that was suggested we leverage is somewhat inappropriate for our purposes.  Utilizing a collision ray would mean that we are always colliding with the terrain.  As a form of hover craft this is sub-par.  It will be necessary for us to create a collision object for each of our units.  Unfortunately, the mel scripts for maya do not seem to be working properly and we do not have a way to add the appropriate attributes to our geometry as far as we know.  Awaiting a response from Dr. Mark on this issue
+
+
+8:44, 11/3: thoughts on implementation: the way that roaming Ralph is set up is that it checks for 
+
+]
+
+
+GOAL_3: Model for player object is complete (requirement: must have at least one feature that resembles a headlight)
+[goal declared 4:28pm, 11/3]
+[notes:
+
+]
+
+GOAL_4: game pauses and can be exited from fullscreen
+[goal declared 4:59pm, 11/3]
+[notes: 
+
+]
+
+GOAL_5: Models for scavenger enemies are complete
+[goal declared 4:28pm, 11/3]
+[notes:
+
+]
+
+GOAL_6: in game player, scavenger enemies have functioning collision geometry (, do not need to reflect the geometry of the models to a T, just good enough to be believable)
+[goal declared 4:33pm, 11/3]
+[notes: 
+
+]
+
+GOAL_7: space craft wreckage geometry is complete (or have sufficient examples to add to level)
+[goal declared 4:47pm, 11/3]
+
+
+GOAL_8: space craft wreckage has functioning collision geometry (, do not need to reflect the geometry of the models to a T, just good enough to be believable)
+[goal declared 4:57pm, 11/3]
+[notes: 
+
+]
+
+GOAL_9: game world contains obstacles
+[goal declared 5:00pm, 11/3]
+[notes:
+
+]
+
+GOAL_10: collisions between enemies (and maybe specific terrain?) at other than low speeds causes damage to the player and enemies
+[goal declared 4:40PM, 11/3]
+[notes: 
+
+]
+
+GOAL_11: targeting reticle for MMP is functional, moves wherever we need it to
+[goal declared 5:04pm, 11/3]
+[notes: 
+
+]
+
+GOAL_12: projectiles of “FatBoy” and “CowBoy” function as they are planned to
+[goal declared 5:04pm, 11/3]
+[notes: 
+
+]
+
+GOAL_13: MMP is fully functional (pull, push, wide beam, narrow beam)
+[goal declared 5:04pm, 11/3]
+[notes: 
+
+]
+
+GOAL_14: scavenger enemies behave in ways that we have planned for them (scavenger enemy AI)
+[goal declared 5:05pm, 11/3]
+[notes: 
+
+]
+
+GOAL_15: we have headlight(s) (DR. MARC DEFINED REQUIREMENT)
+[goal declared 4:39PM, 11/3]
+[notes:
+
+]
+
+GOAL_16: we have a reliable procedural structure to spawn enemies in sequence of time or based on flags
+[goal declared 5:02pm, 11/3]
+[notes:
+
+]
+
+GOAL_17: we have some form of HUD that displays at least health and charge bar for MMP (does not have to be abstract can represent in text)
+[goal declared 5:10pm, 11/3]
+[notes: 
+
+]
+
+GOAL_18: game has sound effects, not necessarily necessary because you are in space and no one can hear you
+[goal declared 5:12pm, 11/3]
+[notes: 
+
+]
+SUBGOALS: (defining what actions we want to have sound and where get)
+[notes: 
+
+]
+
+GOAL_19: enemies can be destroyed, provide visual feedback
+[goal declared 5:37pm, 11/3]
+[notes: 
+
+]
+
+GOAL_20: player can be destroyed, provide visual feedback
+[goal declared 5:38pm, 11/3]
+[notes: 
+
+]
+
+
+Milestone_2: game is now playable, this milestone is our minimum requirement for submission and presentation
+[milestone declared 5:11pm, 11/3]
+[notes: 
+
+]
+
+
+GOAL_21: models have collision geometry that better reflects their models (requirement: please make a note of any slowdown in game speed)
+[goal declared 5:15pm, 11/3]
+[notes: 
+
+]
+
+
+GOAL_22: Implement level design (TERRAIN): read from 1 document the terrain geometry, and all obstacles in terrain
+[goal declared 5:25pm, 11/3]
+[notes:
+
+]
+
+GOAL_23: Implement level design (ENEMIES): read from 1 document the enemies and under which conditions they spawn
+[goal declared 5:26pm, 11/3]
+[notes: 
+
+]
+
+GOAL_24: Implement a way to keep track of flags (all enemies are destroyed, a certain amount of time has passed.  Probably leverage task manager?  Key to level design as relates to enemy spawning)
+[goal declared 5:28pm, 11/3]
+[notes: 
+
+]
+
+
+GOAL_25: we have a ceiling? (outside the world in panda is gray.  If a situation where we can look above the crater we need something to look at.  How about a planet?)
+[goal declared 5:18 pm, 11/3]
+[notes: 
+
+]
+
+GOAL_26: Game menus include a title screen, pause menu includes a restart game button?
+[goal declared 5:22pm, 11/3]
+[notes: 
+
+]
+
+GOAL_27: HUD now has a visual display in terms of bars displaying at least your health and charge for MMP
+[goal declared 5:41pm, 11/3]
+[notes: 
+
+]
+
+GOAL_28: game has music
+[goal declared 5:22pm, 11/3]
+[notes: 
+
+]
+SUBGOALS: define how we want to do music, check flags?  When change music?
+[notes:
+
+]
+
+
+
+Milestone_3: improve game look, improve menu, improve collisions, improve physics, increase control over events, get player into mood with music
+
+
+
+GOAL_29: Police “Warden” and “Annoying Little B******” models are complete
+[goal declared 5:33pm, 11/3]
+[notes: 
+
+]
+
+GOAL_30: Police “Warden” and “Annoying Little B******” have collision geometry that more reflects their geometry than spheres or rectangles
+[goal declared 5:34pm, 11/3]
+[notes: 
+
+]
+
+GOAL_31: Police “Warden” and “Annoying Little B******” move in ways that we want them to (Warden and annoying little b****** AI)
+[goal declared 5:35pm, 11/3]
+[notes: 
+
+]
+
+GOAL_32: Police “Warden” can capture you
+[goal declared 5:35pm, 11/3]
+[notes: 
+
+]
+
+GOAL_33: “Annoying Little B******” self destructs, deals splash damage
+[goal declared 5:38pm, 11/3]
+[notes: 
+
+]
+
+GOAL_34: have some representation: text or audio, that says that we are switching to police and why
+[goal declared 5:40pm, 11/3]
+[notes: 
+
+]
+
+
+
+Milestone_4: added police enemies, for deeper plotline(?), 
+
+GOAL_35: add dialog in audio form to game
+[goal declared 6:07pm, 11/3]
+[notes: 
+
+]
+
+GOAL_36: models for police versions of scavenger enemies are complete
+[goal declared 6:08pm, 11/3]
+[notes: 
+
+]
+
+GOAL_37: police versions of scavenger enemies have collision geometry which somewhat resembles their models
+[goal declared 6:10pm, 11/3]
+[notes: 
+
+]
+
+GOAL_38: police version of scavenger enemies have behavior that matches scavenger counterparts and similar code matching for projectiles
+[goal declared 6:10pm, 11/3]
+[notes: 
+
+]
+
+GOAL_39: dialog set to cues so that implements story
+[goal declared 6:08pm, 11/3]
+[notes: 
+
+]
+
+
+Milestone_5: best game ever
+
+
+
+
