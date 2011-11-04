@@ -130,6 +130,8 @@ class Player(Unit):
 		self.decrementMagnetBar()
 	
 	def areaAttack(self, polarity, game):
+		"""Performs an area attack on all enemies"""
+		
 		#decide on direction of force based on polarity
 		if polarity == PUSH:
 			force = -self.magnetPower
