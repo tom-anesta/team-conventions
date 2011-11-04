@@ -121,9 +121,8 @@ class Game(ShowBase):
 			if not self.pauseWasPressed:
 				print "pause was pressed"
 				self.paused = not self.paused
-				if not self.controlScheme.ignoreMouseChanges():
+				if not self.controlScheme.ignoreMouseChanges():#ignore all changes to mouse position that occur during pause
 					print "mouse problem"
-				#self.updateCamera(elapsedTime)
 				self.pauseWasPressed = True
 		else:
 			self.pauseWasPressed = False
@@ -138,15 +137,20 @@ class Game(ShowBase):
 	def rotateCamera(self):
 		if self.controlScheme.mouseX > self.winProps.getXSize():
 			self.camera.setH(-(self.winProps.getXSize() - 20) * 0.5)
+			print "camera check 1"
 		else:
 			self.camera.setH(-self.controlScheme.mouseX * 0.5)
+			print "camera check 2"
 	
 	def updateCamera(self, elapsedTime):
 		#update the camera's heading based on the mouse's x position
 		if self.controlScheme.recheckMouse():
+			print "successful"
 			self.camera.setH(-self.controlScheme.mouseX * 0.5)
 		else:
+			print "recheck failed"
 			self.rotateCamera()
+			
 		
 		#update the camera's pitch and vertical position based on the mouse's y position
 		self.cameraVOffset = min(self.screenHeight, max(0, self.controlScheme.mouseY)) / self.screenHeight * 25 + 4
