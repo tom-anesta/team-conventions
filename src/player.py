@@ -22,6 +22,8 @@ class Player(Unit):
 		self.cooldown = 0
 		self.score = 0
 		
+		self.target = None
+		
 		#action flags
 		self.switching = False
 		self.shooting = False
@@ -129,7 +131,11 @@ class Player(Unit):
 	def narrowAttack(self, polarity, game):
 		"""Performs a narrow attack on the targeted enemy (and all enemies in between and beyond?)"""
 		
-		#no actual attack code in here yet
+		#decide on direction of force based on polarity
+		direction = -1 if polarity==PUSH else 1
+		
+		if self.target is not None:
+			self.target.applyForceFrom((direction*self.magnetPower)*(1.5), self.position)
 		
 		self.decrementMagnetBar()
 	
