@@ -141,7 +141,7 @@ class Player(Unit):
 		
 		#apply force to all enemies
 		for enemy in game.enemies:
-			enemy.applyForceFrom((polarity*self.magnetPower)/2, self.position)
+			enemy.applyForceFrom((direction*self.magnetPower)/2, self.position)
 		
 		self.decrementMagnetBar()
 	
