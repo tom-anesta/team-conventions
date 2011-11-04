@@ -1,0 +1,183 @@
+Settings:
+Space (flying or on wheels)
+Desert (on wheels) 
+Cave (flying or on wheels)(potential cave in space asteroid)
+The Moon (on wheels)
+
+Gameplay:
+Arena vs. Race
+
+Arena:
+-open environment
+-hunt down enemies and targets
+-enemies and targets could be a variety of things.
+-potential king of the hill idea
+
+Race:
+-closed race track
+-shoot racers to gain advantage
+-Enemies are other racers
+
+Main method of attack:
+-melee
+    -how do damage? (revisable)
+        -shockwave attack
+        -big freaking hammer?
+        -flip enemies? (potential side effect)
+        -chainsaws EVERYWHERE
+    -recoil damage?
+        -are you damaged by collision?
+        -how enemies damage you if you damage them by hitting
+        -resolve "demolition derby" concerns
+        -melee weapon deals only damage no danger
+        -melee can be tricky without polished controls is a concern
+    -Concerns
+        -could require tricky positioning which requires smooth and consistent control
+            -solution: increase range for more leeway-make it loooooooooooooong
+        -would make situations of being surrounded more likely.
+            -gameplay could be slowed down due to looking for opportunities to not be surrounded.  
+            -requirement for ai is that our enemies do not accidentally lump together when chasing player
+                -clumped enemies would be easier to take out
+                -potentially riskier
+                -but would not want to always clump together: exception to rule
+-or shooting
+    -what shoot?
+    -easier to resolve "demolition derby" concerns
+-additional discussions
+    -electromagnet[spacespacespacespacespace]
+        -make your ship emit a magnetic pulse that pulls or pushes things [for space theme]
+            -pull power ups and junk
+            -enemies
+                -push enemies away
+                -or drag enemies around
+        -do as much diverse stuff as possible
+            -mining all the things, gravity gun mechanics
+            -perhaps some enemies that cannot be directly affected by magnets
+        -resolve player getting surrounded: make a possible positive
+            -limited by a rechargeable energy bar
+            -full energy bar means super powerful attack
+    -tractor beam [space]
+        - + disable
+        -get collision damage if hit you
+        -drag in to launch with maximum power with magnet
+            
+
+Enemies: 
+-skins based on location
+    -enemy do: 
+        -leap into air, ground pound, make vulnerable in air, so then you smack them
+    -enemy behave:
+        -make the randoms: excluding general aim for player.
+        
+Controls: 
+    -
+    
+    
+Collectibles
+    -besides being for score and what you could come up with: collectibles do good stuff
+        -up your energy bar [space]
+
+
+
+_______________________________________________________
+
+additional stuff: 
+-have a cool boss that the gameplay is focused on.  would simplify ai time limitations (easier).
+-common ideas is that boss is centralized.  
+
+boss progression:
+-have combat that does not revolve around boss
+-get the player to get used to it
+-potential to have the boss introduce waves of enemies: the boss is main and visible catalyst (presented but not immediately attackable)
+    -idea: boss unreachable--flying? [spawns enemies from air?]
+    -idea: boss unreachable--underground? [spawns enemies from underground?]
+    -idea: boss shielded by enemies...  technically immediately attackable not based on time dealing with enemies
+    
+    
+    
+    
+other stuff:     
+    -vehicle customization for specializing in melee or ranged seems beyond the scope of a two week project (potentially rejected)
+    -
+    
+other stuff2:
+    -asteroid: compete for mining an asteroid
+        -not combat focused?
+        -consensus is nothing with advanced ai
+            -ideally we want success with randomized ai behavior; limits on random that yield success
+            -enemy does not strategize
+    -what if setting is boss (mario galaxy reference?-boss is same size as planet)
+        -boss giant vehicle
+            -constrains possibilities of surrounding environment
+                -must be large environment
+                -boss in environment you on boss?  or boss all environment?  IMMA FIRIN MAH DEATH STAR
+    -general comments on discussion has leaned toward arena setting and ground based combat, more focus has been paid to resolving potential issues of melee combat
+    -water: above is 2d, under is 3d
+    -switch between ground and space?   haaaaaard
+    -we are driving to an antique show because awesome deals
+        -freaking chairs and vinyl
+        
+    
+___________________________________________________________________
+
+
+
+general themes
+
+is there an interest in connecting this project to current events?
+-part of a group of scavenger mafia pirates who sells things on a black market and your flying through mysterious ancient space debris and you're fighting against other scavengers for resources.
+
+in a desert: 
+    -post apocalyptic?
+    -you could be a dune buggy.
+    -AREA 51: meaning aliens.
+        -boss is a ufo
+        -.....  then who the hell are we?  why are we in area 51?  with our heavily armed dune buggy?
+        -
+
+on the moon:
+    -moonbuggies, vs. aliens
+        -boss is also a ufo
+        -MINI ufos
+        -boss undergound?  evil space worm yes?
+    
+in space: 
+    -YOU ARE A SPACE STATION
+        -
+    -boss is a space station
+        -you are on the space station
+    -part of a group of scavenger mafia pirates who sells things on a black market and your flying through mysterious ancient space debris and you're fighting against other scavengers for resources.
+
+in the sky: [planes]
+    -discussing collateral damage, stuff gets broken when you fly into it
+    
+other places:
+    -remote control vehicles in a parking lot
+        -expand on this: 
+        -remote control planes? (predator drones lolololol)
+        -storyline:
+            -kid defends home from hwatever with remote control cars and stuff
+            -take down the beehive with mini predator drones
+                -what do bees do to plane?  SUPER BEES
+                -what plane do?  f*** aerodynamics go anywhere
+            -we drive a boat, remote control boat on a lake: central park boat races?  DESTROY ALL OTHER BOATS AND THE HOPES AND DREAMS OF LITTLE CHILDREN BECAUSE YOU WILL WIN THAT RACE AT ANY COST
+            -remote control sci fi vehicles (MOON ROVERS?!?!)
+            
+        -concerns
+            -once again, how damage?  like battlebots?  probably violation of local laws and ordinances
+    -ROLLING CHAIR COMBAT, motorized rolling chairs.
+        -shopping cart wars?  the first rule of handicapped demolition derby is don't talk about handicapped demolition derby
+            -store manager in the morning: AWWW WHAT THE HELL?!?!?!?!
+    
+    
+__________________________________________________________________________
+
+
+
+RANDOM NONSENSE OPINIONS
+
+-^a few of those things
+-remote control vehicles in a parking lot (on the moon?)
+-pffffft screw physics get really silly things
+-just floating along like kirby
+-enemies must be MORE INTERESTING
