@@ -13,12 +13,12 @@ class Player(Unit):
 		
 		self.controlScheme = controlScheme
 		
-		self.magnetPower = 4
-		self.magnetWeapon = NARROW
+		self.magnetPower = 300
+		self.magnetWeapon = AREA
 		self.magnetBar = 1000
 		self.magnetBarMax = 1000
 		self.magnetCost = {NARROW:16, AREA:32}
-		self.magnetRegen = 2
+		self.magnetRegen = 2500
 		self.cooldown = 0
 		self.score = 0
 		
@@ -28,7 +28,7 @@ class Player(Unit):
 		self.switching = False
 		self.shooting = False
 		
-		self.extraForwardAccel = 2
+		self.extraForwardAccel = 2.2
 		self.accelMultiplier *= 1.2
 		self.maxTurnRate = 720
 		
@@ -90,7 +90,7 @@ class Player(Unit):
 		
 		Unit.move(self, time)
 	
-	def update(self, game):
+	def update(self, game, time):
 		"""Run all major player operations each frame"""
 		#check for weapon switch key
 		if self.controlScheme.keyDown(SWITCH):
@@ -107,11 +107,7 @@ class Player(Unit):
 			self.attack(PULL, game)
 		
 		#automatically regenerate the magnet bar's power
-		self.regenerateMagnetBar()
-	
-	def regenerateMagnetBar(self):
-		"""Regenerate the magnet bar by the amount specified in __init__"""
-		self.magnetBar += self.magnetRegen
+		self.magnetBar += self.magnetRegen * time
 	
 	def decrementMagnetBar(self):
 		"""Subtract from the magnet bar by the amount specified in __init__"""
@@ -143,17 +139,26 @@ class Player(Unit):
 		"""Performs an area attack on all enemies"""
 		
 		#decide on direction of force based on polarity
-		direction = -1 if polarity==PUSH else 1
+		if polarity == PUSH:
+			force = -self.magnetPower
+		else:
+			force = self.magnetPower
 		
 		#apply force to all enemies
 		for enemy in game.enemies:
-			enemy.applyForceFrom((direction*self.magnetPower)/2, self.position)
+			distSquared = (self.position - enemy.position).lengthSquared()
+			if polarity == PULL:
+				distSquared = max(130, distSquared)
+			else:
+				distSquared = max(80, distSquared)
+			
+			enemy.applyForceFrom(force / distSquared, self.position)
 		
 		self.decrementMagnetBar()
 	
 	def switchWeapon(self):
 		"""Switch to whichever weapon is not currently being used"""
-		if self.magnetWeapon==NARROW:
+		if self.magnetWeapon == NARROW:
 			self.magnetWeapon = AREA
-		elif self.magnetWeapon==AREA:
+		elif self.magnetWeapon == AREA:
 			self.magnetWeapon = NARROW
