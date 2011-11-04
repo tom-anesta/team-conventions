@@ -67,8 +67,18 @@ class Game(ShowBase):
 		self.tempEnemy = RushEnemy()
 		self.tempEnemy.setPos(-20, 0, 0)
 		self.tempEnemy.reparentTo(self.render)
+		
+		self.tempEnemy2 = RushEnemy()
+		self.tempEnemy2.setPos(40, 50, 0)
+		self.tempEnemy2.reparentTo(self.render)
+		
+		self.tempEnemy3 = RushEnemy()
+		self.tempEnemy3.setPos(20, 80, 0)
+		self.tempEnemy3.reparentTo(self.render)
+		
 		self.enemies.append(self.tempEnemy)
-		self.tempEnemy.setPos(20, 0, 0)
+		self.enemies.append(self.tempEnemy2)
+		self.enemies.append(self.tempEnemy3)
 		
 		#add some lights
 		topLight = DirectionalLight("top light")
