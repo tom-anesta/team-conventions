@@ -1,14 +1,15 @@
 from unit import Unit
 import random
+import math
 
 class Enemy(Unit):
 	def __init__(self, models = None, anims = None):
 		Unit.__init__(self, models, anims)
 		
 		self.randomMovement = 0
-		self.randomMovementMax = 30*2
-		self.minRandomVel = -5
-		self.maxRandomVel = 5
+		self.randomMovementMax = 30*7
+		self.minRandomVel = 1000
+		self.maxRandomVel = 2000
 	
 	def absorbMagnetism(self, field, game):
 		self.changeDirectionRelative((0,field,field), game.player.position, game.camera)
@@ -27,8 +28,12 @@ class Enemy(Unit):
 			enemy.takeDamage(enemy.vel.length, game)
 	
 	def move(self, time):
-		if time % self.randomMovementMax == 0:
-			self.vel.setX(random.randint(self.minRandomVel, self.maxRandomVel))
-			self.vel.setY(random.randint(self.minRandomVel, self.maxRandomVel))
+		newTime = time*1000000
+		
+		print math.floor(newTime % self.randomMovementMax)
+		
+		if math.floor(newTime % self.randomMovementMax) == 0:
+			self.accel.setX(random.choice(range(-self.maxRandomVel, -self.minRandomVel)+range(self.minRandomVel, self.maxRandomVel+1)))
+			self.accel.setY(random.choice(range(-self.maxRandomVel, -self.minRandomVel)+range(self.minRandomVel, self.maxRandomVel+1)))
 		
 		Unit.move(self, time)
