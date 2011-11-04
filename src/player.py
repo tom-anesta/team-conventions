@@ -106,6 +106,14 @@ class Player(Unit):
 		if self.magnetBar > 0 and self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
 			self.attack(PULL, game)
 		
+		#BEGIN ATTEMPT AT AUTO-TARGETING
+		"""if not self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
+			self.target = None
+		else:
+			self.target = game.onMouseTask()
+			print self.target"""
+		#END ATTEMPT AT AUTO-TARGETING
+		
 		#automatically regenerate the magnet bar's power
 		self.magnetBar += self.magnetRegen * time
 	
