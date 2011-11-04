@@ -105,14 +105,14 @@ class Game(ShowBase):
 		self.previousFrameTime = task.time
 		
 		if self.controlScheme.keyDown(QUIT):
-				exit(0)
-				
+			exit(0)
+		
 		if not self.paused:
 			self.updateCamera(elapsedTime)
 			self.player.move(elapsedTime, self.camera)
 			for enemy in self.enemies:
 				enemy.move(elapsedTime)
-			self.player.detectActions(self)
+			self.player.update(self, elapsedTime)
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
 				self.paused = not self.paused

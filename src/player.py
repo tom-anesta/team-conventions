@@ -15,6 +15,10 @@ class Player(Unit):
 		
 		self.magnetPower = 300
 		self.magnetWeapon = AREA
+		self.magnetBar = 1000
+		self.magnetBarMax = 1000
+		self.magnetCost = {NARROW:16, AREA:32}
+		self.magnetRegen = 2000
 		self.cooldown = 0
 		self.score = 0
 		
@@ -84,44 +88,68 @@ class Player(Unit):
 		
 		Unit.move(self, time)
 	
-	def detectActions(self, game):
+	def update(self, game, time):
+		"""Run all major player operations each frame"""
+		#check for weapon switch key
 		if self.controlScheme.keyDown(SWITCH):
 			if not self.switching:
 				self.switchWeapon()
 				self.switching = True
 		else:
 			self.switching = False
-			
-		if self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
+		
+		#check for attack keys
+		if self.magnetBar > 0 and self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
 			self.attack(PUSH, game)
-		if self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
+		if self.magnetBar > 0 and self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
 			self.attack(PULL, game)
+		
+		#automatically regenerate the magnet bar's power
+		self.magnetBar += self.magnetRegen * time
 	
-	def attack(self, action, game):
-		if self.magnetWeapon == NARROW:
-			self.narrowAttack(action, game)
-		if self.magnetWeapon == AREA:
-			self.areaAttack(action, game)
+	def decrementMagnetBar(self):
+		"""Subtract from the magnet bar by the amount specified in __init__"""
+		self.magnetBar -= self.magnetCost[self.magnetWeapon]
 	
-	def narrowAttack(self, action, game):
-		pass
+	def attack(self, polarity, game):
+		"""Selects the mode of attack and runs the appropriate attack function"""
+		
+		#if magnet is set to narrow and magnet bar has enough power to perform a narrow attack
+		if self.magnetWeapon == NARROW and self.magnetBar >= self.magnetCost[NARROW]:
+			self.narrowAttack(polarity, game)
+		
+		#if magnet is set to area and magnet bar has enough power to perform an area attack
+		if self.magnetWeapon == AREA and self.magnetBar >= self.magnetCost[AREA]:
+			self.areaAttack(polarity, game)
 	
-	def areaAttack(self, action, game):
-		if action == PUSH:
+	def narrowAttack(self, polarity, game):
+		"""Performs a narrow attack on the targeted enemy (and all enemies in between and beyond?)"""
+		
+		#no actual attack code in here yet
+		
+		self.decrementMagnetBar()
+	
+	def areaAttack(self, polarity, game):
+		#decide on direction of force based on polarity
+		if polarity == PUSH:
 			force = -self.magnetPower
 		else:
 			force = self.magnetPower
 		
+		#apply force to all enemies
 		for enemy in game.enemies:
 			distSquared = (self.position - enemy.position).lengthSquared()
-			if action == PULL:
+			if polarity == PULL:
 				distSquared = max(130, distSquared)
 			else:
 				distSquared = max(80, distSquared)
 			
 			enemy.applyForceFrom(force / distSquared, self.position)
+		
+		self.decrementMagnetBar()
 	
 	def switchWeapon(self):
+		"""Switch to whichever weapon is not currently being used"""
 		if self.magnetWeapon == NARROW:
 			self.magnetWeapon = AREA
 		elif self.magnetWeapon == AREA:
