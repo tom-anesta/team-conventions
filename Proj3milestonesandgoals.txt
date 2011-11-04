@@ -24,7 +24,7 @@ Bug Report: 11:52pm 11/3
 
 bug 2 fixed by moving check for exit key is down out of if-else block involving pause
 bug 2 has become unfixed, 12:53am 11/4.  for some reason the quit is not registered and is again treated as a pause.  key down on quit does not return true but returns true for pause.  waiting to commit changes until this works properly
-
+bug 1 seems better as of 10:23am 11/4.  no mouse movement will affect the camera.  what does seem to happen to the camera regarding mouse movement is that it rotates 180 degrees horizontally each time the game is unpaused.  it probably has something to do with the rotate camera function.  committing changes because it is at least no worse than it was.
 
 ]
 [goal considered to be completed to safisfaction as of ]
