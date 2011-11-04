@@ -90,6 +90,12 @@ class ControlScheme(DirectObject):
 			return False
 		
 		return True
+		
+	def ignoreMouseChanges(self):
+		if not self.window.movePointer(0, self.mouseX, self.mouseY):# we want to reset the pointer to the position of the mouse
+			return False
+			
+		return True
 
 class KeyGroup(object):
 	'''
