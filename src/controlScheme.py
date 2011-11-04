@@ -94,17 +94,13 @@ class ControlScheme(DirectObject):
 		self.mouseX += pointer.getX() - self.prevMouseX
 		self.mouseY = pointer.getY()
 		
+		self.resetMouse()
+		
+		return True
+		
+	def resetMouse(self):
 		if not self.window.movePointer(0, self.centerX, self.mouseY):
 			self.prevMouseX = self.mouseX
-			return False
-		
-		return True
-		
-	def ignoreMouseChanges(self):
-		if not self.window.movePointer(0, self.centerX, self.mouseY):# we want to reset the pointer to the position of the mouse and in the middle of the screen
-			return False
-		
-		return True
 
 class KeyGroup(object):
 	'''
