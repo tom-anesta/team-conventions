@@ -117,10 +117,8 @@ class Game(ShowBase):
 			self.player.detectActions(self)
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
-				print "pause was pressed"
 				self.paused = not self.paused
-				if not self.controlScheme.ignoreMouseChanges():#ignore all changes to mouse position that occur during pause
-					print "mouse problem"
+				self.controlScheme.resetMouse()
 				self.pauseWasPressed = True
 		else:
 			self.pauseWasPressed = False
