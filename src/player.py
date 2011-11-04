@@ -18,7 +18,7 @@ class Player(Unit):
 		self.magnetBar = 1000
 		self.magnetBarMax = 1000
 		self.magnetCost = {NARROW:16, AREA:32}
-		self.magnetRegen = 2000
+		self.magnetRegen = 2500
 		self.cooldown = 0
 		self.score = 0
 		
