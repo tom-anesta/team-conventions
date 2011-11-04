@@ -114,11 +114,13 @@ class Game(ShowBase):
 			self.player.move(elapsedTime, self.camera)
 			for enemy in self.enemies:
 				enemy.move(elapsedTime)
-			self.player.detectActions(self)
+			self.player.update(self)
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
+				print "pause was pressed"
 				self.paused = not self.paused
-				self.controlScheme.resetMouse()
+				if not self.controlScheme.ignoreMouseChanges():#ignore all changes to mouse position that occur during pause
+					print "mouse problem"
 				self.pauseWasPressed = True
 		else:
 			self.pauseWasPressed = False
