@@ -137,18 +137,14 @@ class Game(ShowBase):
 	def rotateCamera(self):
 		if self.controlScheme.mouseX > self.winProps.getXSize():
 			self.camera.setH(-(self.winProps.getXSize() - 20) * 0.5)
-			print "camera check 1"
 		else:
 			self.camera.setH(-self.controlScheme.mouseX * 0.5)
-			print "camera check 2"
 	
 	def updateCamera(self, elapsedTime):
 		#update the camera's heading based on the mouse's x position
 		if self.controlScheme.recheckMouse():
-			print "successful"
 			self.camera.setH(-self.controlScheme.mouseX * 0.5)
 		else:
-			print "recheck failed"
 			self.rotateCamera()
 			
 		

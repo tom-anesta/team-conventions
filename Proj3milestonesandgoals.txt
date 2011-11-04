@@ -30,7 +30,7 @@ bug 1 has been fixed as of 2:56pm, 11/4.  the key was to reset the pointer to th
 
 revise to bug 3: this only occurs on startup.  movement quickly smooths out.  bug 3 considered to be non-issue as of 2:56pm, 11/4
 
-
+bug 2 is fine, it seems that the control scheme has been changed so that only q is for quit now.  bug resolved as of 3:31pm 11/4
 
 ]
 [goal considered to be completed to safisfaction as of ]
