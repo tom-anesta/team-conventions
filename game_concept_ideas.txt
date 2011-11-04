@@ -1,0 +1,181 @@
+THEMES AND SETTINGS: 
+
+Dessert in dune buggies (under area 51 concept?): 
+
+Dessert in old cars (under post apocalyptic concept?):
+    -story
+        -potentially generic mad max-stylish-ish
+        -watch mad max for research (fun team building activity!)
+    -collectibles
+        -fuel?
+        -ammo?
+        -potential home area that is friendly to you, recharge your stuff
+    -means of combat
+        -potential split screen (forum has help threads)
+        -1 player handles most of keyboard, other handles mouse and like 3 keys
+            -1 player drives the other rides shotgun (and shoots things becuase that's how shotgun works)
+        -2 cameras
+            -1 camera 3rd person for car
+            -1 first person for in car
+                -key to switch sides of car
+                    -implement time delay for two 
+                -targeting reticle under render2d layer
+    -challenges: 
+        -limited ammunition
+        -limited fuel
+        -significant recoil damage
+    enemies-
+        BOSS-
+            model-
+                -basically super powerful normal sized enemy?  can't throw something that big in there.
+            behavior-
+                -means of attack is ramming, let us say?
+        SMALL ENEMIES-
+    -programming challenges: 
+        -increased um lost my train of thought
+    
+Moon in moon buggies: 
+    -story
+        -you are an astronaut on the moon, driving around on your moon buggy, fighting the aliens.
+    -collectibles
+        -fuel?  oxygen?  friendly space capsule?
+    means of combat-
+        -space laser?
+        -giant hammer?
+        -low gravity, if enemies are ground based knocking them off the ground will make them easier to hit
+    enemies-
+        BOSS-
+            -idea: boss unreachable--flying? [spawns enemies from air?]
+                -is a ufo
+            -idea: boss unreachable--underground? [spawns enemies from underground?]
+                -is a moon worm
+            -idea: boss shielded by enemies...  technically immediately attackable not based on time dealing with enemies
+        SMALL ENEMIES-
+            -if boss is ufo they will be flying enemies
+                -if boss will use shield will use flying enemies
+            -if boss is moon worm they will be alien bugs
+                -leap into air, ground pound, make vulnerable in air, so then you smack them, maybe with hammer
+    -controls
+        -3rd person perspective
+        -if shoot, mouse aims
+        -standard wasd?
+    
+
+In the sky in planes:
+    -comment: must be civillian planes or otherwise no longer really vehicle combat but war device combat?
+    
+
+In the sky in remote control planes (under kid defends the house concept?):
+
+on the ground in remote control cars (under kid defend the house concept?):
+    -story: you are defending your house from an onslaught of some sort of animal, maybe chickens i don't know
+    -main game becomes kind of like  a time limit, get to the things before they get to the house
+        -might need some sort of radar?
+    -collectibles
+        -some sort of cartoony power up?
+    -means of attack
+        -must decide on a believable toy car weapon?
+    -enemies
+        -BOSS
+            -in this theme I think that we would move away from the big boss.
+        -SMALL ENEMIES
+            -chickens?
+    -controls
+        -parameters should cause to resemble remote control cars
+        -let's make our weapon centrally mounted with little to no aiming.
+        
+    
+
+In Space in spaceships(under violent scavengers concept?): EDIT CHANGED TO HOVER CRAFTS
+    -story
+        -part of a group of scavenger mafia pirates who sells things on a black market and your flying through mysterious ancient space debris and you're fighting against other scavengers for resources.
+    -collectibles
+        -besides being for score and what you could come up with: collectibles do good stuff
+            -up your energy bar [space]
+    -means of combat
+        -electromagnet[spacespacespacespacespace]
+            -make your ship emit a magnetic pulse that pulls or pushes things [for space theme]
+                -pull power ups and junk
+                -enemies
+                    -push enemies away
+                    -or drag enemies around
+            -do as much diverse stuff as possible
+                -mining all the things, gravity gun mechanics, means of collecting materials
+                
+            -resolve player getting surrounded: make a possible positive
+                -limited by a rechargeable energy bar
+                -full energy bar means super powerful attack
+        -tractor beam [space]
+            - + disable
+            -get collision damage if hit you
+            -drag in to launch with maximum power with magnet
+    -enemies
+        -BOSS
+            -maintain large boss idea
+                -have boss spawn enemies as shield?
+                    -boss may be scavenger freighter that has ships in docking bay
+                -boss appearance schedule
+                    -when introduce boss?  effect of bosses presence on normal combat?
+                -means to damage boss
+                    -throws things at it
+                        -discussions involving boss shield and number of enemies spawned
+                            -oh snap i spawned all these enemies now they're flying at my face
+                    -bounce things at it
+                        -boss has a shield that turns toward you you must bounce enemies off of things
+                            -what bounce off of?
+                            -will be balance issue we have to solve [in other headings also]
+                                -collision damage or not
+                    -make stuff explode near it
+                        -potential for exploding enemies
+                            -shoot them the explode
+                            -explode near boss while he's facing you to damage boss behind shield
+                            -if you can shoot enemies in any direction aiming could be difficul so we want to make the targets big
+                                -potential concern that may be resolvable
+                                    -if boss is very big how big is shield?
+                                    -shooting exploding enemies behind shield would be hard because if you are facing shield directly, shooting exploding enemy toward edge of shield means trajectory carries it farther away from boss in general after passing shield
+                                    -potential solution: make all but 1 section of boss (behind control bridge which is small) shielded, enemies have large enough explosion radius that even at shooting from relatively close ranges you can still damage behind control bridge
+            -potential boss alternatives and solutions to above
+                -model change: 
+                    -boss is potentially spherical, 
+                    -enemies spawned around boss shield include exploding enemies
+                        -possible enemie change to non-enemy object, exploding barrels, because who doesn't love those?  I love 'em
+                    -lead boss shield away from exploding enemies then shoot things at them so blow up
+        -SMALL ENEMIES
+            -perhaps some enemies that cannot be directly affected by magnets
+            -behavior
+                -waves
+                -attack patterns
+                -avoidance patterns?
+            -models
+                -enemies roughly your size
+                -should match your art style?
+                    -keep with scavenger theme
+                    -potential plot twist
+                        -big boss as the police
+                            -space cops coming to break up your smuggling activities
+                            -under arrest for disturbing the peace.  penalty: death?  (wow the justice system in space is so progressive)
+                            -provides reasoning for a different sort of model that does not match scavenger aesthetic
+		-FLESHED OUT ENEMY IDEAS, applies ground based to all of them.  all are hovercraft
+			-rush type enemies
+				-movement behavior: run straight at you
+				-attack method is ramming damage
+			-mage type enemies
+				-movement behavior: maintain distance and strafe in a circular pattern
+				-attack method: launches a slow moving ball of energy that will temporarily prevent you from using your magnet.
+			-standard shooty enemies
+				-movement behavior: 
+				-attack method: shoot a linear projectile at you.  
+			-swarm type enemies
+				-movement behavior: move in groups, slowly homing in on you
+				-additional notes: autonomous, unpiloted devices
+				-attack method is kamikaze damage
+			-police only type: 
+				-movement behavior: zigzag pattern towards you then tries to circle around you while applying forcefield.  direct contact with a section of the enemy will cause you to be captured
+				
+	-new idea: if you are captured by police your employers send a self-destruct signal to your craft so that they can't be implicated
+    
+
+In Space in some sort of land based vehicle (under on evil space station concept?):
+
+
+
