@@ -114,7 +114,7 @@ class Game(ShowBase):
 			self.player.move(elapsedTime, self.camera)
 			for enemy in self.enemies:
 				enemy.move(elapsedTime)
-			self.player.detectActions()
+			self.player.detectActions(self)
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
 				print "pause was pressed"

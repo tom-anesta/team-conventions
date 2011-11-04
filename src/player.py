@@ -13,7 +13,7 @@ class Player(Unit):
 		
 		self.controlScheme = controlScheme
 		
-		self.magnetPower = 10
+		self.magnetPower = 4
 		self.magnetWeapon = NARROW
 		self.cooldown = 0
 		self.score = 0
@@ -84,7 +84,7 @@ class Player(Unit):
 		
 		Unit.move(self, time)
 	
-	def detectActions(self):
+	def detectActions(self, game):
 		if self.controlScheme.keyDown(SWITCH):
 			if not self.switching:
 				self.switchWeapon()
@@ -93,26 +93,27 @@ class Player(Unit):
 			self.switching = False
 			
 		if self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
-			self.attack(PUSH)
+			self.attack(PUSH, game)
 		if self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
-			self.attack(PULL)
+			self.attack(PULL, game)
 	
-	def attack(self, action):
+	def attack(self, action, game):
 		if self.magnetWeapon == NARROW:
-			self.narrowAttack(action)
+			self.narrowAttack(action, game)
 		if self.magnetWeapon == AREA:
-			self.areaAttack(action)
+			self.areaAttack(action, game)
 	
-	def narrowAttack(self, action):
-		print "narrow attack", action
+	def narrowAttack(self, action, game):
+		pass
 	
-	def areaAttack(self, action):
-		print "area attack", action
+	def areaAttack(self, action, game):
+		direction = -1 if action==PUSH else 1
+		
+		for enemy in game.enemies:
+			enemy.applyForceFrom(direction*self.magnetPower*(1/2), self.position)
 	
 	def switchWeapon(self):
 		if self.magnetWeapon==NARROW:
 			self.magnetWeapon = AREA
-			print "switch to area"
 		elif self.magnetWeapon==AREA:
 			self.magnetWeapon = NARROW
-			print "switch to narrow"
