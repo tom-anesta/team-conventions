@@ -131,6 +131,7 @@ class Game(ShowBase):
 		filename = os.path.abspath(filename)
 		if not os.path.isfile(filename):
 			print "FILE DOES NOT EXIST"
+			print filename
 			exit(1)
 		else:
 			print "FILE DOES EXIST"
@@ -273,6 +274,8 @@ class Game(ShowBase):
 			self.mCollisionQue.sortEntries()
 			entry     = self.mCollisionQue.getEntry(0);
 			pickedObj = entry.getIntoNodePath()
+			
+			print pickedObj
 
 			pickedObj = pickedObj.findNetTag('MyObjectTag')
 			if not pickedObj.isEmpty():
