@@ -60,6 +60,10 @@ class Game(ShowBase):
 		#variables for tracking time
 		self.previousFrameTime = 0
 		
+		#start the collision traverser
+		self.cTrav = CollisionTraverser()
+		self.cTrav.showCollisions(render)#show the collisions
+		
 		filename = PARAMS_PATH + "environment.txt"
 		self.loadLevelGeom(filename)
 		
@@ -76,6 +80,7 @@ class Game(ShowBase):
 		self.player = Player(self.controlScheme)
 		self.player.setH(180)
 		self.player.reparentTo(self.render)
+		
 		
 		#add an enemy
 		self.tempEnemy = RushEnemy()
