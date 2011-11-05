@@ -29,6 +29,7 @@ class ControlScheme(DirectObject):
 		self.window = window
 		properties = window.getProperties()
 		self.centerX = properties.getXSize() // 2
+		self.centerY = properties.getYSize() // 2
 		self.prevMouseX = self.centerX
 		
 		self.keyMap = dict()

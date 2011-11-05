@@ -15,8 +15,9 @@ from pandac.PandaModules import PointLight
 from pandac.PandaModules import Vec4
 from panda3d.core import CollisionRay, CollisionNode, GeomNode, CollisionTraverser
 from panda3d.core import CollisionHandlerQueue, CollisionSphere, BitMask32
-
 from math import pi, sin, cos, sqrt, pow, atan2
+#from pandac.PandaModules import LPoint2f
+
 from unit import Unit
 from player import Player
 from rushEnemy import RushEnemy
@@ -103,14 +104,17 @@ class Game(ShowBase):
 		self.tempEnemy = RushEnemy()
 		self.tempEnemy.setPos(-20, 0, 0)
 		self.tempEnemy.reparentTo(self.render)
+		self.tempEnemy.setName("enemy1")
 		
 		self.tempEnemy2 = RushEnemy()
 		self.tempEnemy2.setPos(40, 50, 0)
 		self.tempEnemy2.reparentTo(self.render)
+		self.tempEnemy2.setName("enemy2")
 		
 		self.tempEnemy3 = RushEnemy()
 		self.tempEnemy3.setPos(20, 80, 0)
 		self.tempEnemy3.reparentTo(self.render)
+		self.tempEnemy3.setName("enemy3")
 		
 		self.enemies.append(self.tempEnemy)
 		self.enemies.append(self.tempEnemy2)
@@ -137,7 +141,7 @@ class Game(ShowBase):
 		self.taskMgr.add(self.updateGameTask, "updateGameTask")
 		
 		#BEGIN ATTEMPT AT AUTO-TARGETING
-		self.accept('mouse1', self.onMouseTask)
+		#self.accept('mouse1', self.onMouseTask)
 		
 		#add mouse collision to our world
 		self.setupMouseCollision()
@@ -148,7 +152,6 @@ class Game(ShowBase):
 		filename = os.path.abspath(filename)
 		if not os.path.isfile(filename):
 			print "FILE DOES NOT EXIST:"
-			print filename
 			exit(1)
 		
 		#get the lines from the file
@@ -275,7 +278,10 @@ class Game(ShowBase):
 
 		#get the mouse position
 		mpos = base.mouseWatcherNode.getMouse()
-
+		
+		#get the center of the screen
+		#mpos = LPoint2f(self.controlScheme.centerX, self.controlScheme.centerY)
+		
 		#Set the position of the ray based on the mouse position
 
 		self.mPickRay.setFromLens(self.camNode, mpos.getX(), mpos.getY())
@@ -288,16 +294,18 @@ class Game(ShowBase):
 			self.mCollisionQue.sortEntries()
 			entry = self.mCollisionQue.getEntry(0);
 			pickedObj = entry.getIntoNodePath()
-			
-			print pickedObj
 
-			pickedObj = pickedObj.findNetTag('MyObjectTag')
+			#pickedObj = pickedObj.findNetTag('MyObjectTag')
 			if not pickedObj.isEmpty():
 				#here is how you get the surface collsion
 				pos = entry.getSurfacePoint(self.render)
-				return handlePickedObject(pickedObj)
-			
-			return pickedObj
+				
+				name = pickedObj.getParent().getParent().getParent().getName()
+				
+				for enemy in self.enemies:
+					if enemy.getName() == name:
+						return enemy
+				#handlePickedObject(pickedObj)
 		
 		return None
 	
