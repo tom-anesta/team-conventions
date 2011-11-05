@@ -2,8 +2,6 @@
 A set of constant values to be referenced elsewhere in the program. This
 module does not import any others, so it is safe to import it anywhere.
 '''
-import os
-import posixpath
 
 LEFT = "left"
 RIGHT = "right"
@@ -18,13 +16,6 @@ QUIT = "quit"
 NARROW = "narrow"
 AREA = "area"
 
-'''
-FILE_PATH = posixpath.dirname(__file__).replace("\\", "/")
-MODELS_PATH = FILE_PATH + "/../lib/models/"
-SFX_PATH = FILE_PATH + "/../lib/sfx/"
-PARAMS_PATH = FILE_PATH + "/../params/"
-TEXTURES_PATH = FILE_PATH + "/../lib/textures/"
-'''
 MODELS_PATH = "../lib/models/"
 SFX_PATH = "../lib/sfx/"
 PARAMS_PATH = "../params/"
