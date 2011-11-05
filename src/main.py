@@ -94,6 +94,11 @@ class Game(ShowBase):
 		self.playerGroundHandler = CollisionHandlerQueue()
 		self.cTrav.addCollider(self.playerGroundCol, self.playerGroundHandler)
 		'''
+		
+		self.playerGroundCol = self.player.find("**/SleekCraftCollisionRect")
+		self.playerGroundHandler = CollisionHandlerQueue()
+		self.cTrav.addCollider(self.playerGroundCol, self.playerGroundHandler)
+		
 		#add an enemy
 		self.tempEnemy = RushEnemy()
 		self.tempEnemy.setPos(-20, 0, 0)
