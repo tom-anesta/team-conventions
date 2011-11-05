@@ -61,7 +61,10 @@ GOAL_4: game pauses and can be exited from fullscreen
 [goal declared 4:59pm, 11/3]
 [notes: 
 
+q is to exit
+
 ]
+[goal continued to be implemented satisfactorily as of 10:49pm, 11/4
 
 GOAL_5: Models for scavenger enemies are complete
 [goal declared 4:28pm, 11/3]
@@ -77,7 +80,9 @@ GOAL_6: in game player, scavenger enemies have functioning collision geometry (,
 
 GOAL_7: space craft wreckage geometry is complete (or have sufficient examples to add to level)
 [goal declared 4:47pm, 11/3]
+[notes:
 
+]
 
 GOAL_8: space craft wreckage has functioning collision geometry (, do not need to reflect the geometry of the models to a T, just good enough to be believable)
 [goal declared 4:57pm, 11/3]
@@ -137,6 +142,8 @@ GOAL_17: we have some form of HUD that displays at least health and charge bar f
 [goal declared 5:10pm, 11/3]
 [notes: 
 
+	5:02pm, 11/4> adding to the requirement is that our HUD displays the modes of your MMP (narrow/wide, push/pull)
+
 ]
 
 GOAL_18: game has sound effects, not necessarily necessary because you are in space and no one can hear you
@@ -179,6 +186,8 @@ GOAL_21: models have collision geometry that better reflects their models (requi
 GOAL_22: Implement level design (TERRAIN): read from 1 document the terrain geometry, and all obstacles in terrain
 [goal declared 5:25pm, 11/3]
 [notes:
+
+as of 10:50pm, 11/4: we can now decide what model we want to be our background terrain and place individual objects where we want.  we can control their scaling and position.  using the collision traverser is not yet handled.  
 
 ]
 

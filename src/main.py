@@ -1,5 +1,6 @@
 from __future__ import division
 from sys import exit
+import os
 
 from direct.interval.IntervalGlobal import Sequence
 from direct.showbase.ShowBase import ShowBase
@@ -41,6 +42,11 @@ class Game(ShowBase):
 		#(this does not actually disable the mouse)
 		base.disableMouse()
 		
+		
+		#declare null values for variables, fill them in later
+		self.environment = None
+		self.player = None
+		
 		#object lists
 		self.enemies = []
 		self.obstacles = []
@@ -52,11 +58,17 @@ class Game(ShowBase):
 		#variables for tracking time
 		self.previousFrameTime = 0
 		
+		filename = PARAMS_PATH + "environment.txt"
+		self.loadLevelGeom(filename)
+		
+		
 		#load and render the environment model
-		self.environment = self.loader.loadModel("models/environment")
+		'''
+		self.environment = self.loader.loadModel(MODELS_PATH + "maya_crater")
 		self.environment.reparentTo(self.render)
 		self.environment.setScale(0.25, 0.25, 0.25)
 		self.environment.setPos(-8, 42, 0)
+		'''
 		
 		#place the player in the environment
 		self.player = Player(self.controlScheme)
@@ -100,14 +112,103 @@ class Game(ShowBase):
 		#register the update task
 		self.taskMgr.add(self.updateGameTask, "updateGameTask")
 	
+	def loadLevelGeom(self, filename):
+		#os.chdir("..")
+		filename = os.path.abspath(filename)
+		if not os.path.isfile(filename):
+			print "FILE DOES NOT EXIST"
+			exit(1)
+		else:
+			print "FILE DOES EXIST"
+		
+		#get the lines from the file
+		textFileList = open(filename, 'r').readlines()
+		
+		if len(textFileList) < 1:
+			print "FATAL ERROR READING FILE"
+			exit(1)
+		else:
+			print "READ LINES FROM FILE"
+			
+		#now split each line into lists
+		
+		i = 0
+		
+		for line in textFileList:
+			textFileList[i] = line.split(TEXT_DELIMITER)
+			for string in textFileList[i]:
+				string.strip()#remove whitespace or endlines
+			i = i+1
+		
+		'''
+		for list in textFileList:
+			for object in list:
+				print "obj " + object
+		'''
+		i = 0
+		
+		for list in textFileList: #go through the list
+			if list[0] == TERRAIN_OUTER:#do all the things for the terrain
+				#choose the model
+				modelVal = list[1]
+				modelVal = (MODELS_PATH + modelVal)
+				#load the model
+				#this yielded an error
+				self.environment = self.loader.loadModel(modelVal)
+				#begin fix, didn't work
+				#modelVal = os.path.abspath(modelVal)
+				#self.environment = self.loader.loadModel(modelVal)
+				#end fix
+				self.environment.reparentTo(self.render)
+				
+				#set scale
+				scaleVal = list[2]
+				scaleVal = scaleVal.split(',')#split by commas
+				'''
+				for val in scaleVal:
+					val = float(val)
+					print val
+				Sx = scaleVal[0]
+				Sy = scaleVal[1]
+				Sz = scaleVal[2]
+				'''
+				self.environment.setScale(float(scaleVal[0]), float(scaleVal[1]), float(scaleVal[2]))
+				#set location
+				locVal = list[3]
+				locVal = locVal.split(',')
+				for val in locVal:
+					val = float(val)
+					print val
+				self.environment.setPos(float(locVal[0]), float(locVal[1]), float(locVal[2]))#then we have our terrain
+			elif list[0] == TERRAIN_OBJECT:
+				#choose the model
+				modelVal = list[1]
+				modelVal = (MODELS_PATH + modelVal)
+				#load the model
+				obstacle = self.loader.loadModel(modelVal)
+				self.obstacles.append(obstacle)
+				obstacle.reparentTo(render)
+				#set scale
+				scaleVal = list[2]
+				scaleVal = scaleVal.split(',')
+				obstacle.setScale(float(scaleVal[0]), float(scaleVal[1]), float(scaleVal[2]))
+				#set location
+				locVal = list[3]
+				locVal = locVal.split(',')
+				obstacle.setPos(float(locVal[0]), float(locVal[1]), float(locVal[2]))#the we have our object
+				
+			else:
+				print "FATAL ERROR READING FILE"
+				exit(1)
+			
+		pass
+	
 	def updateGameTask(self, task):
 		elapsedTime = task.time - self.previousFrameTime
 		self.previousFrameTime = task.time
 		
 		if self.controlScheme.keyDown(QUIT):
-				print "we are exiting"
 				exit(0)
-				print "exiting has occured"
 				
 		if not self.paused:
 			self.updateCamera(elapsedTime)
