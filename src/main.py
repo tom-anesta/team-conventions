@@ -55,10 +55,16 @@ class Game(ShowBase):
 		self.previousFrameTime = 0
 		
 		#load and render the environment model
-		self.environment = self.loader.loadModel("models/environment")
+		self.environment = self.loader.loadModel(MODELS_PATH + "maya_crater")
 		self.environment.reparentTo(self.render)
-		self.environment.setScale(0.35, 0.35, 0.35)
-		self.environment.setPos(-8, 42, 0)
+		self.environment.setScale(400, 400, 400)
+		self.environment.setPos(-8, 42, -80)
+		
+		#load and render the environment model
+		self.environment = self.loader.loadModel(MODELS_PATH + "maya_crater1")
+		self.environment.reparentTo(self.render)
+		self.environment.setScale(400, 400, 400)
+		self.environment.setPos(-8, 42, -80)
 		
 		#place the player in the environment
 		self.player = Player(self.controlScheme)
