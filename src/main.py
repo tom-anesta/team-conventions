@@ -13,6 +13,8 @@ from pandac.PandaModules import DirectionalLight
 from pandac.PandaModules import AmbientLight
 from pandac.PandaModules import PointLight
 from pandac.PandaModules import Vec4
+from panda3d.core import CollisionRay,CollisionNode,GeomNode,CollisionTraverser
+from panda3d.core import CollisionHandlerQueue, CollisionSphere, BitMask32
 
 from math import pi, sin, cos, sqrt, pow, atan2
 from unit import Unit
@@ -66,8 +68,8 @@ class Game(ShowBase):
 		'''
 		self.environment = self.loader.loadModel(MODELS_PATH + "maya_crater")
 		self.environment.reparentTo(self.render)
-		self.environment.setScale(0.25, 0.25, 0.25)
-		self.environment.setPos(-8, 42, 0)
+		self.environment.setScale(400, 400, 400)
+		self.environment.setPos(-8, 42, -80)
 		'''
 		
 		#place the player in the environment
@@ -111,6 +113,13 @@ class Game(ShowBase):
 		
 		#register the update task
 		self.taskMgr.add(self.updateGameTask, "updateGameTask")
+		
+		#BEGIN ATTEMPT AT AUTO-TARGETING
+		self.accept('mouse1', self.onMouseTask)
+		
+		#add mouse collision to our world
+		self.setupMouseCollision()
+		#END ATTEMPT AT AUTO-TARGETING
 	
 	def loadLevelGeom(self, filename):
 		#os.chdir("..")
@@ -140,11 +149,6 @@ class Game(ShowBase):
 				string.strip()#remove whitespace or endlines
 			i = i+1
 		
-		'''
-		for list in textFileList:
-			for object in list:
-				print "obj " + object
-		'''
 		i = 0
 		
 		for list in textFileList: #go through the list
@@ -164,14 +168,6 @@ class Game(ShowBase):
 				#set scale
 				scaleVal = list[2]
 				scaleVal = scaleVal.split(',')#split by commas
-				'''
-				for val in scaleVal:
-					val = float(val)
-					print val
-				Sx = scaleVal[0]
-				Sy = scaleVal[1]
-				Sz = scaleVal[2]
-				'''
 				self.environment.setScale(float(scaleVal[0]), float(scaleVal[1]), float(scaleVal[2]))
 				#set location
 				locVal = list[3]
@@ -208,16 +204,14 @@ class Game(ShowBase):
 		self.previousFrameTime = task.time
 		
 		if self.controlScheme.keyDown(QUIT):
-				exit(0)
-				
+			exit(0)
+		
 		if not self.paused:
 			self.updateCamera(elapsedTime)
 			self.player.move(elapsedTime, self.camera)
 			for enemy in self.enemies:
 				enemy.move(elapsedTime)
-			self.player.detectActions()
-			
-		
+			self.player.update(self, elapsedTime)
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
 				self.paused = not self.paused
@@ -240,7 +234,6 @@ class Game(ShowBase):
 			self.camera.setH(-self.controlScheme.mouseX * 0.5)
 		else:
 			self.rotateCamera()
-			
 		
 		#update the camera's pitch and vertical position based on the mouse's y position
 		self.cameraVOffset = min(self.screenHeight, max(0, self.controlScheme.mouseY)) / self.screenHeight * 25 + 4
@@ -252,6 +245,77 @@ class Game(ShowBase):
 		self.camera.setPos(self.player.getX() + self.cameraHOffset * sin(self.camera.getH() * pi / 180),
 						   self.player.getY() - self.cameraHOffset * cos(self.camera.getH() * pi / 180),
 						   self.player.getZ() + 0.3 + self.cameraVOffset)
+	
+	#BEGIN ATTEMPT AT AUTO-TARGETING
+	def onMouseTask(self):
+		""" """
+		#do we have a mouse
+		if (self.mouseWatcherNode.hasMouse() == False):
+			return
+
+		#get the mouse position
+		mpos = base.mouseWatcherNode.getMouse()
+
+		#Set the position of the ray based on the mouse position
+
+		self.mPickRay.setFromLens(self.camNode, mpos.getX(), mpos.getY())
+
+		#for this small example I will traverse everything, for bigger projects
+		#this is probably a bad idea
+		self.mPickerTraverser.traverse(self.render)
+
+		if (self.mCollisionQue.getNumEntries() > 0):
+			self.mCollisionQue.sortEntries()
+			entry     = self.mCollisionQue.getEntry(0);
+			pickedObj = entry.getIntoNodePath()
+
+			pickedObj = pickedObj.findNetTag('MyObjectTag')
+			if not pickedObj.isEmpty():
+				#here is how you get the surface collsion
+				pos = entry.getSurfacePoint(self.render)
+				return handlePickedObject(pickedObj)
+			
+			return pickedObj
+		
+		return None
+	
+	def setupMouseCollision(self):
+		""" """
+		#Since we are using collision detection to do picking, we set it up 
+		#any other collision detection system with a traverser and a handler
+		self.mPickerTraverser = CollisionTraverser()            #Make a traverser
+		self.mCollisionQue    = CollisionHandlerQueue()
+
+		#create a collision solid ray to detect against
+		self.mPickRay = CollisionRay()
+		self.mPickRay.setOrigin(self.camera.getPos(self.render))
+		self.mPickRay.setDirection(render.getRelativeVector(camera, Vec3(0,1,0)))
+
+		#create our collison Node to hold the ray
+		self.mPickNode = CollisionNode('pickRay')
+		self.mPickNode.addSolid(self.mPickRay)
+
+		#Attach that node to the camera since the ray will need to be positioned
+		#relative to it, returns a new nodepath		
+		#well use the default geometry mask
+		#this is inefficent but its for mouse picking only
+
+		self.mPickNP = self.camera.attachNewNode(self.mPickNode)
+
+		#well use what panda calls the "from" node.  This is reall a silly convention
+		#but from nodes are nodes that are active, while into nodes are usually passive environments
+		#this isnt a hard rule, but following it usually reduces processing
+
+		#Everything to be picked will use bit 1. This way if we were doing other
+		#collision we could seperate it, we use bitmasks to determine what we check other objects against
+		#if they dont have a bitmask for bit 1 well skip them!
+		self.mPickNode.setFromCollideMask(GeomNode.getDefaultCollideMask())
+
+		#Register the ray as something that can cause collisions
+		self.mPickerTraverser.addCollider(self.mPickNP, self.mCollisionQue)
+		#if you want to show collisions for debugging turn this on
+		#self.mPickerTraverser.showCollisions(self.render)
+	#END ATTEMPT AT AUTO-TARGETING
 	
 	def gameOver(self):
 		pass

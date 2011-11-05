@@ -97,7 +97,7 @@ class ControlScheme(DirectObject):
 		self.resetMouse()
 		
 		return True
-		
+	
 	def resetMouse(self):
 		if not self.window.movePointer(0, self.centerX, self.mouseY):
 			self.prevMouseX = self.mouseX

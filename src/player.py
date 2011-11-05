@@ -13,16 +13,22 @@ class Player(Unit):
 		
 		self.controlScheme = controlScheme
 		
-		self.magnetPower = 10
-		self.magnetWeapon = NARROW
+		self.magnetPower = 300
+		self.magnetWeapon = AREA
+		self.magnetBar = 1000
+		self.magnetBarMax = 1000
+		self.magnetCost = {NARROW:16, AREA:32}
+		self.magnetRegen = 2500
 		self.cooldown = 0
 		self.score = 0
+		
+		self.target = None
 		
 		#action flags
 		self.switching = False
 		self.shooting = False
 		
-		self.extraForwardAccel = 2
+		self.extraForwardAccel = 2.2
 		self.accelMultiplier *= 1.2
 		self.maxTurnRate = 720
 		
@@ -84,35 +90,83 @@ class Player(Unit):
 		
 		Unit.move(self, time)
 	
-	def detectActions(self):
+	def update(self, game, time):
+		"""Run all major player operations each frame"""
+		#check for weapon switch key
 		if self.controlScheme.keyDown(SWITCH):
 			if not self.switching:
 				self.switchWeapon()
 				self.switching = True
 		else:
 			self.switching = False
+		
+		#check for attack keys
+		if self.magnetBar > 0 and self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
+			self.attack(PUSH, game)
+		if self.magnetBar > 0 and self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
+			self.attack(PULL, game)
+		
+		#BEGIN ATTEMPT AT AUTO-TARGETING
+		"""if not self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
+			self.target = None
+		else:
+			self.target = game.onMouseTask()
+			print self.target"""
+		#END ATTEMPT AT AUTO-TARGETING
+		
+		#automatically regenerate the magnet bar's power
+		self.magnetBar += self.magnetRegen * time
+	
+	def decrementMagnetBar(self):
+		"""Subtract from the magnet bar by the amount specified in __init__"""
+		self.magnetBar -= self.magnetCost[self.magnetWeapon]
+	
+	def attack(self, polarity, game):
+		"""Selects the mode of attack and runs the appropriate attack function"""
+		
+		#if magnet is set to narrow and magnet bar has enough power to perform a narrow attack
+		if self.magnetWeapon == NARROW and self.magnetBar >= self.magnetCost[NARROW]:
+			self.narrowAttack(polarity, game)
+		
+		#if magnet is set to area and magnet bar has enough power to perform an area attack
+		if self.magnetWeapon == AREA and self.magnetBar >= self.magnetCost[AREA]:
+			self.areaAttack(polarity, game)
+	
+	def narrowAttack(self, polarity, game):
+		"""Performs a narrow attack on the targeted enemy (and all enemies in between and beyond?)"""
+		
+		#decide on direction of force based on polarity
+		direction = -1 if polarity==PUSH else 1
+		
+		if self.target is not None:
+			self.target.applyForceFrom((direction*self.magnetPower)*(1.5), self.position)
+		
+		self.decrementMagnetBar()
+	
+	def areaAttack(self, polarity, game):
+		"""Performs an area attack on all enemies"""
+		
+		#decide on direction of force based on polarity
+		if polarity == PUSH:
+			force = -self.magnetPower
+		else:
+			force = self.magnetPower
+		
+		#apply force to all enemies
+		for enemy in game.enemies:
+			distSquared = (self.position - enemy.position).lengthSquared()
+			if polarity == PULL:
+				distSquared = max(130, distSquared)
+			else:
+				distSquared = max(80, distSquared)
 			
-		if self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
-			self.attack(PUSH)
-		if self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
-			self.attack(PULL)
-	
-	def attack(self, action):
-		if self.magnetWeapon == NARROW:
-			self.narrowAttack(action)
-		if self.magnetWeapon == AREA:
-			self.areaAttack(action)
-	
-	def narrowAttack(self, action):
-		print "narrow attack", action
-	
-	def areaAttack(self, action):
-		print "area attack", action
+			enemy.applyForceFrom(force / distSquared, self.position)
+		
+		self.decrementMagnetBar()
 	
 	def switchWeapon(self):
-		if self.magnetWeapon==NARROW:
+		"""Switch to whichever weapon is not currently being used"""
+		if self.magnetWeapon == NARROW:
 			self.magnetWeapon = AREA
-			print "switch to area"
-		elif self.magnetWeapon==AREA:
+		elif self.magnetWeapon == AREA:
 			self.magnetWeapon = NARROW
-			print "switch to narrow"
