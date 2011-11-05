@@ -17,10 +17,11 @@ QUIT = "quit"
 NARROW = "narrow"
 AREA = "area"
 
-MODELS_PATH = os.path.dirname(__file__)+"/../lib/models/"
-SFX_PATH = os.path.dirname(__file__)+"/../lib/sfx/"
-PARAMS_PATH = os.path.dirname(__file__)+"/../params/"
-TEXTURES_PATH = os.path.dirname(__file__)+"/../lib/textures/"
+FILE_PATH = os.path.dirname(__file__).replace("\\", "/")
+MODELS_PATH = FILE_PATH + "/../lib/models/"
+SFX_PATH = FILE_PATH + "/../lib/sfx/"
+PARAMS_PATH = FILE_PATH + "/../params/"
+TEXTURES_PATH = FILE_PATH + "/../lib/textures/"
 TEXT_DELIMITER = "%%%"
 
 TERRAIN_OUTER = "terrain_outer"#text used to designate that the text following it is the parameters for creating the background terrain
