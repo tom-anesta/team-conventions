@@ -61,7 +61,9 @@ class Game(ShowBase):
 		self.previousFrameTime = 0
 		
 		#start the collision traverser
-		self.cTrav = CollisionTraverser()
+		traverser = CollisionTraverser()
+		base.cTrav = traverser#run every frame
+		self.cTrav = base.cTrav
 		self.cTrav.showCollisions(render)#show the collisions
 		
 		filename = PARAMS_PATH + "environment.txt"
@@ -83,9 +85,15 @@ class Game(ShowBase):
 		self.player = Player(self.controlScheme)
 		self.player.setH(180)
 		self.player.reparentTo(self.render)
-		self.playerGroundCol = self.player.find("SleekCraftCollisionRect")
-		
-		
+		'''
+		self.playerGroundCol = CollisionNode('playerCol')
+		self.playerGroundCol.addSolid(self.player.find("**/SleekCraftCollisionRect"))
+		self.playerGroundCol.setFromCollideMask(BitMask32.bit(0))
+		self.playerGroundCol.setIntoCollideMask(BitMask32.allOff())
+		self.playerGroundColNode = self.player.attachNewNode(self.playerGroundCol)
+		self.playerGroundHandler = CollisionHandlerQueue()
+		self.cTrav.addCollider(self.playerGroundCol, self.playerGroundHandler)
+		'''
 		#add an enemy
 		self.tempEnemy = RushEnemy()
 		self.tempEnemy.setPos(-20, 0, 0)
