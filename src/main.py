@@ -13,7 +13,7 @@ from pandac.PandaModules import DirectionalLight
 from pandac.PandaModules import AmbientLight
 from pandac.PandaModules import PointLight
 from pandac.PandaModules import Vec4
-from panda3d.core import CollisionRay,CollisionNode,GeomNode,CollisionTraverser
+from panda3d.core import CollisionRay, CollisionNode, GeomNode, CollisionTraverser
 from panda3d.core import CollisionHandlerQueue, CollisionSphere, BitMask32
 
 from math import pi, sin, cos, sqrt, pow, atan2
@@ -134,11 +134,9 @@ class Game(ShowBase):
 		#os.chdir("..")
 		filename = os.path.abspath(filename)
 		if not os.path.isfile(filename):
-			print "FILE DOES NOT EXIST"
+			print "FILE DOES NOT EXIST:"
 			print filename
 			exit(1)
-		else:
-			print "FILE DOES EXIST"
 		
 		#get the lines from the file
 		textFileList = open(filename, 'r').readlines()
@@ -146,8 +144,6 @@ class Game(ShowBase):
 		if len(textFileList) < 1:
 			print "FATAL ERROR READING FILE"
 			exit(1)
-		else:
-			print "READ LINES FROM FILE"
 			
 		#now split each line into lists
 		
@@ -157,7 +153,7 @@ class Game(ShowBase):
 			textFileList[i] = line.split(TEXT_DELIMITER)
 			for string in textFileList[i]:
 				string.strip()#remove whitespace or endlines
-			i = i+1
+			i = i + 1
 		
 		i = 0
 		
@@ -277,7 +273,7 @@ class Game(ShowBase):
 
 		if (self.mCollisionQue.getNumEntries() > 0):
 			self.mCollisionQue.sortEntries()
-			entry     = self.mCollisionQue.getEntry(0);
+			entry = self.mCollisionQue.getEntry(0);
 			pickedObj = entry.getIntoNodePath()
 			
 			print pickedObj
@@ -297,12 +293,12 @@ class Game(ShowBase):
 		#Since we are using collision detection to do picking, we set it up 
 		#any other collision detection system with a traverser and a handler
 		self.mPickerTraverser = CollisionTraverser()            #Make a traverser
-		self.mCollisionQue    = CollisionHandlerQueue()
+		self.mCollisionQue = CollisionHandlerQueue()
 
 		#create a collision solid ray to detect against
 		self.mPickRay = CollisionRay()
 		self.mPickRay.setOrigin(self.camera.getPos(self.render))
-		self.mPickRay.setDirection(render.getRelativeVector(camera, Vec3(0,1,0)))
+		self.mPickRay.setDirection(render.getRelativeVector(camera, Vec3(0, 1, 0)))
 
 		#create our collison Node to hold the ray
 		self.mPickNode = CollisionNode('pickRay')
