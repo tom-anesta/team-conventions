@@ -67,6 +67,9 @@ class Game(ShowBase):
 		filename = PARAMS_PATH + "environment.txt"
 		self.loadLevelGeom(filename)
 		
+		#begin code for terrain collisions
+		
+		
 		
 		#load and render the environment model
 		'''
@@ -80,6 +83,7 @@ class Game(ShowBase):
 		self.player = Player(self.controlScheme)
 		self.player.setH(180)
 		self.player.reparentTo(self.render)
+		self.playerGroundCol = self.player.find("SleekCraftCollisionRect")
 		
 		
 		#add an enemy
@@ -164,6 +168,7 @@ class Game(ShowBase):
 				modelVal = (MODELS_PATH + modelVal)
 				#load the model
 				#this yielded an error
+				#print modelVal
 				self.environment = self.loader.loadModel(modelVal)
 				#begin fix, didn't work
 				#modelVal = os.path.abspath(modelVal)
