@@ -100,19 +100,18 @@ class Player(Unit):
 		else:
 			self.switching = False
 		
+		#BEGIN ATTEMPT AT AUTO-TARGETING
+		if self.magnetWeapon==AREA or (not self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL)):
+			self.target = None
+		elif self.magnetWeapon==NARROW:
+			self.target = game.onMouseTask()
+		#END ATTEMPT AT AUTO-TARGETING
+		
 		#check for attack keys
 		if self.magnetBar > 0 and self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
 			self.attack(PUSH, game)
 		if self.magnetBar > 0 and self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
 			self.attack(PULL, game)
-		
-		#BEGIN ATTEMPT AT AUTO-TARGETING
-		"""if not self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
-			self.target = None
-		else:
-			self.target = game.onMouseTask()
-			print self.target"""
-		#END ATTEMPT AT AUTO-TARGETING
 		
 		#automatically regenerate the magnet bar's power
 		self.magnetBar += self.magnetRegen * time
@@ -136,10 +135,19 @@ class Player(Unit):
 		"""Performs a narrow attack on the targeted enemy (and all enemies in between and beyond?)"""
 		
 		#decide on direction of force based on polarity
-		direction = -1 if polarity==PUSH else 1
+		if polarity == PUSH:
+			force = -self.magnetPower
+		else:
+			force = self.magnetPower
 		
 		if self.target is not None:
-			self.target.applyForceFrom((direction*self.magnetPower)*(1.5), self.position)
+			distSquared = (self.position - self.target.position).lengthSquared()
+			if polarity == PULL:
+				distSquared = max(130, distSquared)
+			else:
+				distSquared = max(80, distSquared)
+			
+			self.target.applyForceFrom(2*force / distSquared, self.position)
 		
 		self.decrementMagnetBar()
 	
