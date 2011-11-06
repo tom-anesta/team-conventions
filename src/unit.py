@@ -51,3 +51,5 @@ class Unit(Actor):
 		self.position.setZ(max(0, self.position.getZ()))
 		
 		self.setPos(self.position.getX(), self.position.getY(), self.position.getZ())
+		
+		base.cTrav.traverse(render)
