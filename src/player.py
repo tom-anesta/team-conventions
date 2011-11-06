@@ -53,6 +53,10 @@ class Player(Unit):
 		self.extraForwardAccel = 2.2
 		self.accelMultiplier *= 1.2
 		self.maxTurnRate = 720
+		
+		#self.shooting = False
+		
+		#self.shootable = False
 	
 	def move(self, time, camera):
 		angle = self.getH()
@@ -118,7 +122,15 @@ class Player(Unit):
 				self.switchWeapon()
 				self.switchPressed = True
 		else:
+			#self.switching = False
 			self.switchPressed = False
+		
+		#BEGIN ATTEMPT AT AUTO-TARGETING
+		#if self.magnetWeapon==AREA or (not self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL)):
+			#self.target = None
+		#elif self.magnetWeapon==NARROW and (self.controlScheme.keyDown(PUSH) or self.controlScheme.keyDown(PULL)):
+			#self.target = game.onMouseTask()
+		#END ATTEMPT AT AUTO-TARGETING
 		
 		#check for attack keys
 		if self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):

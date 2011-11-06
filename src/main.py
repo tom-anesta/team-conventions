@@ -13,10 +13,10 @@ from pandac.PandaModules import DirectionalLight
 from pandac.PandaModules import AmbientLight
 from pandac.PandaModules import PointLight
 from pandac.PandaModules import Vec4
+from pandac.PandaModules import Point2
 from panda3d.core import CollisionRay, CollisionNode, GeomNode, CollisionTraverser
 from panda3d.core import CollisionHandlerQueue, CollisionSphere, BitMask32
 from math import pi, sin, cos, sqrt, pow, atan2
-#from pandac.PandaModules import LPoint2f
 
 from unit import Unit
 from player import Player
@@ -30,7 +30,7 @@ class Game(ShowBase):
 		
 		#get window properties
 		self.winProps = WindowProperties()
-		self.winProps.setFullscreen(True)
+		#self.winProps.setFullscreen(True)
 		self.winProps.setCursorHidden(True)
 		base.win.requestProperties(self.winProps)
 		
@@ -78,10 +78,12 @@ class Game(ShowBase):
 		
 		#begin code for terrain collisions
 		
-		
+		#lookup table for actors
+		self.actors = {}
 		
 		#place the player in the environment
 		self.player = Player(self.controlScheme)
+		self.player.setName("player")
 		self.player.setH(180)
 		self.player.reparentTo(self.render)
 		self.playerGroundCol = self.player.find("**/pCube2")
@@ -92,6 +94,7 @@ class Game(ShowBase):
 		self.playerGroundHandler = CollisionHandlerQueue()
 		self.cTrav.addCollider(self.playerGroundCol, self.playerGroundHandler)
 		
+		self.actors["player"] = self.player
 		
 		
 		#add an enemy
@@ -99,16 +102,19 @@ class Game(ShowBase):
 		self.tempEnemy.setPos(-20, 0, 0)
 		self.tempEnemy.reparentTo(self.render)
 		self.tempEnemy.setName("enemy1")
+		self.actors["enemy1"] = self.tempEnemy
 		
 		self.tempEnemy2 = RushEnemy()
 		self.tempEnemy2.setPos(40, 50, 0)
 		self.tempEnemy2.reparentTo(self.render)
 		self.tempEnemy2.setName("enemy2")
+		self.actors["enemy2"] = self.tempEnemy
 		
 		self.tempEnemy3 = RushEnemy()
 		self.tempEnemy3.setPos(20, 80, 0)
 		self.tempEnemy3.reparentTo(self.render)
 		self.tempEnemy3.setName("enemy3")
+		self.actors["enemy3"] = self.tempEnemy
 		
 		self.enemies.append(self.tempEnemy)
 		self.enemies.append(self.tempEnemy2)
@@ -247,8 +253,9 @@ class Game(ShowBase):
 		
 	
 	def updateGameTask(self, task):
+		self.globalTime= self.globalTime + task.time
 		elapsedTime = task.time - self.previousFrameTime
-		self.previousFrameTime = task.time
+		
 		
 		if self.controlScheme.keyDown(QUIT):
 			exit(0)
@@ -259,6 +266,7 @@ class Game(ShowBase):
 				self.runGame(0.05)
 				time -= 0.05
 			self.runGame(time)
+			self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
 				self.paused = not self.paused
@@ -266,6 +274,8 @@ class Game(ShowBase):
 				self.pauseWasPressed = True
 		else:
 			self.pauseWasPressed = False
+		
+		self.previousFrameTime = task.time
 		
 		return task.cont
 	
@@ -288,6 +298,9 @@ class Game(ShowBase):
 		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries)>0) and (entries[0].getIntoNode().getName() == "crater10:Mesh"):
 			self.ralph.setZ(entries[0].getSurfacePoint(render).getZ())
+	
+	def spawnEnemies(self)
+		pass
 		
 	
 	def rotateCamera(self):
@@ -322,10 +335,12 @@ class Game(ShowBase):
 			return
 
 		#get the mouse position
-		mpos = base.mouseWatcherNode.getMouse()
+		mpos2 = base.mouseWatcherNode.getMouse()
 		
 		#get the center of the screen
-		#mpos = LPoint2f(self.controlScheme.centerX, self.controlScheme.centerY)
+		mpos = Point2()
+		mpos.setX(0)
+		mpos.setY(0)
 		
 		#Set the position of the ray based on the mouse position
 
@@ -337,20 +352,23 @@ class Game(ShowBase):
 
 		if (self.mCollisionQue.getNumEntries() > 0):
 			self.mCollisionQue.sortEntries()
-			entry = self.mCollisionQue.getEntry(0);
-			pickedObj = entry.getIntoNodePath()
-
-			#pickedObj = pickedObj.findNetTag('MyObjectTag')
-			if not pickedObj.isEmpty():
-				#here is how you get the surface collsion
-				pos = entry.getSurfacePoint(self.render)
+			for i in range(0, self.mCollisionQue.getNumEntries()):
+				entry = self.mCollisionQue.getEntry(i)
+				pickedObj = entry.getIntoNodePath()
 				
-				name = pickedObj.getParent().getParent().getParent().getName()
-				
-				for enemy in self.enemies:
-					if enemy.getName() == name:
-						return enemy
-				#handlePickedObject(pickedObj)
+				if not pickedObj.isEmpty():
+					#here is how you get the surface collsion
+					pos = entry.getSurfacePoint(self.render)
+					
+					name = pickedObj.getParent().getParent().getParent().getName()
+					if name=="render":
+						return None
+					
+					if self.actors[name].shootable:
+						print self.actors[name].getName()
+						return self.actors[name]
+					
+					#handlePickedObject(pickedObj)
 		
 		return None
 	
@@ -359,12 +377,13 @@ class Game(ShowBase):
 		#Since we are using collision detection to do picking, we set it up 
 		#any other collision detection system with a traverser and a handler
 		self.mPickerTraverser = CollisionTraverser()            #Make a traverser
+		self.mPickerTraverser.showCollisions(render)
 		self.mCollisionQue = CollisionHandlerQueue()
 
 		#create a collision solid ray to detect against
 		self.mPickRay = CollisionRay()
-		self.mPickRay.setOrigin(self.camera.getPos(self.render))
-		self.mPickRay.setDirection(render.getRelativeVector(camera, Vec3(0, 1, 0)))
+		self.mPickRay.setOrigin(self.player.getPos(self.render))
+		self.mPickRay.setDirection(render.getRelativeVector(self.player, Vec3(1, 0, 0)))
 
 		#create our collison Node to hold the ray
 		self.mPickNode = CollisionNode('pickRay')
