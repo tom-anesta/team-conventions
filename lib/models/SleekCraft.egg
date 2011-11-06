@@ -4,7 +4,7 @@
   "maya2egg2012 -p -keep-uvs -round-uvs -tbnall -a none -cs y-up -uo cm -trans all -o C:/Users/hendrm2/Documents/Game3git/lib/models/SleekCraft.egg C:/Users/hendrm2/Documents/Game3git/lib/models/SleekCraft_temp.mb"
 }
 <Texture> lambert3SG {
-  "../../../../Pictures/steeltexture.jpg"
+  "../textures/steeltexture.jpg"
   <Scalar> wrapu { repeat }
   <Scalar> wrapv { repeat }
   <Scalar> minfilter { linear_mipmap_linear }
