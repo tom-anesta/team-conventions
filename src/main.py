@@ -28,6 +28,9 @@ class Game(ShowBase):
 	def __init__(self):
 		ShowBase.__init__(self)
 		
+		#start the time
+		self.globalTime = 0
+		
 		#get window properties
 		self.winProps = WindowProperties()
 		self.winProps.setFullscreen(True)
@@ -53,6 +56,8 @@ class Game(ShowBase):
 		#object lists
 		self.enemies = []
 		self.obstacles = []
+		#list of enemies to be spawned
+		self.eSpawnList = dict()
 		
 		#not paused by default
 		self.paused = False
@@ -62,24 +67,22 @@ class Game(ShowBase):
 		self.previousFrameTime = 0
 		
 		#start the collision traverser
-		self.cTrav = CollisionTraverser()
+		traverser = CollisionTraverser()
+		base.cTrav = traverser#run every frame
+		self.cTrav = base.cTrav
 		self.cTrav.showCollisions(render)#show the collisions
 		
+		#load the environment
 		filename = PARAMS_PATH + "environment.txt"
 		self.loadLevelGeom(filename)
+		#load the enemies
+		filename = PARAMS_PATH + "enemies.txt"
+		self.loadLevelEnemies(filename)
 		
 		#begin code for terrain collisions
 		
 		#lookup table for actors
 		self.actors = {}
-		
-		#load and render the environment model
-		'''
-		self.environment = self.loader.loadModel(MODELS_PATH + "maya_crater")
-		self.environment.reparentTo(self.render)
-		self.environment.setScale(400, 400, 400)
-		self.environment.setPos(-8, 42, -80)
-		'''
 		
 		#place the player in the environment
 		self.player = Player(self.controlScheme)
@@ -87,8 +90,17 @@ class Game(ShowBase):
 		self.player.setH(180)
 		self.player.reparentTo(self.render)
 		self.player.nodePath = self.render.find("player")
-		self.playerGroundCol = self.player.find("SleekCraftCollisionRect")
 		self.actors["player"] = self.player
+		
+		self.playerGroundCol = self.player.find("**/CollisionSphere")
+		if self.playerGroundCol.isEmpty():
+			print "aaaaaa"
+		#self.playerGroundCol.setCollisionMask(BitMask32(0x00))
+		
+		#self.playerGroundCol.setFromCollideMask(BitMask32.bit(0))
+		#self.playerGroundCol.setIntoCollideMask(BitMask32.allOff())
+		self.playerGroundHandler = CollisionHandlerQueue()
+		self.cTrav.addCollider(self.playerGroundCol, self.playerGroundHandler)
 		
 		#add an enemy
 		self.tempEnemy = RushEnemy()
@@ -140,7 +152,6 @@ class Game(ShowBase):
 		self.setupTargeting()
 	
 	def loadLevelGeom(self, filename):
-		#os.chdir("..")
 		filename = os.path.abspath(filename)
 		if not os.path.isfile(filename):
 			print "FILE DOES NOT EXIST:"
@@ -213,10 +224,42 @@ class Game(ShowBase):
 				exit(1)
 			
 		pass
+		
+	def loadLevelEnemies(self, filename):
+		filename = os.path.abspath(filename)
+		if not os.path.isfile(filename):
+			print "FILE DOES NOT EXIST:"
+			exit(1)
+		
+		#get the lines from the file
+		textFileList = open(filename, 'r').readlines()
+		
+		if len(textFileList) < 1:
+			print "FATAL ERROR READING FILE"
+			exit(1)
+			
+		#now split each line into lists
+		
+		i = 0
+		
+		for line in textFileList:
+			textFileList[i] = line.split(TEXT_DELIMITER)
+			for string in textFileList[i]:
+				string.strip()#remove whitespace or endlines
+			i = i + 1
+		
+		i = 0
+		
+		pass
+		
+		
+		
+		
 	
 	def updateGameTask(self, task):
+		self.globalTime= self.globalTime + task.time
 		elapsedTime = task.time - self.previousFrameTime
-		self.previousFrameTime = task.time
+		
 		
 		if self.controlScheme.keyDown(QUIT):
 			exit(0)
@@ -227,6 +270,7 @@ class Game(ShowBase):
 				self.runGame(0.05)
 				time -= 0.05
 			self.runGame(time)
+			self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
 				self.paused = not self.paused
@@ -235,14 +279,39 @@ class Game(ShowBase):
 		else:
 			self.pauseWasPressed = False
 		
+		self.previousFrameTime = task.time
+		
 		return task.cont
 	
 	def runGame(self, time):
 		self.updateCamera(time)
-		self.player.move(time, self.camera)
+		
 		for enemy in self.enemies:
 			enemy.move(time)
+			
+		#check for basic terrain collisions
+		self.playerTerrainCollisionCheck()
 		self.player.update(self, time)
+		self.player.move(time, self.camera)
+		
+		self.cTrav.traverse(render)
+		
+	def playerTerrainCollisionCheck(self):
+		entries = []
+		length = self.playerGroundHandler.getNumEntries()
+		for i in range(length):
+			entry = self.playerGroundHandler.getEntry(i)
+			entries.append(entry)
+		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
+		if (len(entries)>0):
+			for entry in entries:
+				if entry.getIntoNode().getName() == "Barrier":
+					self.player.setZ(entry.getSurfacePoint(render).getZ())
+					break
+	
+	def spawnEnemies(self):
+		pass
+		
 	
 	def rotateCamera(self):
 		if self.controlScheme.mouseX > self.winProps.getXSize():
