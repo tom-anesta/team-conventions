@@ -30,7 +30,7 @@ class Game(ShowBase):
 		
 		#get window properties
 		self.winProps = WindowProperties()
-		#self.winProps.setFullscreen(True)
+		self.winProps.setFullscreen(True)
 		self.winProps.setCursorHidden(True)
 		base.win.requestProperties(self.winProps)
 		
@@ -86,28 +86,31 @@ class Game(ShowBase):
 		self.player.setName("player")
 		self.player.setH(180)
 		self.player.reparentTo(self.render)
+		self.player.nodePath = self.render.find("player")
 		self.playerGroundCol = self.player.find("SleekCraftCollisionRect")
 		self.actors["player"] = self.player
-		
 		
 		#add an enemy
 		self.tempEnemy = RushEnemy()
 		self.tempEnemy.setPos(-20, 0, 0)
-		self.tempEnemy.reparentTo(self.render)
 		self.tempEnemy.setName("enemy1")
+		self.tempEnemy.reparentTo(self.render)
+		self.tempEnemy.nodePath = self.render.find("enemy1")
 		self.actors["enemy1"] = self.tempEnemy
 		
 		self.tempEnemy2 = RushEnemy()
 		self.tempEnemy2.setPos(40, 50, 0)
-		self.tempEnemy2.reparentTo(self.render)
 		self.tempEnemy2.setName("enemy2")
-		self.actors["enemy2"] = self.tempEnemy
+		self.tempEnemy2.reparentTo(self.render)
+		self.tempEnemy2.nodePath = self.render.find("enemy2")
+		self.actors["enemy2"] = self.tempEnemy2
 		
 		self.tempEnemy3 = RushEnemy()
 		self.tempEnemy3.setPos(20, 80, 0)
-		self.tempEnemy3.reparentTo(self.render)
 		self.tempEnemy3.setName("enemy3")
-		self.actors["enemy3"] = self.tempEnemy
+		self.tempEnemy3.reparentTo(self.render)
+		self.tempEnemy3.nodePath = self.render.find("enemy3")
+		self.actors["enemy3"] = self.tempEnemy3
 		
 		self.enemies.append(self.tempEnemy)
 		self.enemies.append(self.tempEnemy2)
@@ -133,12 +136,8 @@ class Game(ShowBase):
 		#register the update task
 		self.taskMgr.add(self.updateGameTask, "updateGameTask")
 		
-		#BEGIN ATTEMPT AT AUTO-TARGETING
-		#self.accept('mouse1', self.onMouseTask)
-		
-		#add mouse collision to our world
-		self.setupMouseCollision()
-		#END ATTEMPT AT AUTO-TARGETING
+		#add targeting to the world
+		self.setupTargeting()
 	
 	def loadLevelGeom(self, filename):
 		#os.chdir("..")
@@ -269,27 +268,10 @@ class Game(ShowBase):
 						   self.player.getY() - self.cameraHOffset * cos(self.camera.getH() * pi / 180),
 						   self.player.getZ() + 0.3 + self.cameraVOffset)
 	
-	#BEGIN ATTEMPT AT AUTO-TARGETING
-	def onMouseTask(self):
-		""" """
-		#do we have a mouse
-		if (self.mouseWatcherNode.hasMouse() == False):
-			return
+	def selectTarget(self):
+		"""Finds the closest shootable object and returns it"""
 
-		#get the mouse position
-		mpos2 = base.mouseWatcherNode.getMouse()
-		
-		#get the center of the screen
-		mpos = Point2()
-		mpos.setX(0)
-		mpos.setY(0)
-		
-		#Set the position of the ray based on the mouse position
-
-		self.mPickRay.setFromLens(self.camNode, mpos.getX(), mpos.getY())
-
-		#for this small example I will traverse everything, for bigger projects
-		#this is probably a bad idea
+		#traverse all objects in render
 		self.mPickerTraverser.traverse(self.render)
 
 		if (self.mCollisionQue.getNumEntries() > 0):
@@ -300,12 +282,14 @@ class Game(ShowBase):
 				
 				if not pickedObj.isEmpty():
 					#here is how you get the surface collsion
-					pos = entry.getSurfacePoint(self.render)
+					#pos = entry.getSurfacePoint(self.render)
 					
+					#get the name of the picked object
 					name = pickedObj.getParent().getParent().getParent().getName()
 					if name=="render":
 						return None
 					
+					#if the object is shootable, set it as the target
 					if self.actors[name].shootable:
 						print self.actors[name].getName()
 						return self.actors[name]
@@ -314,31 +298,32 @@ class Game(ShowBase):
 		
 		return None
 	
-	def setupMouseCollision(self):
-		""" """
+	def setupTargeting(self):
+		"""Set up the collisions necessary to target enemies and other objects"""
+		
 		#Since we are using collision detection to do picking, we set it up 
 		#any other collision detection system with a traverser and a handler
 		self.mPickerTraverser = CollisionTraverser()            #Make a traverser
-		self.mPickerTraverser.showCollisions(render)
+		#self.mPickerTraverser.showCollisions(render)
 		self.mCollisionQue = CollisionHandlerQueue()
 
 		#create a collision solid ray to detect against
 		self.mPickRay = CollisionRay()
 		self.mPickRay.setOrigin(self.player.getPos(self.render))
-		self.mPickRay.setDirection(render.getRelativeVector(self.player, Vec3(1, 0, 0)))
+		self.mPickRay.setDirection(self.render.getRelativeVector(self.player, Vec3(0, 1, 0)))
 
 		#create our collison Node to hold the ray
 		self.mPickNode = CollisionNode('pickRay')
 		self.mPickNode.addSolid(self.mPickRay)
 
-		#Attach that node to the camera since the ray will need to be positioned
+		#Attach that node to the player since the ray will need to be positioned
 		#relative to it, returns a new nodepath		
 		#well use the default geometry mask
 		#this is inefficent but its for mouse picking only
 
-		self.mPickNP = self.camera.attachNewNode(self.mPickNode)
+		self.mPickNP = self.player.attachNewNode(self.mPickNode)
 
-		#well use what panda calls the "from" node.  This is reall a silly convention
+		#well use what panda calls the "from" node.  This is really a silly convention
 		#but from nodes are nodes that are active, while into nodes are usually passive environments
 		#this isnt a hard rule, but following it usually reduces processing
 

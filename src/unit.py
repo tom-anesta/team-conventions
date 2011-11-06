@@ -20,6 +20,7 @@ class Unit(Actor):
 		self.accelMultiplier = 45
 		self.friction = 1.7
 		
+		self.nodePath = None
 		self.shootable = True
 	
 	def applyForceFrom(self, magnitude, sourcePosition):
