@@ -14,10 +14,10 @@ from pandac.PandaModules import AmbientLight
 from pandac.PandaModules import PointLight
 from pandac.PandaModules import Vec4
 from pandac.PandaModules import NodePath
+from pandac.PandaModules import Point2
 from panda3d.core import CollisionRay, CollisionNode, GeomNode, CollisionTraverser
 from panda3d.core import CollisionHandlerQueue, CollisionSphere, BitMask32
 from math import pi, sin, cos, sqrt, pow, atan2
-#from pandac.PandaModules import LPoint2f
 
 from unit import Unit
 from player import Player
@@ -28,6 +28,9 @@ from controlScheme import ControlScheme
 class Game(ShowBase):
 	def __init__(self):
 		ShowBase.__init__(self)
+		
+		#start the time
+		self.globalTime = 0
 		
 		#get window properties
 		self.winProps = WindowProperties()
@@ -57,6 +60,8 @@ class Game(ShowBase):
 		#object lists
 		self.enemies = []
 		self.obstacles = []
+		#list of enemies to be spawned
+		self.eSpawnList = dict()
 		
 		#not paused by default
 		self.paused = False
@@ -66,41 +71,61 @@ class Game(ShowBase):
 		self.previousFrameTime = 0
 		
 		#start the collision traverser
-		self.cTrav = CollisionTraverser()
+		traverser = CollisionTraverser()
+		base.cTrav = traverser#run every frame
+		self.cTrav = base.cTrav
 		self.cTrav.showCollisions(self.unitNodePath)#show the collisions
 		
+		#load the environment
 		filename = PARAMS_PATH + "environment.txt"
 		self.loadLevelGeom(filename)
+		#load the enemies
+		filename = PARAMS_PATH + "enemies.txt"
+		self.loadLevelEnemies(filename)
 		
-		#load and render the environment model
-		'''
-		self.environment = self.loader.loadModel(MODELS_PATH + "maya_crater")
-		self.environment.reparentTo(self.render)
-		self.environment.setScale(400, 400, 400)
-		self.environment.setPos(-8, 42, -80)
-		'''
+		#lookup table for actors
+		self.actors = {}
 		
 		#place the player in the environment
 		self.player = Player(self.controlScheme, self.camera, self)
+		self.player.setName("player")
+		self.player.setH(180)
 		self.player.reparentTo(self.unitNodePath)
-		self.playerGroundCol = self.player.find("SleekCraftCollisionRect")
+		self.player.nodePath = self.render.find("player")
+		self.actors["player"] = self.player
+		
+		self.playerGroundCol = self.player.find("**/CollisionSphere")
+		if self.playerGroundCol.isEmpty():
+			print "playerGroundCol is empty"
+		#self.playerGroundCol.setCollisionMask(BitMask32(0x00))
 		self.player.registerCollider(self.cTrav)
+		
+		#self.playerGroundCol.setFromCollideMask(BitMask32.bit(0))
+		#self.playerGroundCol.setIntoCollideMask(BitMask32.allOff())
+		self.playerGroundHandler = CollisionHandlerQueue()
+		self.cTrav.addCollider(self.playerGroundCol, self.playerGroundHandler)
 		
 		#add an enemy
 		self.tempEnemy = RushEnemy()
 		self.tempEnemy.setPos(-20, 0, 0)
-		self.tempEnemy.reparentTo(self.unitNodePath)
 		self.tempEnemy.setName("enemy1")
+		self.tempEnemy.reparentTo(self.unitNodePath)
+		self.tempEnemy.nodePath = self.render.find("enemy1")
+		self.actors["enemy1"] = self.tempEnemy
 		
 		self.tempEnemy2 = RushEnemy()
 		self.tempEnemy2.setPos(40, 50, 0)
-		self.tempEnemy2.reparentTo(self.unitNodePath)
 		self.tempEnemy2.setName("enemy2")
+		self.tempEnemy2.reparentTo(self.unitNodePath)
+		self.tempEnemy2.nodePath = self.render.find("enemy2")
+		self.actors["enemy2"] = self.tempEnemy2
 		
 		self.tempEnemy3 = RushEnemy()
 		self.tempEnemy3.setPos(20, 80, 0)
-		self.tempEnemy3.reparentTo(self.unitNodePath)
 		self.tempEnemy3.setName("enemy3")
+		self.tempEnemy3.reparentTo(self.unitNodePath)
+		self.tempEnemy3.nodePath = self.render.find("enemy3")
+		self.actors["enemy3"] = self.tempEnemy3
 		
 		self.enemies.append(self.tempEnemy)
 		self.enemies.append(self.tempEnemy2)
@@ -129,15 +154,10 @@ class Game(ShowBase):
 		#register the update task
 		self.taskMgr.add(self.updateGame, "updateGame")
 		
-		#BEGIN ATTEMPT AT AUTO-TARGETING
-		#self.accept('mouse1', self.onMouseTask)
-		
-		#add mouse collision to our world
-		self.setupMouseCollision()
-		#END ATTEMPT AT AUTO-TARGETING
+		#add targeting to the world
+		self.setupTargeting()
 	
 	def loadLevelGeom(self, filename):
-		#os.chdir("..")
 		filename = os.path.abspath(filename)
 		if not os.path.isfile(filename):
 			print "FILE DOES NOT EXIST:"
@@ -209,10 +229,41 @@ class Game(ShowBase):
 				exit(1)
 			
 		pass
+		
+	def loadLevelEnemies(self, filename):
+		filename = os.path.abspath(filename)
+		if not os.path.isfile(filename):
+			print "FILE DOES NOT EXIST:"
+			exit(1)
+		
+		#get the lines from the file
+		textFileList = open(filename, 'r').readlines()
+		
+		if len(textFileList) < 1:
+			print "FATAL ERROR READING FILE"
+			exit(1)
+			
+		#now split each line into lists
+		
+		i = 0
+		
+		for line in textFileList:
+			textFileList[i] = line.split(TEXT_DELIMITER)
+			for string in textFileList[i]:
+				string.strip()#remove whitespace or endlines
+			i = i + 1
+		
+		i = 0
+		
+		pass
+		
+		
+		
+		
 	
 	def updateGame(self, task):
+		self.globalTime = self.globalTime + task.time
 		elapsedTime = task.time - self.previousFrameTime
-		self.previousFrameTime = task.time
 		
 		if self.controlScheme.keyDown(QUIT):
 			exit(0)
@@ -224,6 +275,7 @@ class Game(ShowBase):
 				time -= 0.05
 			self.updateGameComponents(time)
 		
+			self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
 				self.paused = not self.paused
@@ -231,6 +283,8 @@ class Game(ShowBase):
 				self.pauseWasPressed = True
 		else:
 			self.pauseWasPressed = False
+		
+		self.previousFrameTime = task.time
 		
 		return task.cont
 	
@@ -240,9 +294,31 @@ class Game(ShowBase):
 		@precondition: The game isn't paused. 
 		'''
 		self.updateCamera(time)
-		self.player.update(time)
 		for enemy in self.enemies:
 			enemy.update(time)
+			
+		#check for basic terrain collisions
+		self.playerTerrainCollisionCheck()
+		self.player.update(time)
+		
+		self.cTrav.traverse(render)
+		
+	def playerTerrainCollisionCheck(self):
+		entries = []
+		length = self.playerGroundHandler.getNumEntries()
+		for i in range(length):
+			entry = self.playerGroundHandler.getEntry(i)
+			entries.append(entry)
+		entries.sort(lambda x, y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
+		if (len(entries) > 0):
+			for entry in entries:
+				if entry.getIntoNode().getName() == "Barrier":
+					self.player.setZ(entry.getSurfacePoint(render).getZ())
+					break
+	
+	def spawnEnemies(self):
+		pass
+		
 	
 	def rotateCamera(self):
 		if self.controlScheme.mouseX > self.winProps.getXSize():
@@ -268,70 +344,62 @@ class Game(ShowBase):
 						   self.player.getY() - self.cameraHOffset * cos(self.camera.getH() * pi / 180),
 						   self.player.getZ() + 0.3 + self.cameraVOffset)
 	
-	#BEGIN ATTEMPT AT AUTO-TARGETING
-	def onMouseTask(self):
-		""" """
-		#do we have a mouse
-		if (self.mouseWatcherNode.hasMouse() == False):
-			return
+	def selectTarget(self):
+		"""Finds the closest shootable object and returns it"""
 
-		#get the mouse position
-		mpos = base.mouseWatcherNode.getMouse()
-		
-		#get the center of the screen
-		#mpos = LPoint2f(self.controlScheme.centerX, self.controlScheme.centerY)
-		
-		#Set the position of the ray based on the mouse position
-
-		self.mPickRay.setFromLens(self.camNode, mpos.getX(), mpos.getY())
-
-		#for this small example I will traverse everything, for bigger projects
-		#this is probably a bad idea
-		self.mPickerTraverser.traverse(self.render)
+		#traverse all objects in render
+		self.mPickerTraverser.traverse(self.unitNodePath)
 
 		if (self.mCollisionQue.getNumEntries() > 0):
 			self.mCollisionQue.sortEntries()
-			entry = self.mCollisionQue.getEntry(0);
-			pickedObj = entry.getIntoNodePath()
-
-			#pickedObj = pickedObj.findNetTag('MyObjectTag')
-			if not pickedObj.isEmpty():
-				#here is how you get the surface collsion
-				pos = entry.getSurfacePoint(self.render)
+			for i in range(0, self.mCollisionQue.getNumEntries()):
+				entry = self.mCollisionQue.getEntry(i)
+				pickedObj = entry.getIntoNodePath()
 				
-				name = pickedObj.getParent().getParent().getParent().getName()
-				
-				for enemy in self.enemies:
-					if enemy.getName() == name:
-						return enemy
-				#handlePickedObject(pickedObj)
+				if not pickedObj.isEmpty():
+					#here is how you get the surface collsion
+					#pos = entry.getSurfacePoint(self.render)
+					
+					#get the name of the picked object
+					name = pickedObj.getParent().getParent().getParent().getName()
+					if name == "render":
+						return None
+					
+					#if the object is shootable, set it as the target
+					if self.actors[name].shootable:
+						print self.actors[name].getName()
+						return self.actors[name]
+					
+					#handlePickedObject(pickedObj)
 		
 		return None
 	
-	def setupMouseCollision(self):
-		""" """
+	def setupTargeting(self):
+		"""Set up the collisions necessary to target enemies and other objects"""
+		
 		#Since we are using collision detection to do picking, we set it up 
 		#any other collision detection system with a traverser and a handler
 		self.mPickerTraverser = CollisionTraverser()            #Make a traverser
+		#self.mPickerTraverser.showCollisions(render)
 		self.mCollisionQue = CollisionHandlerQueue()
 
 		#create a collision solid ray to detect against
 		self.mPickRay = CollisionRay()
-		self.mPickRay.setOrigin(self.camera.getPos(self.render))
-		self.mPickRay.setDirection(render.getRelativeVector(camera, Vec3(0, 1, 0)))
+		self.mPickRay.setOrigin(self.player.getPos(self.render))
+		self.mPickRay.setDirection(self.render.getRelativeVector(self.player, Vec3(0, 1, 0)))
 
 		#create our collison Node to hold the ray
 		self.mPickNode = CollisionNode('pickRay')
 		self.mPickNode.addSolid(self.mPickRay)
 
-		#Attach that node to the camera since the ray will need to be positioned
+		#Attach that node to the player since the ray will need to be positioned
 		#relative to it, returns a new nodepath		
 		#well use the default geometry mask
 		#this is inefficent but its for mouse picking only
 
-		self.mPickNP = self.camera.attachNewNode(self.mPickNode)
+		self.mPickNP = self.player.attachNewNode(self.mPickNode)
 
-		#well use what panda calls the "from" node.  This is reall a silly convention
+		#well use what panda calls the "from" node.  This is really a silly convention
 		#but from nodes are nodes that are active, while into nodes are usually passive environments
 		#this isnt a hard rule, but following it usually reduces processing
 

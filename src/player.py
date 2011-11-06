@@ -32,14 +32,14 @@ class Player(Unit):
 						   AREA:self.energyRegen + 50}
 		
 		#the strength of a sustained attack per unit of energy used
-		self.magnetStrength = {NARROW:30, AREA:20}
+		self.magnetStrength = {NARROW:0.3, AREA:20}
 		
 		#the energy cost of a burst attack with a given weapon
 		self.burstCost = {NARROW:400, AREA:600}
 		
 		#the strength of a burst attack with a given weapon
-		#(yes, the values really do have to be this high)
-		self.burstStrength = {NARROW:100000, AREA:70000}
+		#(yes, the area value really does have to be this high)
+		self.burstStrength = {NARROW:200, AREA:10000}
 		
 		#the enemy that the narrow weapon has locked on to
 		self.target = None
@@ -55,6 +55,11 @@ class Player(Unit):
 		self.extraForwardAccel = 2.2
 		self.accelMultiplier *= 1.2
 		self.maxTurnRate = 720
+		
+		#self.shooting = False
+		
+		#used in main to check if the unit can be shot with the narrow attack
+		self.shootable = False
 	
 	def move(self, time):
 		angle = self.getH()
@@ -120,6 +125,8 @@ class Player(Unit):
 		else:
 			self.switchPressed = False
 		
+		self.targetEnemy()
+		
 		#check for attack keys
 		if self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
 			self.attack(PUSH, time)
@@ -127,7 +134,7 @@ class Player(Unit):
 			self.attack(PULL, time)
 		else:
 			self.sustainedAttack = False
-			self.target = None
+			#self.target = None
 		
 		#automatically regenerate energy
 		self.energy += self.energyRegen * time
@@ -136,6 +143,13 @@ class Player(Unit):
 		self.move(time)
 		Unit.update(self, time)
 	
+	def targetEnemy(self):
+		"""Either selects a new targeted enemy or wipes the current one, depending on player action"""
+		if self.currentWeapon == AREA or (not self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL)):
+			self.target = None
+		elif self.currentWeapon == NARROW and (self.controlScheme.keyDown(PUSH) or self.controlScheme.keyDown(PULL)):
+			self.target = self.game.selectTarget()
+	
 	def attack(self, polarity, time):
 		"""Selects the mode of attack and runs the appropriate attack function"""
 		
@@ -143,10 +157,6 @@ class Player(Unit):
 		if not self.sustainedAttack:
 			energyUsed = self.burstCost[self.currentWeapon]
 			force = self.burstStrength[self.currentWeapon]
-			
-			#find a target if needed
-			if self.currentWeapon == NARROW:
-				self.target = self.game.onMouseTask()
 			
 			self.sustainedAttack = True
 		else:
@@ -170,10 +180,7 @@ class Player(Unit):
 			force *= -1
 		
 		if self.target is not None:
-			distSquared = (self.position - self.target.position).lengthSquared()
-			distSquared = max(130, distSquared)
-			
-			self.target.applyForceFrom(force / distSquared, self.position)
+			self.target.applyForceFrom(force, self.position)
 	
 	def areaAttack(self, polarity, force):
 		"""Performs an area attack on all enemies"""
@@ -183,9 +190,9 @@ class Player(Unit):
 		for enemy in self.game.enemies:
 			distSquared = (self.position - enemy.position).lengthSquared()
 			if polarity == PULL:
-				distSquared = max(450, distSquared) / 5
+				distSquared = max(750, distSquared) / 5
 			else:
-				distSquared = max(350, distSquared) / 5
+				distSquared = max(650, distSquared) / 5
 			
 			enemy.applyForceFrom(force / distSquared, self.position)
 	

@@ -17,6 +17,7 @@ class Unit(Actor):
 		self.health = 10
 		
 		self.position = Point3()
+		#self.lastPosition = Point3()
 		self.vel = Vec3()
 		self.accel = Vec3(0, 0, -Unit.gravity)
 		
@@ -31,6 +32,9 @@ class Unit(Actor):
 		#can be thought of as the inverse of the unit's mass
 		self.accelMultiplier = 45
 		self.friction = 1.7
+		
+		self.nodePath = None
+		self.shootable = True
 	
 	def registerCollider(self, collisionTraverser):
 		pass
@@ -50,7 +54,6 @@ class Unit(Actor):
 		self.health -= num
 	
 	def collideObstacle(self):
-		#self.position = self.getPos()
 		if (self.vel.length > 7):
 			self.takeDamage(self.vel.length)
 	
