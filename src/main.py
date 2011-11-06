@@ -28,6 +28,9 @@ class Game(ShowBase):
 	def __init__(self):
 		ShowBase.__init__(self)
 		
+		#start the time
+		self.globalTime = 0
+		
 		#get window properties
 		self.winProps = WindowProperties()
 		#self.winProps.setFullscreen(True)
@@ -86,7 +89,9 @@ class Game(ShowBase):
 		self.player.setName("player")
 		self.player.setH(180)
 		self.player.reparentTo(self.render)
-		self.playerGroundCol = self.player.find("**/pCube2")
+		self.playerGroundCol = self.player.find("**/CollisionSphere")
+		if self.playerGroundCol.isEmpty():
+			print "aaaaaa"
 		#self.playerGroundCol.setCollisionMask(BitMask32(0x00))
 		
 		#self.playerGroundCol.setFromCollideMask(BitMask32.bit(0))
@@ -291,15 +296,17 @@ class Game(ShowBase):
 	def playerTerrainCollisionCheck(self):
 		entries = []
 		length = self.playerGroundHandler.getNumEntries()
-		print length
 		for i in range(length):
-			entry = self.ralphGroundHandler.getEntry(i)
+			entry = self.playerGroundHandler.getEntry(i)
 			entries.append(entry)
 		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
-		if (len(entries)>0) and (entries[0].getIntoNode().getName() == "crater10:Mesh"):
-			self.ralph.setZ(entries[0].getSurfacePoint(render).getZ())
+		if (len(entries)>0):
+			for entry in entries:
+				if entry.getIntoNode().getName() == "Barrier":
+					self.player.setZ(entry.getSurfacePoint(render).getZ())
+					break
 	
-	def spawnEnemies(self)
+	def spawnEnemies(self):
 		pass
 		
 	
