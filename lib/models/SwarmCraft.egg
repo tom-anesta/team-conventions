@@ -1,0 +1,13 @@
+<CoordinateSystem> { Y-Up }
+
+<Comment> {
+  "maya2egg2012 -p -keep-uvs -round-uvs -tbnall -a chan -cs y-up -uo cm -trans all -o C:/Users/hendrm2/Documents/Game3git/lib/models/SwarmCraft.egg C:/Users/hendrm2/Documents/Game3git/lib/models/SwarmCraft_temp.mb"
+}
+<Table> {
+  <Bundle> SwarmCraft_temp {
+    <Table> "<skeleton>" {
+    }
+    <Table> morph {
+    }
+  }
+}

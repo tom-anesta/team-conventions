@@ -22,21 +22,22 @@ class Player(Unit):
 		#the amount of energy currently available
 		self.energy = self.maxEnergy
 		
-		#the amount of energy that is restored each frame
-		self.energyRegen = 3
+		#the amount of energy that is restored each second
+		self.energyRegen = 1000
 		
-		#the energy cost of attacking with a given weapon for one frame
-		self.magnetCost = {NARROW:self.energyRegen * 1.05,
-						   AREA:self.energyRegen * 1.1}
+		#the energy cost of attacking with a given weapon for one second
+		self.magnetCost = {NARROW:self.energyRegen + 30,
+						   AREA:self.energyRegen + 50}
 		
-		#the attack strength of a sustained attack
-		self.magnetStrength = {NARROW:300, AREA:200}
+		#the strength of a sustained attack per unit of energy used
+		self.magnetStrength = {NARROW:30, AREA:20}
 		
 		#the energy cost of a burst attack with a given weapon
 		self.burstCost = {NARROW:400, AREA:600}
 		
 		#the strength of a burst attack with a given weapon
-		self.burstStrength = {NARROW:2500, AREA:2000}
+		#(yes, the values really do have to be this high)
+		self.burstStrength = {NARROW:100000, AREA:70000}
 		
 		#the enemy that the narrow weapon has locked on to
 		self.target = None
@@ -126,17 +127,10 @@ class Player(Unit):
 			self.attack(PULL, game, time)
 		else:
 			self.sustainedAttack = False
-		
-		#BEGIN ATTEMPT AT AUTO-TARGETING
-		"""if not self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
 			self.target = None
-		else:
-			self.target = game.onMouseTask()
-			print self.target"""
-		#END ATTEMPT AT AUTO-TARGETING
 		
 		#automatically regenerate energy
-		self.energy += self.energyRegen
+		self.energy += self.energyRegen * time
 		self.energy = min(self.maxEnergy, self.energy)
 	
 	def attack(self, polarity, game, time):
@@ -146,15 +140,18 @@ class Player(Unit):
 		if not self.sustainedAttack:
 			energyUsed = self.burstCost[self.currentWeapon]
 			force = self.burstStrength[self.currentWeapon]
+			
+			#find a target if needed
+			if self.currentWeapon == NARROW:
+				self.target = game.onMouseTask()
+			
 			self.sustainedAttack = True
 		else:
-			energyUsed = self.magnetCost[self.currentWeapon]
-			force = self.magnetStrength[self.currentWeapon]
+			energyUsed = self.magnetCost[self.currentWeapon] * time
+			force = self.magnetStrength[self.currentWeapon] * energyUsed
 		
-		#if not enough energy is left, don't attack, and don't start a
-		#sustained attack
+		#if not enough energy is left, do nothing
 		if energyUsed > self.energy:
-			self.sustainedAttack = False
 			return
 		
 		if self.currentWeapon == NARROW:
@@ -166,21 +163,23 @@ class Player(Unit):
 	
 	def narrowAttack(self, polarity, game, force):
 		"""Performs a narrow attack on the targeted enemy (and all enemies in between and beyond?)"""
-		if polarity == PUSH:
+		if polarity == PULL:
 			force *= -1
 		
 		if self.target is not None:
-			self.target.applyForceFrom(force, self.position)
+			distSquared = (self.position - self.target.position).lengthSquared()
+			distSquared = max(130, distSquared + 50)
+			
+			self.target.applyForceFrom(force / distSquared, self.position)
 	
 	def areaAttack(self, polarity, game, force):
 		"""Performs an area attack on all enemies"""
-		if polarity == PUSH:
+		if polarity == PULL:
 			force *= -1
 		
-		#apply force to all enemies
 		for enemy in game.enemies:
 			distSquared = (self.position - enemy.position).lengthSquared()
-			distSquared = max(100, distSquared + 50)
+			distSquared = max(100, distSquared + 60)
 			
 			enemy.applyForceFrom(force / distSquared, self.position)
 	

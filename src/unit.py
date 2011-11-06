@@ -5,6 +5,8 @@ from pandac.PandaModules import Point3
 import math
 
 class Unit(Actor):
+	gravity = 20
+	
 	def __init__(self, models = None, anims = None):
 		Actor.__init__(self, models, anims)
 		
@@ -12,14 +14,14 @@ class Unit(Actor):
 		
 		self.position = Point3()
 		self.vel = Vec3()
-		self.accel = Vec3()
+		self.accel = Vec3(0, 0, -Unit.gravity)
 		
 		#can be thought of as the inverse of the unit's mass
 		self.accelMultiplier = 45
 		self.friction = 1.7
 	
 	def applyForceFrom(self, magnitude, sourcePosition):
-		forceVector = sourcePosition - self.position
+		forceVector = self.position - sourcePosition
 		forceVector.normalize()
 		forceVector *= magnitude
 		
@@ -40,10 +42,11 @@ class Unit(Actor):
 	
 	def move(self, time):
 		self.vel += self.accel * time
-		self.accel.set(0, 0, 0)
+		self.accel.set(0, 0, -Unit.gravity)
 		
 		self.vel -= self.vel * (self.friction * time)
 		
 		self.position += self.vel * time
+		self.position.setZ(max(0, self.position.getZ()))
 		
 		self.setPos(self.position.getX(), self.position.getY(), self.position.getZ())

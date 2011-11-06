@@ -1,0 +1,13 @@
+<CoordinateSystem> { Y-Up }
+
+<Comment> {
+  "maya2egg2012 -p -keep-uvs -round-uvs -tbnall -a chan -cs y-up -uo cm -trans all -o C:/Users/hendrm2/Documents/MayaObjects/SleekCraftA.egg C:/Users/hendrm2/Documents/MayaObjects/SleekCraft3_temp.mb"
+}
+<Table> {
+  <Bundle> SleekCraft3_temp {
+    <Table> "<skeleton>" {
+    }
+    <Table> morph {
+    }
+  }
+}
