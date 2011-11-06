@@ -10,4 +10,4 @@ class RushEnemy(Enemy):
 		self.maxSpeed = 5
 	
 	def rush(self, player):
-		self.applyForceFrom(3, player.position)
+		self.applyForceFrom(-3, player.position)
