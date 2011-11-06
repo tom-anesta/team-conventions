@@ -95,10 +95,30 @@ class Game(ShowBase):
 		self.playerGroundHandler = CollisionHandlerQueue()
 		self.cTrav.addCollider(self.playerGroundCol, self.playerGroundHandler)
 		'''
-		
+		'''
 		self.playerGroundCol = self.player.find("**/SleekCraftCollisionRect")
+		if self.playerGroundCol.isEmpty():
+			print "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaah"
 		self.playerGroundHandler = CollisionHandlerQueue()
 		self.cTrav.addCollider(self.playerGroundCol, self.playerGroundHandler)
+		'''
+		
+		'''
+		self.playerGroundRay = CollisionRay()
+        self.playerGroundRay.setOrigin(0,0,1000)
+        self.playerGroundRay.setDirection(0,0,-1)
+        self.playerGroundCol = CollisionNode('playerRay')
+        self.playerGroundCol.addSolid(self.playerGroundRay)
+        self.playerGroundCol.setFromCollideMask(BitMask32.bit(0))
+        self.playerGroundCol.setIntoCollideMask(BitMask32.allOff())
+        self.playerGroundColNp = self.player.attachNewNode(self.playerGroundCol)
+        self.playerGroundHandler = CollisionHandlerQueue()
+        self.cTrav.addCollider(self.playerGroundColNp, self.playerGroundHandler)
+		'''
+		
+		self.playerGroundNode = self.player.find("**/SleekCraftCollisionRect")
+		if self.playerGroundNode.isEmpty():
+			print "aaaaaaa"
 		
 		#add an enemy
 		self.tempEnemy = RushEnemy()

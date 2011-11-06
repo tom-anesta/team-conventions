@@ -11,6 +11,7 @@ class Unit(Actor):
 		self.health = 10
 		
 		self.position = Point3()
+		#self.lastPosition = Point3()
 		self.vel = Vec3()
 		self.accel = Vec3()
 		
