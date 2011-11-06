@@ -17,6 +17,8 @@ class Unit(Actor):
 		#can be thought of as the inverse of the unit's mass
 		self.accelMultiplier = 45
 		self.friction = 1.7
+		
+		self.shootable = True
 	
 	def applyForceFrom(self, magnitude, sourcePosition):
 		forceVector = sourcePosition - self.position
