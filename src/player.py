@@ -6,12 +6,14 @@ from math import cos, sin, pi, atan2
 from constants import *
 
 class Player(Unit):
-	def __init__(self, controlScheme):
+	def __init__(self, controlScheme, camera, game):
 		models = MODELS_PATH + "SleekCraft"
 		anims = {}
 		Unit.__init__(self, models, anims)
 		
 		self.controlScheme = controlScheme
+		self.camera = camera
+		self.game = game
 		
 		#the currently active weapon
 		self.currentWeapon = AREA
@@ -54,9 +56,9 @@ class Player(Unit):
 		self.accelMultiplier *= 1.2
 		self.maxTurnRate = 720
 	
-	def move(self, time, camera):
+	def move(self, time):
 		angle = self.getH()
-		cameraAngle = camera.getH()
+		cameraAngle = self.camera.getH()
 		
 		#find the amount that the player wants to turn (remember, the
 		#player should be 180 degrees off from the camera)
@@ -107,10 +109,8 @@ class Player(Unit):
 			#sin needs to be inverted
 			self.applyForce(Vec3(-multiplier * sin(accelAngle * pi / 180),
 								 multiplier * cos(accelAngle * pi / 180), 0))
-		
-		Unit.move(self, time)
 	
-	def update(self, game, time):
+	def update(self, time):
 		"""Run all major player operations each frame"""
 		#check for weapon switch key
 		if self.controlScheme.keyDown(SWITCH):
@@ -122,9 +122,9 @@ class Player(Unit):
 		
 		#check for attack keys
 		if self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
-			self.attack(PUSH, game, time)
+			self.attack(PUSH, time)
 		elif self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
-			self.attack(PULL, game, time)
+			self.attack(PULL, time)
 		else:
 			self.sustainedAttack = False
 			self.target = None
@@ -132,8 +132,11 @@ class Player(Unit):
 		#automatically regenerate energy
 		self.energy += self.energyRegen * time
 		self.energy = min(self.maxEnergy, self.energy)
+		
+		self.move(time)
+		Unit.update(self, time)
 	
-	def attack(self, polarity, game, time):
+	def attack(self, polarity, time):
 		"""Selects the mode of attack and runs the appropriate attack function"""
 		
 		#if the player just started attacking, use a more powerful attack
@@ -143,7 +146,7 @@ class Player(Unit):
 			
 			#find a target if needed
 			if self.currentWeapon == NARROW:
-				self.target = game.onMouseTask()
+				self.target = self.game.onMouseTask()
 			
 			self.sustainedAttack = True
 		else:
@@ -155,31 +158,34 @@ class Player(Unit):
 			return
 		
 		if self.currentWeapon == NARROW:
-			self.narrowAttack(polarity, game, force)
+			self.narrowAttack(polarity, force)
 		else:
-			self.areaAttack(polarity, game, force)
+			self.areaAttack(polarity, force)
 		
 		self.energy -= energyUsed
 	
-	def narrowAttack(self, polarity, game, force):
+	def narrowAttack(self, polarity, force):
 		"""Performs a narrow attack on the targeted enemy (and all enemies in between and beyond?)"""
 		if polarity == PULL:
 			force *= -1
 		
 		if self.target is not None:
 			distSquared = (self.position - self.target.position).lengthSquared()
-			distSquared = max(130, distSquared + 50)
+			distSquared = max(130, distSquared)
 			
 			self.target.applyForceFrom(force / distSquared, self.position)
 	
-	def areaAttack(self, polarity, game, force):
+	def areaAttack(self, polarity, force):
 		"""Performs an area attack on all enemies"""
 		if polarity == PULL:
 			force *= -1
 		
-		for enemy in game.enemies:
+		for enemy in self.game.enemies:
 			distSquared = (self.position - enemy.position).lengthSquared()
-			distSquared = max(100, distSquared + 60)
+			if polarity == PULL:
+				distSquared = max(450, distSquared) / 5
+			else:
+				distSquared = max(350, distSquared) / 5
 			
 			enemy.applyForceFrom(force / distSquared, self.position)
 	

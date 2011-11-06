@@ -27,11 +27,11 @@ class Enemy(Unit):
 			self.takeDamage(self.vel.length, game)
 			enemy.takeDamage(enemy.vel.length, game)
 	
-	def move(self, time):
+	def update(self, time):
 		newTime = time * 1000000
 		
 		if math.floor(newTime % self.randomMovementMax) == 0:
 			self.accel.setX(random.choice(range(-self.maxRandomVel, -self.minRandomVel) + range(self.minRandomVel, self.maxRandomVel + 1)))
 			self.accel.setY(random.choice(range(-self.maxRandomVel, -self.minRandomVel) + range(self.minRandomVel, self.maxRandomVel + 1)))
 		
-		Unit.move(self, time)
+		Unit.update(self, time)

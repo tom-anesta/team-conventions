@@ -1,13 +1,17 @@
 from constants import *
 from direct.actor.Actor import Actor
+from pandac.PandaModules import ActorNode
 from pandac.PandaModules import Vec3
 from pandac.PandaModules import Point3
+from pandac.PandaModules import CollisionNode
+from pandac.PandaModules import CollisionSphere
+from pandac.PandaModules import CollisionHandlerPusher
 import math
 
 class Unit(Actor):
 	gravity = 20
 	
-	def __init__(self, models = None, anims = None):
+	def __init__(self, models = None, anims = None, radius = 3):
 		Actor.__init__(self, models, anims)
 		
 		self.health = 10
@@ -16,9 +20,21 @@ class Unit(Actor):
 		self.vel = Vec3()
 		self.accel = Vec3(0, 0, -Unit.gravity)
 		
+		#set up the collision handling
+#		self.collisionNodePath = self.attachNewNode(CollisionNode('cNode'))
+#		self.collisionNodePath.node().addSolid(CollisionSphere(0, 0, 0, radius))
+#		self.collisionNodePath.show()
+#		
+#		self.collisionHandler = CollisionHandlerPusher()
+#		self.collisionHandler.addCollider(self.collisionNodePath, self)
+		
 		#can be thought of as the inverse of the unit's mass
 		self.accelMultiplier = 45
 		self.friction = 1.7
+	
+	def registerCollider(self, collisionTraverser):
+		pass
+#		collisionTraverser.addCollider(self.collisionNodePath, self.collisionHandler)
 	
 	def applyForceFrom(self, magnitude, sourcePosition):
 		forceVector = self.position - sourcePosition
@@ -34,13 +50,14 @@ class Unit(Actor):
 		self.health -= num
 	
 	def collideObstacle(self):
+		#self.position = self.getPos()
 		if (self.vel.length > 7):
 			self.takeDamage(self.vel.length)
 	
 	def turn(self, magnitude):
 		pass
 	
-	def move(self, time):
+	def update(self, time):
 		self.vel += self.accel * time
 		self.accel.set(0, 0, -Unit.gravity)
 		
@@ -49,4 +66,20 @@ class Unit(Actor):
 		self.position += self.vel * time
 		self.position.setZ(max(0, self.position.getZ()))
 		
-		self.setPos(self.position.getX(), self.position.getY(), self.position.getZ())
+		Actor.setPos(self, self.position.getX(), self.position.getY(), self.position.getZ())
+	
+	def setPos(self, x, y, z):
+		self.position.set(x, y, z)
+		Actor.setPos(self, x, y, z)
+	
+	def setX(self, x):
+		self.position.setX(x)
+		Actor.setX(self, x)
+	
+	def setY(self, y):
+		self.position.setY(y)
+		Actor.setY(self, y)
+	
+	def setZ(self, z):
+		self.position.setX(z)
+		Actor.setZ(self, z)

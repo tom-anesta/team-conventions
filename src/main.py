@@ -13,6 +13,7 @@ from pandac.PandaModules import DirectionalLight
 from pandac.PandaModules import AmbientLight
 from pandac.PandaModules import PointLight
 from pandac.PandaModules import Vec4
+from pandac.PandaModules import NodePath
 from panda3d.core import CollisionRay, CollisionNode, GeomNode, CollisionTraverser
 from panda3d.core import CollisionHandlerQueue, CollisionSphere, BitMask32
 from math import pi, sin, cos, sqrt, pow, atan2
@@ -30,7 +31,7 @@ class Game(ShowBase):
 		
 		#get window properties
 		self.winProps = WindowProperties()
-		self.winProps.setFullscreen(True)
+		#self.winProps.setFullscreen(True)
 		self.winProps.setCursorHidden(True)
 		base.win.requestProperties(self.winProps)
 		
@@ -45,10 +46,13 @@ class Game(ShowBase):
 		#(this does not actually disable the mouse)
 		base.disableMouse()
 		
-		
 		#declare null values for variables, fill them in later
 		self.environment = None
 		self.player = None
+		
+		#a node for holding all in-game units
+		self.unitNodePath = NodePath('unit holder')
+		self.unitNodePath.reparentTo(self.render)
 		
 		#object lists
 		self.enemies = []
@@ -63,14 +67,10 @@ class Game(ShowBase):
 		
 		#start the collision traverser
 		self.cTrav = CollisionTraverser()
-		self.cTrav.showCollisions(render)#show the collisions
+		self.cTrav.showCollisions(self.unitNodePath)#show the collisions
 		
 		filename = PARAMS_PATH + "environment.txt"
 		self.loadLevelGeom(filename)
-		
-		#begin code for terrain collisions
-		
-		
 		
 		#load and render the environment model
 		'''
@@ -81,31 +81,33 @@ class Game(ShowBase):
 		'''
 		
 		#place the player in the environment
-		self.player = Player(self.controlScheme)
-		self.player.setH(180)
-		self.player.reparentTo(self.render)
+		self.player = Player(self.controlScheme, self.camera, self)
+		self.player.reparentTo(self.unitNodePath)
 		self.playerGroundCol = self.player.find("SleekCraftCollisionRect")
-		
+		self.player.registerCollider(self.cTrav)
 		
 		#add an enemy
 		self.tempEnemy = RushEnemy()
 		self.tempEnemy.setPos(-20, 0, 0)
-		self.tempEnemy.reparentTo(self.render)
+		self.tempEnemy.reparentTo(self.unitNodePath)
 		self.tempEnemy.setName("enemy1")
 		
 		self.tempEnemy2 = RushEnemy()
 		self.tempEnemy2.setPos(40, 50, 0)
-		self.tempEnemy2.reparentTo(self.render)
+		self.tempEnemy2.reparentTo(self.unitNodePath)
 		self.tempEnemy2.setName("enemy2")
 		
 		self.tempEnemy3 = RushEnemy()
 		self.tempEnemy3.setPos(20, 80, 0)
-		self.tempEnemy3.reparentTo(self.render)
+		self.tempEnemy3.reparentTo(self.unitNodePath)
 		self.tempEnemy3.setName("enemy3")
 		
 		self.enemies.append(self.tempEnemy)
 		self.enemies.append(self.tempEnemy2)
 		self.enemies.append(self.tempEnemy3)
+		
+		for enemy in self.enemies:
+			enemy.registerCollider(self.cTrav)
 		
 		#add some lights
 		topLight = DirectionalLight("top light")
@@ -125,7 +127,7 @@ class Game(ShowBase):
 		self.cameraVOffset = 10
 		
 		#register the update task
-		self.taskMgr.add(self.updateGameTask, "updateGameTask")
+		self.taskMgr.add(self.updateGame, "updateGame")
 		
 		#BEGIN ATTEMPT AT AUTO-TARGETING
 		#self.accept('mouse1', self.onMouseTask)
@@ -184,7 +186,6 @@ class Game(ShowBase):
 				locVal = locVal.split(',')
 				for val in locVal:
 					val = float(val)
-					print val
 				self.environment.setPos(float(locVal[0]), float(locVal[1]), float(locVal[2]))#then we have our terrain
 			elif list[0] == TERRAIN_OBJECT:
 				#choose the model
@@ -209,7 +210,7 @@ class Game(ShowBase):
 			
 		pass
 	
-	def updateGameTask(self, task):
+	def updateGame(self, task):
 		elapsedTime = task.time - self.previousFrameTime
 		self.previousFrameTime = task.time
 		
@@ -219,9 +220,10 @@ class Game(ShowBase):
 		if not self.paused:
 			time = min(0.25, elapsedTime)
 			while time > 0.05:
-				self.runGame(0.05)
+				self.updateGameComponents(0.05)
 				time -= 0.05
-			self.runGame(time)
+			self.updateGameComponents(time)
+		
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
 				self.paused = not self.paused
@@ -232,12 +234,15 @@ class Game(ShowBase):
 		
 		return task.cont
 	
-	def runGame(self, time):
+	def updateGameComponents(self, time):
+		'''
+		Updates the state of the world.
+		@precondition: The game isn't paused. 
+		'''
 		self.updateCamera(time)
-		self.player.move(time, self.camera)
+		self.player.update(time)
 		for enemy in self.enemies:
-			enemy.move(time)
-		self.player.update(self, time)
+			enemy.update(time)
 	
 	def rotateCamera(self):
 		if self.controlScheme.mouseX > self.winProps.getXSize():
