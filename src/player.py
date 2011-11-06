@@ -13,26 +13,46 @@ class Player(Unit):
 		
 		self.controlScheme = controlScheme
 		
-		self.magnetPower = 300
-		self.magnetWeapon = AREA
-		self.magnetBar = 1000
-		self.magnetBarMax = 1000
-		self.magnetCost = {NARROW:16, AREA:32}
-		self.magnetRegen = 2500
-		self.cooldown = 0
-		self.score = 0
+		#the currently active weapon
+		self.currentWeapon = AREA
 		
+		#the maximum amount of energy available
+		self.maxEnergy = 2000
+		
+		#the amount of energy currently available
+		self.energy = self.maxEnergy
+		
+		#the amount of energy that is restored each second
+		self.energyRegen = 1000
+		
+		#the energy cost of attacking with a given weapon for one second
+		self.magnetCost = {NARROW:self.energyRegen + 30,
+						   AREA:self.energyRegen + 50}
+		
+		#the strength of a sustained attack per unit of energy used
+		self.magnetStrength = {NARROW:30, AREA:20}
+		
+		#the energy cost of a burst attack with a given weapon
+		self.burstCost = {NARROW:400, AREA:600}
+		
+		#the strength of a burst attack with a given weapon
+		#(yes, the values really do have to be this high)
+		self.burstStrength = {NARROW:100000, AREA:70000}
+		
+		#the enemy that the narrow weapon has locked on to
 		self.target = None
 		
-		#action flags
-		self.switching = False
-		self.shooting = False
+		#whether the player was attacking the previous frame; this is used
+		#to determine whether to release a large burst or a smaller
+		#sustained force
+		self.sustainedAttack = False
+		
+		#action flag
+		self.switchPressed = False
 		
 		self.extraForwardAccel = 2.2
 		self.accelMultiplier *= 1.2
 		self.maxTurnRate = 720
-		
-		self.shooting = False
 	
 	def move(self, time, camera):
 		angle = self.getH()
@@ -94,87 +114,78 @@ class Player(Unit):
 		"""Run all major player operations each frame"""
 		#check for weapon switch key
 		if self.controlScheme.keyDown(SWITCH):
-			if not self.switching:
+			if not self.switchPressed:
 				self.switchWeapon()
-				self.switching = True
+				self.switchPressed = True
 		else:
-			self.switching = False
-		
-		#BEGIN ATTEMPT AT AUTO-TARGETING
-		if self.magnetWeapon==AREA or (not self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL)):
-			self.target = None
-		elif self.magnetWeapon==NARROW:
-			self.target = game.onMouseTask()
-		#END ATTEMPT AT AUTO-TARGETING
+			self.switchPressed = False
 		
 		#check for attack keys
-		if self.magnetBar > 0 and self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
-			self.attack(PUSH, game)
-		if self.magnetBar > 0 and self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
-			self.attack(PULL, game)
+		if self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
+			self.attack(PUSH, game, time)
+		elif self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
+			self.attack(PULL, game, time)
+		else:
+			self.sustainedAttack = False
+			self.target = None
 		
-		#automatically regenerate the magnet bar's power
-		self.magnetBar += self.magnetRegen * time
+		#automatically regenerate energy
+		self.energy += self.energyRegen * time
+		self.energy = min(self.maxEnergy, self.energy)
 	
-	def decrementMagnetBar(self):
-		"""Subtract from the magnet bar by the amount specified in __init__"""
-		self.magnetBar -= self.magnetCost[self.magnetWeapon]
-	
-	def attack(self, polarity, game):
+	def attack(self, polarity, game, time):
 		"""Selects the mode of attack and runs the appropriate attack function"""
 		
-		#if magnet is set to narrow and magnet bar has enough power to perform a narrow attack
-		if self.magnetWeapon == NARROW and self.magnetBar >= self.magnetCost[NARROW]:
-			self.narrowAttack(polarity, game)
-		
-		#if magnet is set to area and magnet bar has enough power to perform an area attack
-		if self.magnetWeapon == AREA and self.magnetBar >= self.magnetCost[AREA]:
-			self.areaAttack(polarity, game)
-	
-	def narrowAttack(self, polarity, game):
-		"""Performs a narrow attack on the targeted enemy (and all enemies in between and beyond?)"""
-		
-		#decide on direction of force based on polarity
-		if polarity == PUSH:
-			force = -self.magnetPower
+		#if the player just started attacking, use a more powerful attack
+		if not self.sustainedAttack:
+			energyUsed = self.burstCost[self.currentWeapon]
+			force = self.burstStrength[self.currentWeapon]
+			
+			#find a target if needed
+			if self.currentWeapon == NARROW:
+				self.target = game.onMouseTask()
+			
+			self.sustainedAttack = True
 		else:
-			force = self.magnetPower
+			energyUsed = self.magnetCost[self.currentWeapon] * time
+			force = self.magnetStrength[self.currentWeapon] * energyUsed
+		
+		#if not enough energy is left, do nothing
+		if energyUsed > self.energy:
+			return
+		
+		if self.currentWeapon == NARROW:
+			self.narrowAttack(polarity, game, force)
+		else:
+			self.areaAttack(polarity, game, force)
+		
+		self.energy -= energyUsed
+	
+	def narrowAttack(self, polarity, game, force):
+		"""Performs a narrow attack on the targeted enemy (and all enemies in between and beyond?)"""
+		if polarity == PULL:
+			force *= -1
 		
 		if self.target is not None:
 			distSquared = (self.position - self.target.position).lengthSquared()
-			if polarity == PULL:
-				distSquared = max(130, distSquared)
-			else:
-				distSquared = max(80, distSquared)
+			distSquared = max(130, distSquared + 50)
 			
-			self.target.applyForceFrom(2*force / distSquared, self.position)
-		
-		self.decrementMagnetBar()
+			self.target.applyForceFrom(force / distSquared, self.position)
 	
-	def areaAttack(self, polarity, game):
+	def areaAttack(self, polarity, game, force):
 		"""Performs an area attack on all enemies"""
+		if polarity == PULL:
+			force *= -1
 		
-		#decide on direction of force based on polarity
-		if polarity == PUSH:
-			force = -self.magnetPower
-		else:
-			force = self.magnetPower
-		
-		#apply force to all enemies
 		for enemy in game.enemies:
 			distSquared = (self.position - enemy.position).lengthSquared()
-			if polarity == PULL:
-				distSquared = max(130, distSquared)
-			else:
-				distSquared = max(80, distSquared)
+			distSquared = max(100, distSquared + 60)
 			
 			enemy.applyForceFrom(force / distSquared, self.position)
-		
-		self.decrementMagnetBar()
 	
 	def switchWeapon(self):
 		"""Switch to whichever weapon is not currently being used"""
-		if self.magnetWeapon == NARROW:
-			self.magnetWeapon = AREA
-		elif self.magnetWeapon == AREA:
-			self.magnetWeapon = NARROW
+		if self.currentWeapon == NARROW:
+			self.currentWeapon = AREA
+		else:
+			self.currentWeapon = NARROW

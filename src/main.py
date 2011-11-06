@@ -250,11 +250,11 @@ class Game(ShowBase):
 			exit(0)
 		
 		if not self.paused:
-			self.updateCamera(elapsedTime)
-			self.player.move(elapsedTime, self.camera)
-			for enemy in self.enemies:
-				enemy.move(elapsedTime)
-			self.player.update(self, elapsedTime)
+			time = min(0.25, elapsedTime)
+			while time > 0.05:
+				self.runGame(0.05)
+				time -= 0.05
+			self.runGame(time)
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
 				self.paused = not self.paused
@@ -264,6 +264,13 @@ class Game(ShowBase):
 			self.pauseWasPressed = False
 		
 		return task.cont
+	
+	def runGame(self, time):
+		self.updateCamera(time)
+		self.player.move(time, self.camera)
+		for enemy in self.enemies:
+			enemy.move(time)
+		self.player.update(self, time)
 	
 	def rotateCamera(self):
 		if self.controlScheme.mouseX > self.winProps.getXSize():
