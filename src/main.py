@@ -70,7 +70,7 @@ class Game(ShowBase):
 		traverser = CollisionTraverser()
 		base.cTrav = traverser#run every frame
 		self.cTrav = base.cTrav
-		self.cTrav.showCollisions(render)#show the collisions
+		self.cTrav.showCollisions(self.render) #show the collisions
 		
 		#load the environment
 		filename = PARAMS_PATH + "environment.txt"
@@ -306,7 +306,7 @@ class Game(ShowBase):
 		if (len(entries)>0):
 			for entry in entries:
 				if entry.getIntoNode().getName() == "Barrier":
-					self.player.setZ(entry.getSurfacePoint(render).getZ())
+					self.player.position.setZ(entry.getSurfacePoint(render).getZ())
 					break
 	
 	def spawnEnemies(self):
