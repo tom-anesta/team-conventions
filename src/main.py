@@ -13,6 +13,7 @@ from pandac.PandaModules import DirectionalLight
 from pandac.PandaModules import AmbientLight
 from pandac.PandaModules import PointLight
 from pandac.PandaModules import Vec4
+from pandac.PandaModules import NodePath
 from pandac.PandaModules import Point2
 from panda3d.core import CollisionRay, CollisionNode, GeomNode, CollisionTraverser
 from panda3d.core import CollisionHandlerQueue, CollisionSphere, BitMask32
@@ -33,7 +34,7 @@ class Game(ShowBase):
 		
 		#get window properties
 		self.winProps = WindowProperties()
-		self.winProps.setFullscreen(True)
+		#self.winProps.setFullscreen(True)
 		self.winProps.setCursorHidden(True)
 		base.win.requestProperties(self.winProps)
 		
@@ -48,10 +49,13 @@ class Game(ShowBase):
 		#(this does not actually disable the mouse)
 		base.disableMouse()
 		
-		
 		#declare null values for variables, fill them in later
 		self.environment = None
 		self.player = None
+		
+		#a node for holding all in-game units
+		self.unitNodePath = NodePath('unit holder')
+		self.unitNodePath.reparentTo(self.render)
 		
 		#object lists
 		self.enemies = []
@@ -70,7 +74,7 @@ class Game(ShowBase):
 		traverser = CollisionTraverser()
 		base.cTrav = traverser#run every frame
 		self.cTrav = base.cTrav
-		self.cTrav.showCollisions(self.render) #show the collisions
+		self.cTrav.showCollisions(self.unitNodePath)#show the collisions
 		
 		#load the environment
 		filename = PARAMS_PATH + "environment.txt"
@@ -79,23 +83,22 @@ class Game(ShowBase):
 		filename = PARAMS_PATH + "enemies.txt"
 		self.loadLevelEnemies(filename)
 		
-		#begin code for terrain collisions
-		
 		#lookup table for actors
 		self.actors = {}
 		
 		#place the player in the environment
-		self.player = Player(self.controlScheme)
+		self.player = Player(self.controlScheme, self.camera, self)
 		self.player.setName("player")
 		self.player.setH(180)
-		self.player.reparentTo(self.render)
+		self.player.reparentTo(self.unitNodePath)
 		self.player.nodePath = self.render.find("player")
 		self.actors["player"] = self.player
 		
 		self.playerGroundCol = self.player.find("**/CollisionSphere")
 		if self.playerGroundCol.isEmpty():
-			print "aaaaaa"
+			print "playerGroundCol is empty"
 		#self.playerGroundCol.setCollisionMask(BitMask32(0x00))
+		self.player.registerCollider(self.cTrav)
 		
 		#self.playerGroundCol.setFromCollideMask(BitMask32.bit(0))
 		#self.playerGroundCol.setIntoCollideMask(BitMask32.allOff())
@@ -106,27 +109,30 @@ class Game(ShowBase):
 		self.tempEnemy = RushEnemy()
 		self.tempEnemy.setPos(-20, 0, 0)
 		self.tempEnemy.setName("enemy1")
-		self.tempEnemy.reparentTo(self.render)
+		self.tempEnemy.reparentTo(self.unitNodePath)
 		self.tempEnemy.nodePath = self.render.find("enemy1")
 		self.actors["enemy1"] = self.tempEnemy
 		
 		self.tempEnemy2 = RushEnemy()
 		self.tempEnemy2.setPos(40, 50, 0)
 		self.tempEnemy2.setName("enemy2")
-		self.tempEnemy2.reparentTo(self.render)
+		self.tempEnemy2.reparentTo(self.unitNodePath)
 		self.tempEnemy2.nodePath = self.render.find("enemy2")
 		self.actors["enemy2"] = self.tempEnemy2
 		
 		self.tempEnemy3 = RushEnemy()
 		self.tempEnemy3.setPos(20, 80, 0)
 		self.tempEnemy3.setName("enemy3")
-		self.tempEnemy3.reparentTo(self.render)
+		self.tempEnemy3.reparentTo(self.unitNodePath)
 		self.tempEnemy3.nodePath = self.render.find("enemy3")
 		self.actors["enemy3"] = self.tempEnemy3
 		
 		self.enemies.append(self.tempEnemy)
 		self.enemies.append(self.tempEnemy2)
 		self.enemies.append(self.tempEnemy3)
+		
+		for enemy in self.enemies:
+			enemy.registerCollider(self.cTrav)
 		
 		#add some lights
 		topLight = DirectionalLight("top light")
@@ -146,7 +152,7 @@ class Game(ShowBase):
 		self.cameraVOffset = 10
 		
 		#register the update task
-		self.taskMgr.add(self.updateGameTask, "updateGameTask")
+		self.taskMgr.add(self.updateGame, "updateGame")
 		
 		#add targeting to the world
 		self.setupTargeting()
@@ -200,7 +206,6 @@ class Game(ShowBase):
 				locVal = locVal.split(',')
 				for val in locVal:
 					val = float(val)
-					print val
 				self.environment.setPos(float(locVal[0]), float(locVal[1]), float(locVal[2]))#then we have our terrain
 			elif list[0] == TERRAIN_OBJECT:
 				#choose the model
@@ -256,10 +261,9 @@ class Game(ShowBase):
 		
 		
 	
-	def updateGameTask(self, task):
-		self.globalTime= self.globalTime + task.time
+	def updateGame(self, task):
+		self.globalTime = self.globalTime + task.time
 		elapsedTime = task.time - self.previousFrameTime
-		
 		
 		if self.controlScheme.keyDown(QUIT):
 			exit(0)
@@ -267,9 +271,10 @@ class Game(ShowBase):
 		if not self.paused:
 			time = min(0.25, elapsedTime)
 			while time > 0.05:
-				self.runGame(0.05)
+				self.updateGameComponents(0.05)
 				time -= 0.05
-			self.runGame(time)
+			self.updateGameComponents(time)
+		
 			self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
@@ -283,16 +288,18 @@ class Game(ShowBase):
 		
 		return task.cont
 	
-	def runGame(self, time):
+	def updateGameComponents(self, time):
+		'''
+		Updates the state of the world.
+		@precondition: The game isn't paused. 
+		'''
 		self.updateCamera(time)
-		
 		for enemy in self.enemies:
-			enemy.move(time)
+			enemy.update(time)
 			
 		#check for basic terrain collisions
 		self.playerTerrainCollisionCheck()
-		self.player.update(self, time)
-		self.player.move(time, self.camera)
+		self.player.update(time)
 		
 		self.cTrav.traverse(render)
 		
@@ -302,8 +309,8 @@ class Game(ShowBase):
 		for i in range(length):
 			entry = self.playerGroundHandler.getEntry(i)
 			entries.append(entry)
-		entries.sort(lambda x,y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
-		if (len(entries)>0):
+		entries.sort(lambda x, y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
+		if (len(entries) > 0):
 			for entry in entries:
 				if entry.getIntoNode().getName() == "Barrier":
 					self.player.position.setZ(entry.getSurfacePoint(render).getZ())
@@ -341,7 +348,7 @@ class Game(ShowBase):
 		"""Finds the closest shootable object and returns it"""
 
 		#traverse all objects in render
-		self.mPickerTraverser.traverse(self.render)
+		self.mPickerTraverser.traverse(self.unitNodePath)
 
 		if (self.mCollisionQue.getNumEntries() > 0):
 			self.mCollisionQue.sortEntries()
@@ -355,7 +362,7 @@ class Game(ShowBase):
 					
 					#get the name of the picked object
 					name = pickedObj.getParent().getParent().getParent().getName()
-					if name=="render":
+					if name == "render":
 						return None
 					
 					#if the object is shootable, set it as the target
