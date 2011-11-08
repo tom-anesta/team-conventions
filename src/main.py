@@ -76,7 +76,7 @@ class Game(ShowBase):
 		traverser = CollisionTraverser()
 		base.cTrav = traverser#run every frame
 		self.cTrav = base.cTrav
-		self.cTrav.showCollisions(self.unitNodePath)#show the collisions
+		#self.cTrav.showCollisions(self.unitNodePath)#show the collisions
 		
 		#load the environment
 		filename = PARAMS_PATH + "environment.txt"
@@ -201,7 +201,13 @@ class Game(ShowBase):
 				self.environment = self.loader.loadModel(modelVal)
 				
 				self.environment.reparentTo(self.render)
-				print self.environment #.find("craterCollisionPlane").setZ(self.environment.getZ() + 10)
+				
+				#get the collision geometry for the environment
+				#and move it up a bit to allow the character to float above the crater
+				self.craterCollision = self.environment.find("**/craterCollisionPlane")
+				self.craterCollision.setZ(self.environment.getZ() + 0.15)
+				
+				#self.environment.find( #.find("craterCollisionPlane").setZ(self.environment.getZ() + 10)
 				
 				#set scale
 				scaleVal = list[2].split(',')#split by commas
