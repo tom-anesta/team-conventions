@@ -87,7 +87,7 @@ class Game(ShowBase):
 		self.actors = {}
 		
 		#place the player in the environment
-		self.player = Player(self.controlScheme, self.camera, self)
+		self.player = Player(self.controlScheme, self.camera, self, 0, 0, 0)
 		self.player.setName("player")
 		self.player.setH(180)
 		self.player.reparentTo(self.unitNodePath)
@@ -106,22 +106,22 @@ class Game(ShowBase):
 		self.cTrav.addCollider(self.playerGroundCol, self.playerGroundHandler)
 		
 		#add an enemy
-		self.tempEnemy = RushEnemy()
-		self.tempEnemy.setPos(-20, 0, 0)
+		self.tempEnemy = RushEnemy(-20, 0, 0)
+		#self.tempEnemy.setPos(-20, 0, 0)
 		self.tempEnemy.setName("enemy1")
 		self.tempEnemy.reparentTo(self.unitNodePath)
 		self.tempEnemy.nodePath = self.render.find("enemy1")
 		self.actors["enemy1"] = self.tempEnemy
 		
-		self.tempEnemy2 = RushEnemy()
-		self.tempEnemy2.setPos(40, 50, 0)
+		self.tempEnemy2 = RushEnemy(40, 50, 0)
+		#self.tempEnemy2.setPos(40, 50, 0)
 		self.tempEnemy2.setName("enemy2")
 		self.tempEnemy2.reparentTo(self.unitNodePath)
 		self.tempEnemy2.nodePath = self.render.find("enemy2")
 		self.actors["enemy2"] = self.tempEnemy2
 		
-		self.tempEnemy3 = RushEnemy()
-		self.tempEnemy3.setPos(20, 80, 0)
+		self.tempEnemy3 = RushEnemy(20, 80, 0)
+		#self.tempEnemy3.setPos(20, 80, 0)
 		self.tempEnemy3.setName("enemy3")
 		self.tempEnemy3.reparentTo(self.unitNodePath)
 		self.tempEnemy3.nodePath = self.render.find("enemy3")
@@ -309,7 +309,7 @@ class Game(ShowBase):
 		if (len(entries) > 0):
 			for entry in entries:
 				if entry.getIntoNode().getName() == "Barrier":
-					self.player.setZ(entry.getSurfacePoint(render).getZ())
+					self.player.position.setZ(entry.getSurfacePoint(render).getZ())
 					break
 	
 	def spawnEnemies(self):
