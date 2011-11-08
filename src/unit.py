@@ -140,10 +140,10 @@ class Unit(Actor):
 		entries.sort(lambda x, y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0):
 			for entry in entries:
-				if entry.getIntoNode().getName() == "Barrier":
+				if entry.getIntoNode().getName() == "craterCollisionPlane":
 					self.setZ(entry.getSurfacePoint(render).getZ())
 				elif entry.getIntoNodePath().getName() != "enemyCollisionSphere" and not entry.getIntoNodePath().isEmpty():
-					name = pickedObj.getParent().getParent().getParent().getName()
+					name =  entry.getIntoNodePath().getParent().getParent().getParent().getName()
 					
 					if name == "render":
 						return None
