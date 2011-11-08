@@ -140,15 +140,18 @@ class Game(ShowBase):
 		
 		#add some lights
 		topLight = DirectionalLight("top light")
-		topLight.setColor(Vec4(0.9, 0.9, 0.6, 1))
+		topLight.setColor(Vec4(255/255, 253/255, 222/255, 1))
 		topLight.setDirection(Vec3(130, -60, 0))
 		self.render.setLight(self.render.attachNewNode(topLight))
-		horizontalLight = DirectionalLight("horizontal light")
-		horizontalLight.setColor(Vec4(1, 0.9, 0.8, 1))
-		horizontalLight.setDirection(Vec3(-90, 0, 0))
-		self.render.setLight(self.render.attachNewNode(horizontalLight))
+		
+		#horizontalLight = DirectionalLight("horizontal light")
+		#horizontalLight.setColor(Vec4(1, 0.9, 0.8, 1))
+		#horizontalLight.setDirection(Vec3(-90, 0, 0))
+		#self.render.setLight(self.render.attachNewNode(horizontalLight))
+		
 		ambientLight = AmbientLight("ambient light")
-		ambientLight.setColor(Vec4(0.5, 0.5, 0.5, 1))
+		ambientLight.setColor(Vec4(0.1, 0.1, 0.1, 1))
+		topLight.setDirection(Vec3(130, -60, 0))
 		self.render.setLight(self.render.attachNewNode(ambientLight))
 		
 		#the distance the camera is from the player
@@ -313,7 +316,7 @@ class Game(ShowBase):
 		entries.sort(lambda x, y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0):
 			for entry in entries:
-				if entry.getIntoNode().getName() == "environemntCollisionPlane":
+				if entry.getIntoNode().getName() == "environmentCollisionPlane":
 					self.player.position.setZ(entry.getSurfacePoint(render).getZ())
 					break
 	'''

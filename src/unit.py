@@ -22,6 +22,8 @@ class Unit(Actor):
 	def __init__(self, models = None, anims = None, sphereString="**/CollisionSphere", game = None, xStart=0, yStart=0, zStart=0, radius = 3):
 		Actor.__init__(self, models, anims)
 		
+		self.game = game
+		
 		self.health = 10
 		self.heightOffset = 3
 		
@@ -126,6 +128,9 @@ class Unit(Actor):
 		
 		self.setPos(position.getX(), position.getY(), position.getZ())
 	
+	def collideWithObject(self, obj):
+		print type(obj)
+	
 	def terrainCollisionCheck(self):
 		entries = []
 		length = self.groundSphereHandler.getNumEntries()
@@ -137,5 +142,11 @@ class Unit(Actor):
 			for entry in entries:
 				if entry.getIntoNode().getName() == "Barrier":
 					self.setZ(entry.getSurfacePoint(render).getZ())
-					break
+				elif entry.getIntoNodePath().getName() != "enemyCollisionSphere" and not entry.getIntoNodePath().isEmpty():
+					name = pickedObj.getParent().getParent().getParent().getName()
+					
+					if name == "render":
+						return None
+					
+					self.collideWithObj(self, self.game.actors[name])
 	

@@ -147,6 +147,9 @@ class Player(Unit):
 		self.move(time)
 		Unit.update(self, time)
 	
+	def collideWithObject(self, obj):
+		Unit.collideWithObject(obj)
+	
 	def targetEnemy(self):
 		"""Either selects a new targeted enemy or wipes the current one, depending on player action"""
 		if self.currentWeapon == AREA or (not self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL)):
