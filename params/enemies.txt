@@ -1,3 +1,7 @@
-BEGINWAVE%%%5000
-
+BEGINWAVE%%%5
+rush_enemy%%%-20,0,0
+rush_enemy%%%40,50,0
+rush_enemy%%%20,80,0
 ENDWAVE
+BEGINWAVE%%%10
+rush_enemy%%%-20,-20,10
