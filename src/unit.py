@@ -5,22 +5,28 @@ from pandac.PandaModules import Vec3
 from pandac.PandaModules import Point3
 from pandac.PandaModules import CollisionNode
 from pandac.PandaModules import CollisionSphere
-from pandac.PandaModules import CollisionHandlerPusher
+#from pandac.PandaModules import CollisionHandlerPusher
+from panda3d.core import CollisionHandlerQueue
 import math
 
 class Unit(Actor):
 	gravity = 20
 	
-	def __init__(self, models = None, anims = None, xStart=0, yStart=0, zStart=0, radius = 3):
+	
+	
+	def __init__(self, models = None, anims = None, sphereString="**/CollisionSphere", game = None, xStart=0, yStart=0, zStart=0, radius = 3):
 		Actor.__init__(self, models, anims)
 		
 		self.health = 10
+		self.heightOffset = 3
 		
-		self.position = Point3(xStart, yStart, zStart)
+		#self.position = Point3(xStart, yStart, zStart)
+		self.setPos(xStart, yStart, zStart)
 		#self.lastPosition = Point3()
 		self.vel = Vec3()
 		self.accel = Vec3(0, 0, -Unit.gravity)
 		
+		'''
 		#set up the collision handling
 #		self.collisionNodePath = self.attachNewNode(CollisionNode('cNode'))
 #		self.collisionNodePath.node().addSolid(CollisionSphere(0, 0, 0, radius))
@@ -28,6 +34,19 @@ class Unit(Actor):
 #		
 #		self.collisionHandler = CollisionHandlerPusher()
 #		self.collisionHandler.addCollider(self.collisionNodePath, self)
+		'''
+		
+		#set up collision handling
+		self.groundSphereCol = self.find("**/CollisionSphere")
+		if self.groundSphereCol.isEmpty():
+			print "playerGroundCol is empty"
+		#self.playerGroundCol.setCollisionMask(BitMask32(0x00))
+		self.registerCollider(game.cTrav)
+		#self.playerGroundCol.setFromCollideMask(BitMask32.bit(0))
+		#self.playerGroundCol.setIntoCollideMask(BitMask32.allOff())
+		self.groundSphereHandler = CollisionHandlerQueue()
+		game.cTrav.addCollider(self.groundSphereCol, self.groundSphereHandler)
+		
 		
 		#can be thought of as the inverse of the unit's mass
 		self.accelMultiplier = 45
@@ -72,17 +91,17 @@ class Unit(Actor):
 		Actor.setPos(self, self.position.getX(), self.position.getY(), self.position.getZ())
 	
 	def setPos(self, x, y, z):
-		self.position.set(x, y, z)
+		#self.position.set(x, y, z)
 		Actor.setPos(self, x, y, z)
 	
 	def setX(self, x):
-		self.position.setX(x)
+		#self.position.setX(x)
 		Actor.setX(self, x)
 	
 	def setY(self, y):
-		self.position.setY(y)
+		#self.position.setY(y)
 		Actor.setY(self, y)
 	
 	def setZ(self, z):
-		self.position.setX(z)
+		#self.position.setX(z)
 		Actor.setZ(self, z)

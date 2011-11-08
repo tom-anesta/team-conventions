@@ -4,16 +4,20 @@ from unit import Unit
 from pandac.PandaModules import Vec3
 from math import cos, sin, pi, atan2
 from constants import *
+from panda3d.core import CollisionHandlerQueue
 
 class Player(Unit):
 	def __init__(self, controlScheme, camera, game, xStart=0, yStart=0, zStart=0):
 		models = MODELS_PATH + "SleekCraft"
 		anims = {}
-		Unit.__init__(self, models, anims, xStart, yStart, zStart)
+		Unit.__init__(self, models, anims, "**/CollisionSphere", game, xStart, yStart, zStart)
 		
 		self.controlScheme = controlScheme
 		self.camera = camera
 		self.game = game
+		
+		#set up the collisions in unit
+		
 		
 		#the currently active weapon
 		self.currentWeapon = AREA

@@ -94,16 +94,19 @@ class Game(ShowBase):
 		self.player.nodePath = self.render.find("player")
 		self.actors["player"] = self.player
 		
+		'''
 		self.playerGroundCol = self.player.find("**/CollisionSphere")
 		if self.playerGroundCol.isEmpty():
 			print "playerGroundCol is empty"
 		#self.playerGroundCol.setCollisionMask(BitMask32(0x00))
 		self.player.registerCollider(self.cTrav)
 		
+		
 		#self.playerGroundCol.setFromCollideMask(BitMask32.bit(0))
 		#self.playerGroundCol.setIntoCollideMask(BitMask32.allOff())
 		self.playerGroundHandler = CollisionHandlerQueue()
 		self.cTrav.addCollider(self.playerGroundCol, self.playerGroundHandler)
+		'''
 		
 		#add an enemy
 		self.tempEnemy = RushEnemy(-20, 0, 0)
@@ -269,11 +272,7 @@ class Game(ShowBase):
 			exit(0)
 		
 		if not self.paused:
-			time = min(0.25, elapsedTime)
-			while time > 0.05:
-				self.updateGameComponents(0.05)
-				time -= 0.05
-			self.updateGameComponents(time)
+			self.updateGameComponents(elapsedTime)
 		
 			self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
@@ -305,15 +304,16 @@ class Game(ShowBase):
 		
 	def playerTerrainCollisionCheck(self):
 		entries = []
-		length = self.playerGroundHandler.getNumEntries()
+		length = self.player.groundSphereHandler.getNumEntries()
 		for i in range(length):
-			entry = self.playerGroundHandler.getEntry(i)
+			entry = self.player.groundSphereHandler.getEntry(i)
 			entries.append(entry)
 		entries.sort(lambda x, y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0):
 			for entry in entries:
 				if entry.getIntoNode().getName() == "Barrier":
-					self.player.position.setZ(entry.getSurfacePoint(render).getZ())
+					self.player.setZ(entry.getSurfacePoint(render).getZ())
+					#self.player.position.setZ(entry.getSurfacePoint(render).getZ() + self.player.heightOffset)
 					break
 	
 	def spawnEnemies(self):
