@@ -109,21 +109,21 @@ class Game(ShowBase):
 		'''
 		
 		#add an enemy
-		self.tempEnemy = RushEnemy(-20, 0, 0)
+		self.tempEnemy = RushEnemy(self, -20, 0, 0)
 		#self.tempEnemy.setPos(-20, 0, 0)
 		self.tempEnemy.setName("enemy1")
 		self.tempEnemy.reparentTo(self.unitNodePath)
 		self.tempEnemy.nodePath = self.render.find("enemy1")
 		self.actors["enemy1"] = self.tempEnemy
 		
-		self.tempEnemy2 = RushEnemy(40, 50, 0)
+		self.tempEnemy2 = RushEnemy(self, 40, 50, 0)
 		#self.tempEnemy2.setPos(40, 50, 0)
 		self.tempEnemy2.setName("enemy2")
 		self.tempEnemy2.reparentTo(self.unitNodePath)
 		self.tempEnemy2.nodePath = self.render.find("enemy2")
 		self.actors["enemy2"] = self.tempEnemy2
 		
-		self.tempEnemy3 = RushEnemy(20, 80, 0)
+		self.tempEnemy3 = RushEnemy(self, 20, 80, 0)
 		#self.tempEnemy3.setPos(20, 80, 0)
 		self.tempEnemy3.setName("enemy3")
 		self.tempEnemy3.reparentTo(self.unitNodePath)
@@ -273,12 +273,7 @@ class Game(ShowBase):
 		
 		if not self.paused:
 			self.updateGameComponents(elapsedTime)
-<<<<<<< HEAD
-		
-=======
-			
->>>>>>> 776e577854f5b402a603a5341e925c53b0463106
-			self.spawnEnemies()#globalTime is available
+			#self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
 				self.paused = not self.paused
@@ -301,11 +296,13 @@ class Game(ShowBase):
 			enemy.update(time)
 			
 		#check for basic terrain collisions
-		self.playerTerrainCollisionCheck()
+		self.player.terrainCollisionCheck()
 		self.player.update(time)
+		for enemy in self.enemies:
+			enemy.terrainCollisionCheck()
 		
 		self.cTrav.traverse(render)
-	
+	'''
 	def playerTerrainCollisionCheck(self):
 		entries = []
 		length = self.player.groundSphereHandler.getNumEntries()
@@ -317,12 +314,8 @@ class Game(ShowBase):
 			for entry in entries:
 				if entry.getIntoNode().getName() == "Barrier":
 					self.player.setZ(entry.getSurfacePoint(render).getZ())
-<<<<<<< HEAD
-					#self.player.position.setZ(entry.getSurfacePoint(render).getZ() + self.player.heightOffset)
-=======
->>>>>>> 776e577854f5b402a603a5341e925c53b0463106
 					break
-	
+	'''
 	def spawnEnemies(self):
 		pass
 		
