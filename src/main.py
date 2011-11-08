@@ -22,6 +22,8 @@ from pandac.PandaModules import BitMask32
 
 from unit import Unit
 from player import Player
+from projectile import Projectile
+from bullet import Bullet
 from rushEnemy import RushEnemy
 from constants import *
 from controlScheme import ControlScheme
@@ -62,6 +64,7 @@ class Game(ShowBase):
 		#object lists
 		self.enemies = []
 		self.obstacles = []
+		self.projectiles = []
 		#list of enemies to be spawned
 		self.eSpawnList = []
 		
@@ -136,6 +139,9 @@ class Game(ShowBase):
 		self.enemies.append(self.tempEnemy2)
 		self.enemies.append(self.tempEnemy3)
 		
+		#ADD A BULLET - TEMPORARY TEST
+		self.projectiles.append(Bullet(self, self.tempEnemy, Vec3(1,1,0)))
+		
 		for enemy in self.enemies:
 			enemy.registerCollider(self.cTrav)
 		
@@ -145,10 +151,10 @@ class Game(ShowBase):
 		topLight.setDirection(Vec3(130, -60, 0))
 		self.render.setLight(self.render.attachNewNode(topLight))
 		
-		#horizontalLight = DirectionalLight("horizontal light")
-		#horizontalLight.setColor(Vec4(1, 0.9, 0.8, 1))
-		#horizontalLight.setDirection(Vec3(-90, 0, 0))
-		#self.render.setLight(self.render.attachNewNode(horizontalLight))
+		horizontalLight = DirectionalLight("horizontal light")
+		horizontalLight.setColor(Vec4(1, 0.9, 0.8, 1))
+		horizontalLight.setDirection(Vec3(-90, 0, 0))
+		self.render.setLight(self.render.attachNewNode(horizontalLight))
 		
 		ambientLight = AmbientLight("ambient light")
 		ambientLight.setColor(Vec4(0.1, 0.1, 0.1, 1))
@@ -334,12 +340,16 @@ class Game(ShowBase):
 		self.updateCamera(time)
 		for enemy in self.enemies:
 			enemy.update(time)
+		for projectile in self.projectiles:
+			projectile.update(time)
 			
 		#check for basic terrain collisions
 		self.player.terrainCollisionCheck()
 		self.player.update(time)
 		for enemy in self.enemies:
 			enemy.terrainCollisionCheck()
+		for projectile in self.projectiles:
+			projectile.terrainCollisionCheck()
 		
 		self.cTrav.traverse(render)
 	'''
