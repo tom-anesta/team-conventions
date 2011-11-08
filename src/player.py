@@ -43,7 +43,7 @@ class Player(Unit):
 		
 		#the strength of a burst attack with a given weapon
 		#(yes, the area value really does have to be this high)
-		self.burstStrength = {NARROW:200, AREA:10000}
+		self.burstStrength = {NARROW:200, AREA:70000}
 		
 		#the enemy that the narrow weapon has locked on to
 		self.target = None

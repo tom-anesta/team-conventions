@@ -273,7 +273,11 @@ class Game(ShowBase):
 		
 		if not self.paused:
 			self.updateGameComponents(elapsedTime)
+<<<<<<< HEAD
 		
+=======
+			
+>>>>>>> 776e577854f5b402a603a5341e925c53b0463106
 			self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
@@ -301,7 +305,7 @@ class Game(ShowBase):
 		self.player.update(time)
 		
 		self.cTrav.traverse(render)
-		
+	
 	def playerTerrainCollisionCheck(self):
 		entries = []
 		length = self.player.groundSphereHandler.getNumEntries()
@@ -313,7 +317,10 @@ class Game(ShowBase):
 			for entry in entries:
 				if entry.getIntoNode().getName() == "Barrier":
 					self.player.setZ(entry.getSurfacePoint(render).getZ())
+<<<<<<< HEAD
 					#self.player.position.setZ(entry.getSurfacePoint(render).getZ() + self.player.heightOffset)
+=======
+>>>>>>> 776e577854f5b402a603a5341e925c53b0463106
 					break
 	
 	def spawnEnemies(self):
