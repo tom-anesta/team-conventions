@@ -1,3 +1,4 @@
 terrain_outer%%%crater_final2%%%10,10,10%%%0,0,50%%%0,0,0
 terrain_object%%%MetalTowerBlock%%%10,10,10%%%-20,-20,-5%%%0,0,0
+
 terrain_object%%%MetalTowerBlock%%%10,10,10%%%-20,-20,15%%%5,0,0
