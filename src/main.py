@@ -141,7 +141,8 @@ class Game(ShowBase):
 		
 		#add some lights
 		topLight = DirectionalLight("top light")
-		topLight.setColor(Vec4(255/255, 253/255, 222/255, 1))
+		#topLight.setColor(Vec4(255/255, 253/255, 222/255, 1))
+		topLight.setColor(Vec4(10/255, 10/255, 10/255, 1))
 		topLight.setDirection(Vec3(130, -60, 0))
 		self.render.setLight(self.render.attachNewNode(topLight))
 		
@@ -152,7 +153,6 @@ class Game(ShowBase):
 		
 		ambientLight = AmbientLight("ambient light")
 		ambientLight.setColor(Vec4(0.1, 0.1, 0.1, 1))
-		topLight.setDirection(Vec3(130, -60, 0))
 		self.render.setLight(self.render.attachNewNode(ambientLight))
 		
 		#the distance the camera is from the player
@@ -342,20 +342,8 @@ class Game(ShowBase):
 			enemy.terrainCollisionCheck()
 		
 		self.cTrav.traverse(render)
-	'''
-	def playerTerrainCollisionCheck(self):
-		entries = []
-		length = self.player.groundSphereHandler.getNumEntries()
-		for i in range(length):
-			entry = self.player.groundSphereHandler.getEntry(i)
-			entries.append(entry)
-		entries.sort(lambda x, y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
-		if (len(entries) > 0):
-			for entry in entries:
-				if entry.getIntoNode().getName() == "environmentCollisionPlane":
-					self.player.position.setZ(entry.getSurfacePoint(render).getZ())
-					break
-	'''
+		
+		
 	def spawnEnemies(self):
 		pass
 		
