@@ -3,8 +3,8 @@ import random
 import math
 
 class Enemy(Unit):
-	def __init__(self, models = None, anims = None):
-		Unit.__init__(self, models, anims)
+	def __init__(self, models = None, anims = None, xStart = 0, yStart = 0, zStart = 0):
+		Unit.__init__(self, models, anims, xStart, yStart, zStart)
 		
 		self.randomMovement = 0
 		self.randomMovementMax = 30 * 7
@@ -12,7 +12,7 @@ class Enemy(Unit):
 		self.maxRandomVel = 2000
 	
 	def absorbMagnetism(self, field, game):
-		self.changeDirectionRelative((0, field, field), game.player.position, game.camera)
+		self.changeDirectionRelative((0, field, field), game.player.getPos(), game.camera)
 	
 	def die(self, game):
 		game.enemies.remove(self)

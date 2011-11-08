@@ -6,10 +6,10 @@ from math import cos, sin, pi, atan2
 from constants import *
 
 class Player(Unit):
-	def __init__(self, controlScheme, camera, game):
+	def __init__(self, controlScheme, camera, game, xStart = 0, yStart = 0, zStart = 0):
 		models = MODELS_PATH + "SleekCraft"
 		anims = {}
-		Unit.__init__(self, models, anims)
+		Unit.__init__(self, models, anims, xStart, yStart, zStart)
 		
 		self.controlScheme = controlScheme
 		self.camera = camera
@@ -39,7 +39,7 @@ class Player(Unit):
 		
 		#the strength of a burst attack with a given weapon
 		#(yes, the area value really does have to be this high)
-		self.burstStrength = {NARROW:200, AREA:10000}
+		self.burstStrength = {NARROW:200, AREA:70000}
 		
 		#the enemy that the narrow weapon has locked on to
 		self.target = None
@@ -180,7 +180,7 @@ class Player(Unit):
 			force *= -1
 		
 		if self.target is not None:
-			self.target.applyForceFrom(force, self.position)
+			self.target.applyForceFrom(force, self.getPos())
 	
 	def areaAttack(self, polarity, force):
 		"""Performs an area attack on all enemies"""
@@ -188,13 +188,13 @@ class Player(Unit):
 			force *= -1
 		
 		for enemy in self.game.enemies:
-			distSquared = (self.position - enemy.position).lengthSquared()
+			distSquared = (self.getPos() - enemy.getPos()).lengthSquared()
 			if polarity == PULL:
 				distSquared = max(750, distSquared) / 5
 			else:
 				distSquared = max(650, distSquared) / 5
 			
-			enemy.applyForceFrom(force / distSquared, self.position)
+			enemy.applyForceFrom(force / distSquared, self.getPos())
 	
 	def switchWeapon(self):
 		"""Switch to whichever weapon is not currently being used"""
