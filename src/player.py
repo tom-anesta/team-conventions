@@ -6,6 +6,10 @@ from math import cos, sin, pi, atan2
 from constants import *
 from panda3d.core import CollisionHandlerQueue
 
+from pandac.PandaModules import Spotlight
+from pandac.PandaModules import VBase4
+from pandac.PandaModules import PerspectiveLens
+
 class Player(Unit):
 	def __init__(self, controlScheme, camera, game, xStart = 0, yStart = 0, zStart = 0):
 		models = MODELS_PATH + "SleekCraft"
@@ -17,6 +21,17 @@ class Player(Unit):
 		self.game = game
 		
 		#set up the collisions in unit
+		
+		#set up the headlamp specific to the model
+		headlamp1 = Spotlight('headlamp1')
+		headlamp1.showFrustum()
+		headlamp1.setColor(VBase4(1, 1, 1, 1))
+		lens = PerspectiveLens()
+		headlamp1.setLens(lens)
+		headlamp1node = self.attachNewNode(headlamp1)
+		headlamp1node.setPos(0, -5, 1)
+		headlamp1node.setHpr(0, -180, 0)
+		game.render.setLight(headlamp1node)
 		
 		
 		#the currently active weapon

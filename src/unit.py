@@ -9,6 +9,8 @@ from pandac.PandaModules import CollisionSphere
 #from pandac.PandaModules import CollisionHandlerPusher
 from panda3d.core import CollisionHandlerQueue
 
+from pandac.PandaModules import CollisionRay
+
 
 from pandac.PandaModules import CollisionHandlerPusher
 from pandac.PandaModules import BitMask32
@@ -27,35 +29,19 @@ class Unit(Actor):
 		self.health = 10
 		self.heightOffset = 3
 		
-		#self.position = Point3(xStart, yStart, zStart)
+		#set up the position
 		self.setPos(xStart, yStart, zStart)
 		#self.lastPosition = Point3()
 		self.vel = Vec3()
 		self.accel = Vec3(0, 0, -Unit.gravity)
-		
-		'''
-		#set up the collision handling
-
-#		self.collisionNodePath = self.attachNewNode(CollisionNode('cNode'))
-#		self.collisionNodePath.node().addSolid(CollisionSphere(0, 0, 0, radius))
-#		self.collisionNodePath.show()
-#		
-#		self.collisionHandler = CollisionHandlerPusher()
-#		self.collisionHandler.addCollider(self.collisionNodePath, self)
-		'''
+		#define the position that will be treated as the center of the map
+		self.wCenter = Point3(0, 0, 0)
 		
 		#set up collision handling
-		'''
-		self.groundSphereCol = self.find(sphereString)
-		if self.groundSphereCol.isEmpty():
-			print "playerGroundCol is empty"
-		#self.playerGroundCol.setCollisionMask(BitMask32(0x00))
-		#self.playerGroundCol.setFromCollideMask(BitMask32.bit(0))
-		#self.playerGroundCol.setIntoCollideMask(BitMask32.allOff())
-		'''
 		
 		#self.collisionNodePath = self.attachNewNode(CollisionNode('cNode'))
 		#self.collisionNodePath.node().addSolid(CollisionSphere(0, 0, 0, radius))
+		#first the pusher
 		self.collisionNodePath = self.find(sphereString)
 		if self.collisionNodePath.isEmpty():
 			self.collisionNodePath = self.find("**/enemyCollisionSphere")
@@ -66,11 +52,25 @@ class Unit(Actor):
 		self.collisionNodePath.node().setFromCollideMask(BitMask32.bit(0))
 		self.collisionNodePath.node().setIntoCollideMask(BitMask32.bit(0))
 		
-		self.groundSphereHandler = CollisionHandlerQueue()
-		game.cTrav.addCollider(self.collisionNodePath, self.groundSphereHandler)
-		
+		#build our collision pusher
 		self.collisionHandler = CollisionHandlerPusher()
 		self.collisionHandler.addCollider(self.collisionNodePath, self)
+		
+		#self.groundSphereHandler = CollisionHandlerQueue()
+		#game.cTrav.addCollider(self.collisionNodePath, self.groundSphereHandler)
+		
+		#check for colllisions with the ground
+		self.groundRay = CollisionRay()
+		self.groundRay.setOrigin(0,0,4000)
+		self.groundRay.setDirection(0,0,-1)
+		self.groundCol = CollisionNode('unitRay')
+		self.groundCol.addSolid(self.groundRay)
+		self.groundCol.setFromCollideMask(BitMask32.bit(0))
+		self.groundCol.setIntoCollideMask(BitMask32.allOff())
+		self.groundColNode = self.attachNewNode(self.groundCol)
+		self.groundHandler = CollisionHandlerQueue()
+		game.cTrav.addCollider(self.groundColNode, self.groundHandler)
+		
 		
 		#can be thought of as the inverse of the unit's mass
 		self.accelMultiplier = 45
@@ -133,20 +133,24 @@ class Unit(Actor):
 	
 	def terrainCollisionCheck(self):
 		entries = []
-		length = self.groundSphereHandler.getNumEntries()
+		length = self.groundHandler.getNumEntries()
 		for i in range(length):
-			entry = self.groundSphereHandler.getEntry(i)
+			entry = self.groundHandler.getEntry(i)
 			entries.append(entry)
 		entries.sort(lambda x, y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0):
 			for entry in entries:
 				if entry.getIntoNode().getName() == "craterCollisionPlane":
-					self.setZ(entry.getSurfacePoint(render).getZ())
-				elif entry.getIntoNodePath().getName() != "enemyCollisionSphere" and not entry.getIntoNodePath().isEmpty():
-					name =  entry.getIntoNodePath().getParent().getParent().getParent().getName()
-					
-					if name == "render":
-						return None
-					
-					self.collideWithObj(self, self.game.actors[name])
-	
+					zVal = entry.getSurfacePoint(render).getZ()
+					if zVal >= MAX_HEIGHT:#apply a force toward the center
+						self.applyForce(self.wCenter - Point3( (self.getX()*GROUND_REPULSION_MULTIPLIER), (self.getY()*GROUND_REPULSION_MULTIPLIER), 0))
+						'''
+							this is a little bit hackish, what is done is that a force in the x and y direction is created proportional to your distance from the origin.  this will only 
+							work effectively if the crater is xy centered in the environment
+						'''
+					else:
+						self.setZ(max(zVal, self.getZ()))
+					break
+				
+				
+			
