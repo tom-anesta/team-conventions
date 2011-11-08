@@ -143,7 +143,6 @@ class Unit(Actor):
 				if entry.getIntoNode().getName() == "craterCollisionPlane":
 					zVal = entry.getSurfacePoint(render).getZ()
 					if zVal >= MAX_HEIGHT:#apply a force toward the center
-						print "applying force"
 						self.applyForce(self.wCenter - Point3( (self.getX()*GROUND_REPULSION_MULTIPLIER), (self.getY()*GROUND_REPULSION_MULTIPLIER), 0))
 						'''
 							this is a little bit hackish, what is done is that a force in the x and y direction is created proportional to your distance from the origin.  this will only 
@@ -151,7 +150,6 @@ class Unit(Actor):
 						'''
 					else:
 						self.setZ(max(zVal, self.getZ()))
-						print self.getZ()
 					break
 				
 				

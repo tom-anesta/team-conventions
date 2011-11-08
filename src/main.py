@@ -80,12 +80,14 @@ class Game(ShowBase):
 		self.cTrav = base.cTrav
 		#self.cTrav.showCollisions(self.unitNodePath)#show the collisions
 		
+		#load terrain and enemies
+		
 		#load the environment, it seems that an x value of zero, a y value of -50 puts the origin point relatively in the middle of the crater
 		filename = PARAMS_PATH + "environment.txt"
 		self.loadLevelGeom(filename)
 		#load the enemies
 		filename = PARAMS_PATH + "enemies.txt"
-		#self.loadLevelEnemies(filename)
+		self.loadLevelEnemies(filename)
 		
 		#lookup table for actors
 		self.actors = {}
@@ -98,7 +100,8 @@ class Game(ShowBase):
 		self.player.nodePath = self.render.find("player")
 		self.actors["player"] = self.player
 		
-		
+		#this should be gone soon
+		'''
 		#add an enemy
 		self.tempEnemy = RushEnemy(self, -20, 0, 0)
 		#self.tempEnemy.setPos(-20, 0, 0)
@@ -127,6 +130,7 @@ class Game(ShowBase):
 		
 		for enemy in self.enemies:
 			enemy.registerCollider(self.cTrav)
+		'''
 		
 		#add some lights
 		topLight = DirectionalLight("top light")
@@ -165,15 +169,12 @@ class Game(ShowBase):
 			
 		#now split each line into lists
 		
-		i = 0
 		
-		for line in textFileList:
-			textFileList[i] = line.split(TEXT_DELIMITER)
-			for string in textFileList[i]:
-				string.strip()#remove whitespace or endlines
-			i = i + 1
+		for num, val in enumerate(textFileList):
+			val = val.rstrip('\n')#strip the newlines
+			val = val.strip()
+			textFileList[num] = val.split(TEXT_DELIMITER)
 		
-		i = 0
 		
 		obstacle = None
 		
@@ -236,58 +237,58 @@ class Game(ShowBase):
 		
 		#get the lines from the file and split them
 		textFileList = open(filename, 'r').readlines()
-		for num, val in enumerate(textFileList):
-			textFileList[num] = val.split(TEXT_DELMITER)
+		if len(textFileList) < 1:
+			print "FATAL ERROR READING FILE"
+			exit(1)
 		
+		for num, val in enumerate(textFileList):
+			val = val.rstrip('\n')#strip the newlines
+			val = val.strip()
+			textFileList[num] = val.split(TEXT_DELIMITER)
 		
 		currwave = dict()
 		currwave["time"] = None
 		currwave["enemies"] = []
 		currEnem = dict()
-		pos = []
+		
+		print "populating enemy waves"
+		
 		
 		for val in textFileList:
+			print val
 			if val[0] == BEGIN_WAVE:
+				currwave = dict()
 				currwave["time"] = float(val[1])#set your time
+				currwave["enemies"] = []
 			elif val[0] == RUSH_ENEMY:
+				currEnem = dict()
+				pos = []
 				pos = val[1].split(',')#get the three values for spawning, not floats
 				currEnem["type"] = RUSH_ENEMY
-				currEnem["xVal"] = int(pos[0])
-				currEnem["yVal"] = int(pos[1])
-				currEnem["zVal"] = int(pos[2])
-				
+				currEnem["xVal"] = float(pos[0])
+				currEnem["yVal"] = float(pos[1])
+				currEnem["zVal"] = float(pos[2])
+				currwave["enemies"].append(dict(currEnem))#copy
 			elif val[0] == END_WAVE:#then we are done with that wave
-				self.eSpawnList.append(currwave)
-				currwave["time"] = None#then reset
-				currwave["enemies"] = []
+				self.eSpawnList.append(dict(currwave))#copy
+				print len(self.eSpawnList)
+				print "test"
 			else:
 				pass#then something was stupid
 			
-			#now sort your waves
-			
-			
-		
-		if len(textFileList) < 1:
-			print "FATAL ERROR READING FILE"
-			exit(1)
-			
-		#now split each line into lists
+		#now sort your waves with lowest time first	
+		self.eSpawnList.sort(key = lambda object: object["time"])
+		#and you're done
 		
 		i = 0
-		
-		for line in textFileList:
-			textFileList[i] = line.split(TEXT_DELIMITER)
-			for string in textFileList[i]:
-				string.strip()#remove whitespace or endlines
-			i = i + 1
-		
-		i = 0
-		
-		pass
-		
-		
-		
-		
+		'''
+		while i != len(self.eSpawnList):
+			print i
+			print self.eSpawnList[i]["time"]
+			for val in self.eSpawnList[i]["enemies"]:
+				print val["type"]
+			i = i+1
+		'''
 	
 	def updateGame(self, task):
 		self.globalTime = self.globalTime + task.time
@@ -298,7 +299,7 @@ class Game(ShowBase):
 		
 		if not self.paused:
 			self.updateGameComponents(elapsedTime)
-			#self.spawnEnemies()#globalTime is available
+			self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
 				self.paused = not self.paused
@@ -329,8 +330,29 @@ class Game(ShowBase):
 		self.cTrav.traverse(render)
 		
 		
-	def spawnEnemies(self):
-		pass
+	def spawnEnemies(self):#now we spawn our enemies
+		while(( len(self.eSpawnList) > 0) and self.eSpawnList[0]["time"] < self.globalTime):
+			for val in self.eSpawnList[0]["enemies"]:
+				if val["type"] == RUSH_ENEMY:
+					print "rush enemy"
+					#add an enemy
+					tempEnemy = RushEnemy(self, val["xVal"], val["yVal"], val["zVal"])
+					self.configureEnemy(tempEnemy)
+				else: 
+					pass
+				
+			del self.eSpawnList[0]#del
+			
+	
+	def configureEnemy(self, tempEnemy):#after making an enemy configure it for the game
+		numString = str(self.nextEnemy)
+		tempEnemy.setName("enemy"+numString)
+		tempEnemy.reparentTo(self.unitNodePath)
+		tempEnemy.nodePath = self.render.find("enemy1")
+		self.actors["enemy"+numString] = tempEnemy
+		tempEnemy.registerCollider(self.cTrav)
+		self.nextEnemy = self.nextEnemy + 1
+		self.enemies.append(tempEnemy)
 		
 	
 	def rotateCamera(self):
@@ -433,6 +455,7 @@ class Game(ShowBase):
 	def gameOver(self):
 		pass
 
+#start the game
 if __name__ == '__main__':
 	game = Game()
 	game.run()
