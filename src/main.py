@@ -297,8 +297,8 @@ class Game(ShowBase):
 		self.playerTerrainCollisionCheck()
 		self.player.update(time)
 		
-		self.cTrav.traverse(self.unitNodePath)
-		
+		self.cTrav.traverse(render)
+	
 	def playerTerrainCollisionCheck(self):
 		entries = []
 		length = self.playerGroundHandler.getNumEntries()
@@ -309,7 +309,7 @@ class Game(ShowBase):
 		if (len(entries) > 0):
 			for entry in entries:
 				if entry.getIntoNode().getName() == "Barrier":
-					self.player.position.setZ(entry.getSurfacePoint(render).getZ())
+					self.player.setZ(entry.getSurfacePoint(render).getZ())
 					break
 	
 	def spawnEnemies(self):

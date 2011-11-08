@@ -12,12 +12,11 @@ import math
 class Unit(Actor):
 	gravity = 20
 	
-	def __init__(self, models = None, anims = None, xStart=0, yStart=0, zStart=0, radius = 3):
+	def __init__(self, models = None, anims = None, xStart = 0, yStart = 0, zStart = 0, radius = 3):
 		Actor.__init__(self, models, anims)
 		
 		self.health = 10
 		
-		self.position = Point3(xStart, yStart, zStart)
 		#self.lastPosition = Point3()
 		self.vel = Vec3()
 		self.accel = Vec3(0, 0, -Unit.gravity)
@@ -72,24 +71,8 @@ class Unit(Actor):
 		
 		self.vel -= self.vel * (self.friction * time)
 		
-		self.position = self.getPos()
-		self.position += self.vel * time
-		self.position.setZ(max(-100, self.position.getZ()))
+		position = self.getPos()
+		position += self.vel * time
+		position.setZ(max(-100, position.getZ()))
 		
-		Actor.setPos(self, self.position.getX(), self.position.getY(), self.position.getZ())
-	
-	def setPos(self, x, y, z):
-		self.position.set(x, y, z)
-		Actor.setPos(self, x, y, z)
-	
-	def setX(self, x):
-		self.position.setX(x)
-		Actor.setX(self, x)
-	
-	def setY(self, y):
-		self.position.setY(y)
-		Actor.setY(self, y)
-	
-	def setZ(self, z):
-		self.position.setX(z)
-		Actor.setZ(self, z)
+		self.setPos(position.getX(), position.getY(), position.getZ())
