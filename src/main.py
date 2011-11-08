@@ -18,6 +18,7 @@ from pandac.PandaModules import Point2
 from panda3d.core import CollisionRay, CollisionNode, GeomNode, CollisionTraverser
 from panda3d.core import CollisionHandlerQueue, CollisionSphere, BitMask32
 from math import pi, sin, cos, sqrt, pow, atan2
+from pandac.PandaModules import BitMask32
 
 from unit import Unit
 from player import Player
@@ -312,7 +313,7 @@ class Game(ShowBase):
 		entries.sort(lambda x, y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0):
 			for entry in entries:
-				if entry.getIntoNode().getName() == "Barrier":
+				if entry.getIntoNode().getName() == "environemntCollisionPlane":
 					self.player.position.setZ(entry.getSurfacePoint(render).getZ())
 					break
 	
@@ -354,20 +355,31 @@ class Game(ShowBase):
 			self.mCollisionQue.sortEntries()
 			for i in range(0, self.mCollisionQue.getNumEntries()):
 				entry = self.mCollisionQue.getEntry(i)
-				pickedObj = entry.getIntoNodePath()
+				#pickedObj = entry.getIntoNodePath()
+				pickedObj = entry.getIntoNode()
 				
-				if not pickedObj.isEmpty():
+				print pickedObj
+				
+				if True:#not pickedObj.isEmpty():
 					#here is how you get the surface collsion
 					#pos = entry.getSurfacePoint(self.render)
 					
 					#get the name of the picked object
-					name = pickedObj.getParent().getParent().getParent().getName()
+					#print pickedObj
+					
+					found = False
+					pickedActor = pickedObj
+					
+					if pickedObj.getName() != "enemyCollisionSphere":
+						continue
+					
+					name = pickedObj.getName()
+					
 					if name == "render":
 						return None
 					
 					#if the object is shootable, set it as the target
 					if self.actors[name].shootable:
-						print self.actors[name].getName()
 						return self.actors[name]
 					
 					#handlePickedObject(pickedObj)
@@ -380,7 +392,7 @@ class Game(ShowBase):
 		#Since we are using collision detection to do picking, we set it up 
 		#any other collision detection system with a traverser and a handler
 		self.mPickerTraverser = CollisionTraverser()            #Make a traverser
-		#self.mPickerTraverser.showCollisions(render)
+		self.mPickerTraverser.showCollisions(self.unitNodePath)
 		self.mCollisionQue = CollisionHandlerQueue()
 
 		#create a collision solid ray to detect against
@@ -390,6 +402,7 @@ class Game(ShowBase):
 
 		#create our collison Node to hold the ray
 		self.mPickNode = CollisionNode('pickRay')
+		self.mPickNode.setIntoCollideMask(BitMask32.allOff())
 		self.mPickNode.addSolid(self.mPickRay)
 
 		#Attach that node to the player since the ray will need to be positioned
@@ -410,6 +423,7 @@ class Game(ShowBase):
 
 		#Register the ray as something that can cause collisions
 		self.mPickerTraverser.addCollider(self.mPickNP, self.mCollisionQue)
+		#self.cTrav.addCollider(self.mPickNP, self.mCollisionQue)
 		#if you want to show collisions for debugging turn this on
 		#self.mPickerTraverser.showCollisions(self.render)
 	#END ATTEMPT AT AUTO-TARGETING
