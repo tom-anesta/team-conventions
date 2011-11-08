@@ -3,6 +3,7 @@ A set of constant values to be referenced elsewhere in the program. This
 module does not import any others, so it is safe to import it anywhere.
 '''
 
+#for keys
 LEFT = "left"
 RIGHT = "right"
 UP = "up"
@@ -13,15 +14,22 @@ SWITCH = "switch"
 PAUSE = "pause"
 QUIT = "quit"
 
+#for shooting with magnets
 NARROW = "narrow"
 AREA = "area"
 
+#for movement
+MAX_HEIGHT = 55#the max height that you can go up, the floor is around -15, it's a float value so it's misleading sometimes
+GROUND_REPULSION_MULTIPLIER = 0.3
+
+#paths
 MODELS_PATH = "../lib/models/"
 SFX_PATH = "../lib/sfx/"
 PARAMS_PATH = "../params/"
 TEXTURES_PATH = "../lib/textures/"
-TEXT_DELIMITER = "%%%"
 
+#for reading from text file
+TEXT_DELIMITER = "%%%"
 #codes for reading terrain from text file
 TERRAIN_OUTER = "terrain_outer"#text used to designate that the text following it is the parameters for creating the background terrain
 TERRAIN_OBJECT = "terrain_object"#text used to designate that the text following it is the parameters for creating a static terrain object within the terrain

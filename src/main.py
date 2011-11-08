@@ -34,9 +34,11 @@ class Game(ShowBase):
 		self.globalTime = 0
 		self.nextEnemy =1
 		
+		
+		
 		#get window properties
 		self.winProps = WindowProperties()
-		#self.winProps.setFullscreen(True)
+		self.winProps.setFullscreen(True)
 		self.winProps.setCursorHidden(True)
 		base.win.requestProperties(self.winProps)
 		
@@ -78,7 +80,7 @@ class Game(ShowBase):
 		self.cTrav = base.cTrav
 		#self.cTrav.showCollisions(self.unitNodePath)#show the collisions
 		
-		#load the environment
+		#load the environment, it seems that an x value of zero, a y value of -50 puts the origin point relatively in the middle of the crater
 		filename = PARAMS_PATH + "environment.txt"
 		self.loadLevelGeom(filename)
 		#load the enemies
@@ -96,19 +98,6 @@ class Game(ShowBase):
 		self.player.nodePath = self.render.find("player")
 		self.actors["player"] = self.player
 		
-		'''
-		self.playerGroundCol = self.player.find("**/CollisionSphere")
-		if self.playerGroundCol.isEmpty():
-			print "playerGroundCol is empty"
-		#self.playerGroundCol.setCollisionMask(BitMask32(0x00))
-		self.player.registerCollider(self.cTrav)
-		
-		
-		#self.playerGroundCol.setFromCollideMask(BitMask32.bit(0))
-		#self.playerGroundCol.setIntoCollideMask(BitMask32.allOff())
-		self.playerGroundHandler = CollisionHandlerQueue()
-		self.cTrav.addCollider(self.playerGroundCol, self.playerGroundHandler)
-		'''
 		
 		#add an enemy
 		self.tempEnemy = RushEnemy(self, -20, 0, 0)
@@ -142,14 +131,10 @@ class Game(ShowBase):
 		#add some lights
 		topLight = DirectionalLight("top light")
 		#topLight.setColor(Vec4(255/255, 253/255, 222/255, 1))
-		topLight.setColor(Vec4(10/255, 10/255, 10/255, 1))
-		topLight.setDirection(Vec3(130, -60, 0))
+		topLight.setColor(Vec4(255/255, 255/255, 255/255, 1))
+		topLight.setDirection(Vec3(0, -90, 0))
 		self.render.setLight(self.render.attachNewNode(topLight))
 		
-		#horizontalLight = DirectionalLight("horizontal light")
-		#horizontalLight.setColor(Vec4(1, 0.9, 0.8, 1))
-		#horizontalLight.setDirection(Vec3(-90, 0, 0))
-		#self.render.setLight(self.render.attachNewNode(horizontalLight))
 		
 		ambientLight = AmbientLight("ambient light")
 		ambientLight.setColor(Vec4(0.1, 0.1, 0.1, 1))

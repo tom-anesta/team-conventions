@@ -29,11 +29,13 @@ class Unit(Actor):
 		self.health = 10
 		self.heightOffset = 3
 		
+		#set up the position
 		self.setPos(xStart, yStart, zStart)
 		#self.lastPosition = Point3()
 		self.vel = Vec3()
 		self.accel = Vec3(0, 0, -Unit.gravity)
-
+		#define the position that will be treated as the center of the map
+		self.wCenter = Point3(0, 0, 0)
 		
 		#set up collision handling
 		
@@ -139,7 +141,17 @@ class Unit(Actor):
 		if (len(entries) > 0):
 			for entry in entries:
 				if entry.getIntoNode().getName() == "craterCollisionPlane":
-					self.setZ(max(entry.getSurfacePoint(render).getZ(), self.getZ()))
+					zVal = entry.getSurfacePoint(render).getZ()
+					if zVal >= MAX_HEIGHT:#apply a force toward the center
+						print "applying force"
+						self.applyForce(self.wCenter - Point3( (self.getX()*GROUND_REPULSION_MULTIPLIER), (self.getY()*GROUND_REPULSION_MULTIPLIER), 0))
+						'''
+							this is a little bit hackish, what is done is that a force in the x and y direction is created proportional to your distance from the origin.  this will only 
+							work effectively if the crater is xy centered in the environment
+						'''
+					else:
+						self.setZ(max(zVal, self.getZ()))
+						print self.getZ()
 					break
 				
 				
