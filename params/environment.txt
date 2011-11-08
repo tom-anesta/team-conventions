@@ -1,3 +1,5 @@
+
 terrain_outer%%%maya_crater%%%200,200,200%%%-75,-75,-35%%%-75,-75,650
 terrain_object%%%MetalTowerBlock%%%10,10,10%%%-20,-20,-5%%%0,0,0
 
+terrain_object%%%MetalTowerBlock%%%10,10,10%%%-20,-20,15%%%5,0,0

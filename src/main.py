@@ -32,6 +32,7 @@ class Game(ShowBase):
 		
 		#start the time
 		self.globalTime = 0
+		self.nextEnemy =1
 		
 		#get window properties
 		self.winProps = WindowProperties()
@@ -62,7 +63,7 @@ class Game(ShowBase):
 		self.enemies = []
 		self.obstacles = []
 		#list of enemies to be spawned
-		self.eSpawnList = dict()
+		self.eSpawnList = []
 		
 		#not paused by default
 		self.paused = False
@@ -82,7 +83,7 @@ class Game(ShowBase):
 		self.loadLevelGeom(filename)
 		#load the enemies
 		filename = PARAMS_PATH + "enemies.txt"
-		self.loadLevelEnemies(filename)
+		#self.loadLevelEnemies(filename)
 		
 		#lookup table for actors
 		self.actors = {}
@@ -189,31 +190,29 @@ class Game(ShowBase):
 		
 		i = 0
 		
+		obstacle = None
+		
 		for list in textFileList: #go through the list
 			if list[0] == TERRAIN_OUTER:#do all the things for the terrain
 				#choose the model
 				modelVal = list[1]
 				modelVal = (MODELS_PATH + modelVal)
-				#load the model
-				#this yielded an error
-				#print modelVal
+				
 				self.environment = self.loader.loadModel(modelVal)
-				#begin fix, didn't work
-				#modelVal = os.path.abspath(modelVal)
-				#self.environment = self.loader.loadModel(modelVal)
-				#end fix
+				
 				self.environment.reparentTo(self.render)
 				
 				#set scale
-				scaleVal = list[2]
-				scaleVal = scaleVal.split(',')#split by commas
+				scaleVal = list[2].split(',')#split by commas
 				self.environment.setScale(float(scaleVal[0]), float(scaleVal[1]), float(scaleVal[2]))
 				#set location
-				locVal = list[3]
-				locVal = locVal.split(',')
-				for val in locVal:
-					val = float(val)
+				locVal = list[3].split(',')
 				self.environment.setPos(float(locVal[0]), float(locVal[1]), float(locVal[2]))#then we have our terrain
+				#set rotation
+				hprVal = list[4].split(',')
+				self.environment.setHpr(float(hprVal[0]), float(hprVal[1]), float(hprVal[2]))
+				
+				
 			elif list[0] == TERRAIN_OBJECT:
 				#choose the model
 				modelVal = list[1]
@@ -223,13 +222,13 @@ class Game(ShowBase):
 				self.obstacles.append(obstacle)
 				obstacle.reparentTo(render)
 				#set scale
-				scaleVal = list[2]
-				scaleVal = scaleVal.split(',')
+				scaleVal = list[2].split(',')
 				obstacle.setScale(float(scaleVal[0]), float(scaleVal[1]), float(scaleVal[2]))
 				#set location
-				locVal = list[3]
-				locVal = locVal.split(',')
+				locVal = list[3].split(',')
 				obstacle.setPos(float(locVal[0]), float(locVal[1]), float(locVal[2]))#the we have our object
+				hprVal = list[4].split(',')
+				obstacle.setHpr(float(hprVal[0]), float(hprVal[1]), float(hprVal[2]))
 				
 			else:
 				print "FATAL ERROR READING FILE"
@@ -243,8 +242,38 @@ class Game(ShowBase):
 			print "FILE DOES NOT EXIST:"
 			exit(1)
 		
-		#get the lines from the file
+		#get the lines from the file and split them
 		textFileList = open(filename, 'r').readlines()
+		for num, val in enumerate(textFileList):
+			textFileList[num] = val.split(TEXT_DELMITER)
+		
+		
+		currwave = dict()
+		currwave["time"] = None
+		currwave["enemies"] = []
+		currEnem = dict()
+		pos = []
+		
+		for val in textFileList:
+			if val[0] == BEGIN_WAVE:
+				currwave["time"] = float(val[1])#set your time
+			elif val[0] == RUSH_ENEMY:
+				pos = val[1].split(',')#get the three values for spawning, not floats
+				currEnem["type"] = RUSH_ENEMY
+				currEnem["xVal"] = int(pos[0])
+				currEnem["yVal"] = int(pos[1])
+				currEnem["zVal"] = int(pos[2])
+				
+			elif val[0] == END_WAVE:#then we are done with that wave
+				self.eSpawnList.append(currwave)
+				currwave["time"] = None#then reset
+				currwave["enemies"] = []
+			else:
+				pass#then something was stupid
+			
+			#now sort your waves
+			
+			
 		
 		if len(textFileList) < 1:
 			print "FATAL ERROR READING FILE"
