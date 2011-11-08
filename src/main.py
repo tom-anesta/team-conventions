@@ -18,6 +18,7 @@ from pandac.PandaModules import Point2
 from panda3d.core import CollisionRay, CollisionNode, GeomNode, CollisionTraverser
 from panda3d.core import CollisionHandlerQueue, CollisionSphere, BitMask32
 from math import pi, sin, cos, sqrt, pow, atan2
+from pandac.PandaModules import BitMask32
 
 from unit import Unit
 from player import Player
@@ -94,33 +95,36 @@ class Game(ShowBase):
 		self.player.nodePath = self.render.find("player")
 		self.actors["player"] = self.player
 		
+		'''
 		self.playerGroundCol = self.player.find("**/CollisionSphere")
 		if self.playerGroundCol.isEmpty():
 			print "playerGroundCol is empty"
 		#self.playerGroundCol.setCollisionMask(BitMask32(0x00))
 		self.player.registerCollider(self.cTrav)
 		
+		
 		#self.playerGroundCol.setFromCollideMask(BitMask32.bit(0))
 		#self.playerGroundCol.setIntoCollideMask(BitMask32.allOff())
 		self.playerGroundHandler = CollisionHandlerQueue()
 		self.cTrav.addCollider(self.playerGroundCol, self.playerGroundHandler)
+		'''
 		
 		#add an enemy
-		self.tempEnemy = RushEnemy(-20, 0, 0)
+		self.tempEnemy = RushEnemy(self, -20, 0, 0)
 		#self.tempEnemy.setPos(-20, 0, 0)
 		self.tempEnemy.setName("enemy1")
 		self.tempEnemy.reparentTo(self.unitNodePath)
 		self.tempEnemy.nodePath = self.render.find("enemy1")
 		self.actors["enemy1"] = self.tempEnemy
 		
-		self.tempEnemy2 = RushEnemy(40, 50, 0)
+		self.tempEnemy2 = RushEnemy(self, 40, 50, 0)
 		#self.tempEnemy2.setPos(40, 50, 0)
 		self.tempEnemy2.setName("enemy2")
 		self.tempEnemy2.reparentTo(self.unitNodePath)
 		self.tempEnemy2.nodePath = self.render.find("enemy2")
 		self.actors["enemy2"] = self.tempEnemy2
 		
-		self.tempEnemy3 = RushEnemy(20, 80, 0)
+		self.tempEnemy3 = RushEnemy(self, 20, 80, 0)
 		#self.tempEnemy3.setPos(20, 80, 0)
 		self.tempEnemy3.setName("enemy3")
 		self.tempEnemy3.reparentTo(self.unitNodePath)
@@ -136,15 +140,18 @@ class Game(ShowBase):
 		
 		#add some lights
 		topLight = DirectionalLight("top light")
-		topLight.setColor(Vec4(0.9, 0.9, 0.6, 1))
+		topLight.setColor(Vec4(255/255, 253/255, 222/255, 1))
 		topLight.setDirection(Vec3(130, -60, 0))
 		self.render.setLight(self.render.attachNewNode(topLight))
-		horizontalLight = DirectionalLight("horizontal light")
-		horizontalLight.setColor(Vec4(1, 0.9, 0.8, 1))
-		horizontalLight.setDirection(Vec3(-90, 0, 0))
-		self.render.setLight(self.render.attachNewNode(horizontalLight))
+		
+		#horizontalLight = DirectionalLight("horizontal light")
+		#horizontalLight.setColor(Vec4(1, 0.9, 0.8, 1))
+		#horizontalLight.setDirection(Vec3(-90, 0, 0))
+		#self.render.setLight(self.render.attachNewNode(horizontalLight))
+		
 		ambientLight = AmbientLight("ambient light")
-		ambientLight.setColor(Vec4(0.5, 0.5, 0.5, 1))
+		ambientLight.setColor(Vec4(0.1, 0.1, 0.1, 1))
+		topLight.setDirection(Vec3(130, -60, 0))
 		self.render.setLight(self.render.attachNewNode(ambientLight))
 		
 		#the distance the camera is from the player
@@ -270,8 +277,7 @@ class Game(ShowBase):
 		
 		if not self.paused:
 			self.updateGameComponents(elapsedTime)
-			
-			self.spawnEnemies()#globalTime is available
+			#self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
 				self.paused = not self.paused
@@ -294,24 +300,26 @@ class Game(ShowBase):
 			enemy.update(time)
 			
 		#check for basic terrain collisions
-		self.playerTerrainCollisionCheck()
+		self.player.terrainCollisionCheck()
 		self.player.update(time)
+		for enemy in self.enemies:
+			enemy.terrainCollisionCheck()
 		
 		self.cTrav.traverse(render)
-	
+	'''
 	def playerTerrainCollisionCheck(self):
 		entries = []
-		length = self.playerGroundHandler.getNumEntries()
+		length = self.player.groundSphereHandler.getNumEntries()
 		for i in range(length):
-			entry = self.playerGroundHandler.getEntry(i)
+			entry = self.player.groundSphereHandler.getEntry(i)
 			entries.append(entry)
 		entries.sort(lambda x, y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0):
 			for entry in entries:
 				if entry.getIntoNode().getName() == "environmentCollisionPlane":
-					self.player.setZ(entry.getSurfacePoint(render).getZ())
+					self.player.position.setZ(entry.getSurfacePoint(render).getZ())
 					break
-	
+	'''
 	def spawnEnemies(self):
 		pass
 		
@@ -353,20 +361,20 @@ class Game(ShowBase):
 				pickedObj = entry.getIntoNodePath()
 				
 				if not pickedObj.isEmpty():
-					#here is how you get the surface collsion
-					#pos = entry.getSurfacePoint(self.render)
 					
-					#get the name of the picked object
+					found = False
+					
+					if pickedObj.getName() != "enemyCollisionSphere":
+						continue
+					
 					name = pickedObj.getParent().getParent().getParent().getName()
+					
 					if name == "render":
 						return None
 					
 					#if the object is shootable, set it as the target
 					if self.actors[name].shootable:
-						print self.actors[name].getName()
 						return self.actors[name]
-					
-					#handlePickedObject(pickedObj)
 		
 		return None
 	
@@ -376,7 +384,7 @@ class Game(ShowBase):
 		#Since we are using collision detection to do picking, we set it up 
 		#any other collision detection system with a traverser and a handler
 		self.mPickerTraverser = CollisionTraverser()            #Make a traverser
-		#self.mPickerTraverser.showCollisions(render)
+		#self.mPickerTraverser.showCollisions(self.unitNodePath)
 		self.mCollisionQue = CollisionHandlerQueue()
 
 		#create a collision solid ray to detect against
@@ -386,6 +394,7 @@ class Game(ShowBase):
 
 		#create our collison Node to hold the ray
 		self.mPickNode = CollisionNode('pickRay')
+		self.mPickNode.setIntoCollideMask(BitMask32.allOff())
 		self.mPickNode.addSolid(self.mPickRay)
 
 		#Attach that node to the player since the ray will need to be positioned
@@ -402,10 +411,12 @@ class Game(ShowBase):
 		#Everything to be picked will use bit 1. This way if we were doing other
 		#collision we could seperate it, we use bitmasks to determine what we check other objects against
 		#if they dont have a bitmask for bit 1 well skip them!
-		self.mPickNode.setFromCollideMask(GeomNode.getDefaultCollideMask())
+		#self.mPickNode.setFromCollideMask(GeomNode.getDefaultCollideMask())
+		self.mPickNode.setFromCollideMask(BitMask32.bit(0))
 
 		#Register the ray as something that can cause collisions
 		self.mPickerTraverser.addCollider(self.mPickNP, self.mCollisionQue)
+		#self.cTrav.addCollider(self.mPickNP, self.mCollisionQue)
 		#if you want to show collisions for debugging turn this on
 		#self.mPickerTraverser.showCollisions(self.render)
 	#END ATTEMPT AT AUTO-TARGETING
