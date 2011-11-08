@@ -201,6 +201,7 @@ class Game(ShowBase):
 				self.environment = self.loader.loadModel(modelVal)
 				
 				self.environment.reparentTo(self.render)
+				print self.environment #.find("craterCollisionPlane").setZ(self.environment.getZ() + 10)
 				
 				#set scale
 				scaleVal = list[2].split(',')#split by commas
