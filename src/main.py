@@ -308,7 +308,7 @@ class Game(ShowBase):
 		entries.sort(lambda x, y: cmp(y.getSurfacePoint(render).getZ(), x.getSurfacePoint(render).getZ()))
 		if (len(entries) > 0):
 			for entry in entries:
-				if entry.getIntoNode().getName() == "Barrier":
+				if entry.getIntoNode().getName() == "environmentCollisionPlane":
 					self.player.setZ(entry.getSurfacePoint(render).getZ())
 					break
 	

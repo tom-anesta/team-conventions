@@ -1,2 +1,2 @@
-terrain_outer%%%maya_crater%%%200,200,200%%%-75,-75,-35
+terrain_outer%%%crater_final2%%%200,200,200%%%-75,-75,970
 terrain_object%%%MetalTowerBlock%%%10,10,10%%%-20,-20,-5
