@@ -22,6 +22,8 @@ class Unit(Actor):
 	def __init__(self, models = None, anims = None, sphereString="**/CollisionSphere", game = None, xStart=0, yStart=0, zStart=0, radius = 3):
 		Actor.__init__(self, models, anims)
 		
+		self.game = game
+		
 		self.health = 10
 		self.heightOffset = 3
 		
@@ -73,6 +75,7 @@ class Unit(Actor):
 		#can be thought of as the inverse of the unit's mass
 		self.accelMultiplier = 45
 		self.friction = 1.7
+		self.disableFriction = False
 		
 		self.nodePath = None
 		self.shootable = True
@@ -90,6 +93,16 @@ class Unit(Actor):
 	
 	def applyForce(self, forceVector):
 		self.accel += forceVector * self.accelMultiplier
+	
+	def applyConstantVelocityFrom(self, magnitude, sourcePosition):
+		velVector = self.getPos() - sourcePosition
+		velVector.normalize()
+		velVector *= magnitude
+		
+		self.applyConstantVelocity(velVector)
+	
+	def applyConstantVelocity(self, velVector):
+		self.vel = velVector
 
 	def takeDamage(self, num):
 		self.health -= num
@@ -105,7 +118,8 @@ class Unit(Actor):
 		self.vel += self.accel * time
 		self.accel.set(0, 0, -Unit.gravity)
 		
-		self.vel -= self.vel * (self.friction * time)
+		if not self.disableFriction:
+			self.vel -= self.vel * (self.friction * time)
 		
 		position = self.getPos()
 		position += self.vel * time
@@ -113,6 +127,9 @@ class Unit(Actor):
 		
 		
 		self.setPos(position.getX(), position.getY(), position.getZ())
+	
+	def collideWithObject(self, obj):
+		print type(obj)
 	
 	def terrainCollisionCheck(self):
 		entries = []
@@ -125,5 +142,11 @@ class Unit(Actor):
 			for entry in entries:
 				if entry.getIntoNode().getName() == "Barrier":
 					self.setZ(entry.getSurfacePoint(render).getZ())
-					break
+				elif entry.getIntoNodePath().getName() != "enemyCollisionSphere" and not entry.getIntoNodePath().isEmpty():
+					name = pickedObj.getParent().getParent().getParent().getName()
+					
+					if name == "render":
+						return None
+					
+					self.collideWithObj(self, self.game.actors[name])
 	
