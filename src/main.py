@@ -141,7 +141,7 @@ class Game(ShowBase):
 		#add some lights
 		topLight = DirectionalLight("top light")
 		#topLight.setColor(Vec4(255/255, 253/255, 222/255, 1))
-		topLight.setColor(Vec4(255/255, 255/255, 255/255, 1))
+		topLight.setColor(Vec4(30/255, 30/255, 30/255, 1))
 		topLight.setDirection(Vec3(0, -90, 0))
 		self.render.setLight(self.render.attachNewNode(topLight))
 		
