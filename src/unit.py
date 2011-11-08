@@ -6,6 +6,7 @@ from pandac.PandaModules import Point3
 from pandac.PandaModules import CollisionNode
 from pandac.PandaModules import CollisionSphere
 from pandac.PandaModules import CollisionHandlerPusher
+from pandac.PandaModules import BitMask32
 import math
 
 class Unit(Actor):
@@ -22,12 +23,17 @@ class Unit(Actor):
 		self.accel = Vec3(0, 0, -Unit.gravity)
 		
 		#set up the collision handling
-#		self.collisionNodePath = self.attachNewNode(CollisionNode('cNode'))
-#		self.collisionNodePath.node().addSolid(CollisionSphere(0, 0, 0, radius))
-#		self.collisionNodePath.show()
-#		
-#		self.collisionHandler = CollisionHandlerPusher()
-#		self.collisionHandler.addCollider(self.collisionNodePath, self)
+		#self.collisionNodePath = self.attachNewNode(CollisionNode('cNode'))
+		#self.collisionNodePath.node().addSolid(CollisionSphere(0, 0, 0, radius))
+		self.collisionNodePath = self.find("**/enemyCollisionSphere")
+		if self.collisionNodePath.isEmpty():
+			self.collisionNodePath = self.find("**/CollisionSphere")
+		self.collisionNodePath.node().setFromCollideMask(BitMask32.bit(0))
+		self.collisionNodePath.node().setIntoCollideMask(BitMask32.bit(0))
+		self.collisionNodePath.show()
+		
+		self.collisionHandler = CollisionHandlerPusher()
+		self.collisionHandler.addCollider(self.collisionNodePath, self)
 		
 		#can be thought of as the inverse of the unit's mass
 		self.accelMultiplier = 45
@@ -37,8 +43,8 @@ class Unit(Actor):
 		self.shootable = True
 	
 	def registerCollider(self, collisionTraverser):
+		collisionTraverser.addCollider(self.collisionNodePath, self.collisionHandler)
 		pass
-#		collisionTraverser.addCollider(self.collisionNodePath, self.collisionHandler)
 	
 	def applyForceFrom(self, magnitude, sourcePosition):
 		forceVector = self.position - sourcePosition
@@ -66,6 +72,7 @@ class Unit(Actor):
 		
 		self.vel -= self.vel * (self.friction * time)
 		
+		self.position = self.getPos()
 		self.position += self.vel * time
 		self.position.setZ(max(0, self.position.getZ()))
 		

@@ -269,12 +269,8 @@ class Game(ShowBase):
 			exit(0)
 		
 		if not self.paused:
-			time = min(0.25, elapsedTime)
-			while time > 0.05:
-				self.updateGameComponents(0.05)
-				time -= 0.05
-			self.updateGameComponents(time)
-		
+			self.updateGameComponents(elapsedTime)
+			
 			self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
@@ -301,7 +297,7 @@ class Game(ShowBase):
 		self.playerTerrainCollisionCheck()
 		self.player.update(time)
 		
-		self.cTrav.traverse(render)
+		self.cTrav.traverse(self.unitNodePath)
 		
 	def playerTerrainCollisionCheck(self):
 		entries = []
