@@ -45,7 +45,7 @@ class Unit(Actor):
 		pass
 	
 	def applyForceFrom(self, magnitude, sourcePosition):
-		forceVector = self.position - sourcePosition
+		forceVector = self.getPos() - sourcePosition
 		forceVector.normalize()
 		forceVector *= magnitude
 		
