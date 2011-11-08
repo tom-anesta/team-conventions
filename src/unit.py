@@ -29,7 +29,6 @@ class Unit(Actor):
 			self.collisionNodePath = self.find("**/CollisionSphere")
 		self.collisionNodePath.node().setFromCollideMask(BitMask32.bit(0))
 		self.collisionNodePath.node().setIntoCollideMask(BitMask32.bit(0))
-		self.collisionNodePath.show()
 		
 		self.collisionHandler = CollisionHandlerPusher()
 		self.collisionHandler.addCollider(self.collisionNodePath, self)
