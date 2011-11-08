@@ -351,25 +351,16 @@ class Game(ShowBase):
 			self.mCollisionQue.sortEntries()
 			for i in range(0, self.mCollisionQue.getNumEntries()):
 				entry = self.mCollisionQue.getEntry(i)
-				#pickedObj = entry.getIntoNodePath()
-				pickedObj = entry.getIntoNode()
+				pickedObj = entry.getIntoNodePath()
 				
-				print pickedObj
-				
-				if True:#not pickedObj.isEmpty():
-					#here is how you get the surface collsion
-					#pos = entry.getSurfacePoint(self.render)
-					
-					#get the name of the picked object
-					#print pickedObj
+				if not pickedObj.isEmpty():
 					
 					found = False
-					pickedActor = pickedObj
 					
 					if pickedObj.getName() != "enemyCollisionSphere":
 						continue
 					
-					name = pickedObj.getName()
+					name = pickedObj.getParent().getParent().getParent().getName()
 					
 					if name == "render":
 						return None
@@ -377,8 +368,6 @@ class Game(ShowBase):
 					#if the object is shootable, set it as the target
 					if self.actors[name].shootable:
 						return self.actors[name]
-					
-					#handlePickedObject(pickedObj)
 		
 		return None
 	
@@ -388,7 +377,7 @@ class Game(ShowBase):
 		#Since we are using collision detection to do picking, we set it up 
 		#any other collision detection system with a traverser and a handler
 		self.mPickerTraverser = CollisionTraverser()            #Make a traverser
-		self.mPickerTraverser.showCollisions(self.unitNodePath)
+		#self.mPickerTraverser.showCollisions(self.unitNodePath)
 		self.mCollisionQue = CollisionHandlerQueue()
 
 		#create a collision solid ray to detect against
@@ -415,7 +404,8 @@ class Game(ShowBase):
 		#Everything to be picked will use bit 1. This way if we were doing other
 		#collision we could seperate it, we use bitmasks to determine what we check other objects against
 		#if they dont have a bitmask for bit 1 well skip them!
-		self.mPickNode.setFromCollideMask(GeomNode.getDefaultCollideMask())
+		#self.mPickNode.setFromCollideMask(GeomNode.getDefaultCollideMask())
+		self.mPickNode.setFromCollideMask(BitMask32.bit(0))
 
 		#Register the ray as something that can cause collisions
 		self.mPickerTraverser.addCollider(self.mPickNP, self.mCollisionQue)

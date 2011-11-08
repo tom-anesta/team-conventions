@@ -36,6 +36,7 @@ class Unit(Actor):
 		#can be thought of as the inverse of the unit's mass
 		self.accelMultiplier = 45
 		self.friction = 1.7
+		self.disableFriction = False
 		
 		self.nodePath = None
 		self.shootable = True
@@ -53,6 +54,16 @@ class Unit(Actor):
 	
 	def applyForce(self, forceVector):
 		self.accel += forceVector * self.accelMultiplier
+	
+	def applyConstantVelocityFrom(self, magnitude, sourcePosition):
+		velVector = self.getPos() - sourcePosition
+		velVector.normalize()
+		velVector *= magnitude
+		
+		self.applyConstantVelocity(velVector)
+	
+	def applyConstantVelocity(self, velVector):
+		self.vel = velVector
 
 	def takeDamage(self, num):
 		self.health -= num
@@ -68,7 +79,8 @@ class Unit(Actor):
 		self.vel += self.accel * time
 		self.accel.set(0, 0, -Unit.gravity)
 		
-		self.vel -= self.vel * (self.friction * time)
+		if not self.disableFriction:
+			self.vel -= self.vel * (self.friction * time)
 		
 		position = self.getPos()
 		position += self.vel * time
