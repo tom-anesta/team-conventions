@@ -12,6 +12,6 @@ class DroneEnemy(Enemy):
 		self.pointValue = 1
 		
 	def update(self, time):
-		self.applyForceFrom(-3, self.player.getPos())
+		self.applyForceFrom(-0.1, self.player.getPos())
 		
 		Unit.update(self, time)

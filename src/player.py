@@ -25,7 +25,7 @@ class Player(Unit):
 		#set up the headlamp specific to the model
 		headLampMain = Spotlight('headLampMain')
 		#headLampMain.showFrustum()
-		headLampMain.setColor(VBase4(0.8, 0.8, 0.8, 1))
+		headLampMain.setColor(VBase4(1, 1, 1, 1))
 		mlens = PerspectiveLens()
 		mlens.setNearFar(0.25, 1500)
 		headLampMain.setLens(mlens)
@@ -34,30 +34,7 @@ class Player(Unit):
 		headLampMainnode.setHpr(-180, 0, 0)#reverse completely because our model is backwards
 		game.render.setLight(headLampMainnode)
 		
-		headLampLeft = Spotlight('headLampLeft')
-		#headLampLeft.showFrustum()
-		headLampLeft.setColor(VBase4(0.6, 0.6, 0.6, 1))
-		llens = PerspectiveLens()
-		headLampLeft.setLens(llens)
-		llens.setNearFar(0.25, 500)
-		headLampLeftnode = self.attachNewNode(headLampLeft)
-		headLampLeftnode.setPos(self.find("**/LightCubeLeft").getPos())
-		headLampLeftnode.setHpr(-105, 0, 0)#reverse completely because our model is backwards
-		game.render.setLight(headLampLeftnode)
-		
-		headLampRight = Spotlight('headLampRight')
-		#headLampRight.showFrustum()
-		headLampRight.setColor(VBase4(0.6, 0.6, 0.6, 1))
-		rlens = PerspectiveLens()
-		rlens.setNearFar(0.25, 500)
-		headLampRight.setLens(rlens)
-		headLampRightnode = self.attachNewNode(headLampRight)
-		headLampRightnode.setPos(self.find("**/LightCubeRight").getPos())
-		headLampRightnode.setHpr(105, 0, 0)#reverse completely because our model is backwards
-		game.render.setLight(headLampRightnode)
-		
 		self.health = 100
-		self.mass = 15
 		self.collisionAttackPower = 0
 		
 		#the currently active weapon
@@ -84,7 +61,7 @@ class Player(Unit):
 		
 		#the strength of a burst attack with a given weapon
 		#(yes, the area value really does have to be this high)
-		self.burstStrength = {NARROW:50, AREA:70000}
+		self.burstStrength = {NARROW:50, AREA:7000}
 		
 		#the enemy that the narrow weapon has locked on to
 		self.target = None
