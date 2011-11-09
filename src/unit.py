@@ -53,25 +53,25 @@ class Unit(Actor):
 		#if the acceleration is less, no damage is dealt
 		self.accelerationDamageThreshold = 5
 		
-		#set up Panda's collision handling
-		#self.collisionNodePath = self.attachNewNode(CollisionNode('cNode'))
-		#self.collisionNodePath.node().addSolid(CollisionSphere(0, 0, 0, radius))
+		#set up Panda's collisions
 		#first the pusher
 
 		cSphere = CollisionSphere((0,0,1), 2)
-		cNode = CollisionNode("panda")
+		cNode = CollisionNode("unit")
 		cNode.addSolid(cSphere)
 		cNode.setIntoCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
 		cNode.setFromCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
 		self.collisionNodePath = self.attachNewNode(cNode)
 		self.collisionNodePath.show()
-		#registers a from object with the traverser with a corresponding handler
 		
 		#set pattern for event sent on collision
-		# "%in" is substituted with the name of the into object
-		self.collisionHandler = CollisionHandlerEvent()
-		self.collisionHandler.setInPattern("impacted-%in")
-		game.cTrav.addCollider(self.collisionNodePath, self.collisionHandler)
+		# "%in" is substituted with the name of the into object, "%fn" is substituted with the name of the from object
+		#do the collision pusher
+		self.collisionPusher = CollisionHandlerPusher()
+		self.collisionPusher.addCollider(self.collisionNodePath, self)
+		self.collisionPusher.addInPattern("%fn-into-%in")
+		self.collisionPusher.addOutPattern("fn-out-%in")
+		game.cTrav.addCollider(self.collisionNodePath, self.collisionPusher)
 		
 		
 		
@@ -145,7 +145,7 @@ class Unit(Actor):
 		self.setPos(self.getPos() + self.vel * time)
 		self.setZ(max(-100, self.getZ()))
 		
-		#self.checkCollisions(time)
+		self.checkCollisions(time)
 	
 	
 	def checkCollisions(self, time):

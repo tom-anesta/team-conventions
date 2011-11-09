@@ -37,6 +37,7 @@ TERRAIN_OBJECT = "terrain_object"#text used to designate that the text following
 BEGIN_WAVE = "BEGINWAVE"
 END_WAVE = "ENDWAVE"
 RUSH_ENEMY = "rush_enemy"
+DRONE_ENEMY = "drone_enemy"
 
 #collision groups, make sure are power of two
 TERRAIN_RAY_MASK = 4

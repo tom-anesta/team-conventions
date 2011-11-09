@@ -15,6 +15,7 @@ from pandac.PandaModules import PointLight
 from pandac.PandaModules import Vec4
 from pandac.PandaModules import NodePath
 from pandac.PandaModules import Point2
+from direct.showbase.DirectObject import DirectObject
 from panda3d.core import CollisionRay, CollisionNode, GeomNode, CollisionTraverser
 from panda3d.core import CollisionHandlerQueue, CollisionSphere, BitMask32
 from math import pi, sin, cos, sqrt, pow, atan2
@@ -36,6 +37,12 @@ class Game(ShowBase):
 		#start the time
 		self.globalTime = 0
 		self.nextEnemy = 1
+		
+		#setup your collision event handlers, apparently needs a direct object
+		
+		self.do = DirectObject()
+		self.do.accept('unit-into-unit', self.handleUnitFromCollision)
+		self.do.accept('unit-out-unit', self.handleUnitIntoCollision)
 		
 		#get window properties
 		self.winProps = WindowProperties()
@@ -103,7 +110,7 @@ class Game(ShowBase):
 		self.player.nodePath = self.render.find("player")
 		self.actors["player"] = self.player
 		
-		'''
+		
 		#add some lights
 		topLight = DirectionalLight("top light")
 		topLight.setColor(Vec4(0.5, 0.5, 0.5, 1))
@@ -426,6 +433,12 @@ class Game(ShowBase):
 		#if you want to show collisions for debugging turn this on
 		#self.mPickerTraverser.showCollisions(self.render)
 	#END ATTEMPT AT AUTO-TARGETING
+	
+	def handleUnitIntoCollision(self, entry):
+		print "collision occurred into"
+		
+	def handleUnitFromCollision(self, entry):
+		print "collision occured from"
 	
 	def gameOver(self):
 		pass
