@@ -44,7 +44,7 @@ class Unit(Actor):
 		
 		#set up Panda's collisions
 		#first the pusher
-
+		
 		cSphere = CollisionSphere((0, 0, 1), 2)
 		cNode = CollisionNode("unit")
 		cNode.addSolid(cSphere)
@@ -125,40 +125,8 @@ class Unit(Actor):
 		if not self.disableFriction:
 			self.vel -= self.vel * (self.friction * time)
 		
-		self.prevPosition = self.getPos()
-		
-		#self.setPos(self.getPos() + self.vel * time)
 		self.setFluidPos(self.getPos() + self.vel * time)
 		self.setZ(max(-100, self.getZ()))
-	
-#	def checkCollisions(self, time):
-#		for otherUnit in Unit.units:
-#			if otherUnit != self:
-#				offsetVector = self.getPos() - otherUnit.getPos()
-#				offsetDistSquared = offsetVector.lengthSquared()
-#				combinedRadiusSquared = (self.radius + otherUnit.radius) ** 2
-#				
-#				if offsetDistSquared <= combinedRadiusSquared:
-#					offsetVector.normalize()
-#					offsetVector *= (self.radius + otherUnit.radius) / 2
-#					
-#					centerOfMass = (self.getPos() + otherUnit.getPos()) * 0.5
-#					
-#					self.setPos(centerOfMass + offsetVector)
-#					otherUnit.setPos(centerOfMass - offsetVector)
-#					
-#					#update the units' velocities, and apply damage based
-#					#on the impulse
-#					time = max(0.01, time)
-#					
-#					selfNewVel = (self.getPos() - self.prevPosition) * (1 / time)
-#					selfAccel = (selfNewVel - self.vel).length()
-#					self.vel = selfNewVel
-#					
-#					if selfAccel > otherUnit.accelerationDamageThreshold:
-#						pass
-#					
-#					otherUnit.vel = (otherUnit.getPos() - otherUnit.prevPosition) * (1 / time)
 	
 	def collideWithUnit(self, other):
 		velDiff = self.vel - other.vel
