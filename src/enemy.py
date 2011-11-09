@@ -14,10 +14,11 @@ class Enemy(Unit):
 	def absorbMagnetism(self, field, game):
 		self.changeDirectionRelative((0, field, field), game.player.getPos(), game.camera)
 	
-	def die(self, game):
-		game.enemies.remove(self)
+	def die(self):
+		self.game.enemies.remove(self)
+		Unit.die(self)
 	
-	def takeDamage(self, num, game):
+	def takeDamage(self, num):
 		Unit.takeDamage(num)
 		if self.health <= 0:
 			self.die(game)
