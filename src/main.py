@@ -308,8 +308,8 @@ class Game(ShowBase):
 		self.updateCamera(time)
 		for enemy in self.enemies:
 			enemy.update(time)
-		#for projectile in self.projectiles:
-		#	projectile.update(time)
+		for projectile in self.projectiles:
+			projectile.update(time)
 			
 		#check for basic terrain collisions
 		self.player.terrainCollisionCheck()
@@ -346,7 +346,6 @@ class Game(ShowBase):
 		tempEnemy.reparentTo(self.unitNodePath)
 		tempEnemy.nodePath = self.render.find("enemy1")
 		self.actors["enemy" + numString] = tempEnemy
-		#tempEnemy.registerCollider(self.cTrav)
 		self.nextEnemy = self.nextEnemy + 1
 		self.enemies.append(tempEnemy)
 		
@@ -449,10 +448,10 @@ class Game(ShowBase):
 	#END ATTEMPT AT AUTO-TARGETING
 	
 	def handleUnitIntoCollision(self, entry):
-		print "collision occurred into"
+		pass
 		
 	def handleUnitFromCollision(self, entry):
-		print "collision occured from"
+		pass
 	
 	def gameOver(self):
 		pass
