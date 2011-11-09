@@ -30,6 +30,7 @@ from droneEnemy import DroneEnemy
 from shootingEnemy import ShootingEnemy
 from constants import *
 from controlScheme import ControlScheme
+import random
 
 class Game(ShowBase):
 	def __init__(self):
@@ -140,6 +141,9 @@ class Game(ShowBase):
 		
 		#add targeting to the world
 		self.setupTargeting()
+		
+		#seed the random number generator
+		random.seed()
 	
 	def loadLevelGeom(self, filename):
 		filename = os.path.abspath(filename)
