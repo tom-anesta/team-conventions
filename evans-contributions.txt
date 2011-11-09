@@ -1,0 +1,10 @@
+Narrow attack collisions and logic
+HUD design & code
+Intro design & code
+Obstacle modeling/texturing
+Basic unit logic
+Environment layout
+Enemy concept sketches
+Title Screen
+Font choice
+Game concept and title

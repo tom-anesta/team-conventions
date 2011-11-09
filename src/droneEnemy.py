@@ -9,7 +9,7 @@ class DroneEnemy(Enemy):
 		anims = None
 		Enemy.__init__(self, models, anims, "**/enemyCollisionSphere", game, xStart, yStart, zStart)
 		
-		self.health = 20
+		self.health = 10
 		self.pointValue = 1
 		self.player = player
 		

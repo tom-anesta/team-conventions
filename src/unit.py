@@ -24,7 +24,7 @@ class Unit(Actor):
 		
 		self.game = game
 		
-		self.health = 15
+		self.health = 10
 		self.heightOffset = 3
 		
 		#set up the position
