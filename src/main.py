@@ -146,7 +146,7 @@ class Game(ShowBase):
 		self.render.setLight(self.render.attachNewNode(topLight))
 		
 		ambientLight = AmbientLight("ambient light")
-		ambientLight.setColor(Vec4(0.1, 0.1, 0.1, 1))
+		ambientLight.setColor(Vec4(0.25, 0.25, 0.25, 1))
 		self.render.setLight(self.render.attachNewNode(ambientLight))
 		
 		#the distance the camera is from the player
