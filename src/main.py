@@ -52,7 +52,7 @@ class Game(ShowBase):
 		
 		#get window properties
 		self.winProps = WindowProperties()
-		#self.winProps.setFullscreen(True)
+		self.winProps.setFullscreen(True)
 		self.winProps.setCursorHidden(True)
 		base.win.requestProperties(self.winProps)
 		
@@ -93,7 +93,10 @@ class Game(ShowBase):
 		traverser = CollisionTraverser()
 		base.cTrav = traverser#run every frame
 		self.cTrav = base.cTrav
-		self.cTrav.showCollisions(self.render)
+		#set the check for units accidentally passing through level geometry
+		self.cTrav.setRespectPrevTransform(True)
+		
+		#self.cTrav.showCollisions(self.render)
 		#self.cTrav.showCollisions(self.unitNodePath)#show the collisions
 		
 		#load terrain and enemies
@@ -130,6 +133,9 @@ class Game(ShowBase):
 		#the distance the camera is from the player
 		self.cameraHOffset = 45
 		self.cameraVOffset = 10
+		
+		#add the collision sound
+		self.collisionSound = self.loader.loadSfx(SFX_PATH + "collide.wav")
 		
 		#register the update task
 		self.taskMgr.add(self.updateGame, "updateGame")
@@ -408,6 +414,7 @@ class Game(ShowBase):
 	def updateGame(self, task):
 		self.globalTime = self.globalTime + task.time
 		elapsedTime = task.time - self.previousFrameTime
+		#base.resetPrevTransform(render)#for our high intensity collision detection
 		
 		if self.controlScheme.keyDown(QUIT):
 			exit(0)
@@ -420,6 +427,7 @@ class Game(ShowBase):
 			self.updateGameComponents(time)
 			
 			self.cTrav.traverse(render)
+			
 			self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
@@ -618,6 +626,8 @@ class Game(ShowBase):
 			fromName = entry.getFromNodePath().getParent().getName()
 			intoName = entry.getIntoNodePath().getParent().getName()
 			Unit.collideWithUnit(self.actors[intoName], self.actors[fromName])
+			if (fromName == "player" or introName == "player") and self.collisionSound.status() is not self.collisionSound.PLAYING:
+				self.collisionSound.play()
 		except:
 			pass
 	
@@ -627,14 +637,20 @@ class Game(ShowBase):
 	def handleWingIntoCollision(self, entry):
 		fromName = entry.getFromNodePath().getParent().getName()
 		Unit.collideWithObstacle(self.actors[fromName])
+		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+			self.collisionSound.play()
 	
 	def handleCubeIntoCollision(self, entry):
 		fromName = entry.getFromNodePath().getParent().getName()
 		Unit.collideWithObstacle(self.actors[fromName])
+		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+			self.collisionSound.play()
 	
 	def handleBarIntoCollision(self, entry):
 		fromName = entry.getFromNodePath().getParent().getName()
 		Unit.collideWithObstacle(self.actors[fromName])
+		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+			self.collisionSound.play()
 	
 	def gameOver(self):
 		pass

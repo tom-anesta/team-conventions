@@ -51,7 +51,7 @@ class Unit(Actor):
 		cNode.setIntoCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
 		cNode.setFromCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
 		self.collisionNodePath = self.attachNewNode(cNode)
-		self.collisionNodePath.show()
+		#self.collisionNodePath.show()
 		
 		#set pattern for event sent on collision
 		# "%in" is substituted with the name of the into object, "%fn" is substituted with the name of the from object
@@ -81,6 +81,9 @@ class Unit(Actor):
 		
 		self.nodePath = None
 		self.shootable = True
+		
+		#finally set the python tag
+		self.setPythonTag("unit", self)
 	
 	def applyForceFrom(self, magnitude, sourcePosition):
 		forceVector = self.getPos() - sourcePosition
@@ -124,7 +127,8 @@ class Unit(Actor):
 		
 		self.prevPosition = self.getPos()
 		
-		self.setPos(self.getPos() + self.vel * time)
+		#self.setPos(self.getPos() + self.vel * time)
+		self.setFluidPos(self.getPos() + self.vel * time)
 		self.setZ(max(-100, self.getZ()))
 	
 #	def checkCollisions(self, time):
