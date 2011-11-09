@@ -8,7 +8,7 @@ from pandac.PandaModules import Point3
 
 class ShootingEnemy(Enemy):
 	def __init__(self, game, xStart = 0, yStart = 0, zStart = 0):
-		models = MODELS_PATH + "HovercraftOne"
+		models = MODELS_PATH + "TankyHovercraft"
 		anims = None
 		Enemy.__init__(self, models, anims, "**/enemyCollisionSphere", game, xStart, yStart, zStart)
 		self.cooldownLength = random.randint(6, 8)

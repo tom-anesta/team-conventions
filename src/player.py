@@ -110,6 +110,7 @@ class Player(Unit):
 		
 		#used in main to check if the unit can be shot with the narrow attack
 		self.shootable = False
+		self.immune = False
 	
 	def move(self, time):
 		angle = self.getH()
@@ -233,6 +234,10 @@ class Player(Unit):
 	def collideWithObject(self, obj):
 		Unit.collideWithObject(obj)
 	
+	def takeDamage(self, num):
+		if not self.invulnerable:
+			Unit.takeDamage(num)
+	
 	def targetEnemy(self):
 		"""Either selects a new targeted enemy or wipes the current one, depending on player action"""
 		if self.currentWeapon == AREA or (not self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL)):
@@ -256,6 +261,11 @@ class Player(Unit):
 		#if not enough energy is left, do nothing
 		if energyUsed > self.energy:
 			return
+		
+		if polarity == PULL:
+			self.invulnerable = True
+		else:
+			self.invulnerable = False
 		
 		if self.currentWeapon == NARROW:
 			self.narrowAttack(polarity, force)

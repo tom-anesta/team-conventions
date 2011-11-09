@@ -247,7 +247,6 @@ class Game(ShowBase):
 	
 	def updateTitleScreen(self):
 		if (self.controlScheme.keyDown(PUSH) or self.controlScheme.keyDown(PULL) or self.controlScheme.keyDown(SWITCH)) and self.titleScreenIsActive:
-			print self.controlScheme.keyMap
 			self.titleImage.hide()
 			self.titleScreenIsActive = False
 		elif self.titleScreenIsActive:
@@ -794,10 +793,13 @@ class Game(ShowBase):
 			self.collisionSound.play()
 	
 	def handleCubeIntoCollision(self, entry):
-		fromName = entry.getFromNodePath().getParent().getName()
-		Unit.collideWithObstacle(self.actors[fromName])
-		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
-			self.collisionSound.play()
+		try:
+			fromName = entry.getFromNodePath().getParent().getName()
+			Unit.collideWithObstacle(self.actors[fromName])
+			if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+				self.collisionSound.play()
+		except:
+			pass
 	
 	def handleBarIntoCollision(self, entry):
 		fromName = entry.getFromNodePath().getParent().getName()
