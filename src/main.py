@@ -50,7 +50,7 @@ class Game(ShowBase):
 		
 		#get window properties
 		self.winProps = WindowProperties()
-		#self.winProps.setFullscreen(True)
+		self.winProps.setFullscreen(True)
 		self.winProps.setCursorHidden(True)
 		base.win.requestProperties(self.winProps)
 		
@@ -94,7 +94,7 @@ class Game(ShowBase):
 		#set the check for units accidentally passing through level geometry
 		self.cTrav.setRespectPrevTransform(True)
 		
-		self.cTrav.showCollisions(self.render)
+		#self.cTrav.showCollisions(self.render)
 		#self.cTrav.showCollisions(self.unitNodePath)#show the collisions
 		
 		#load terrain and enemies

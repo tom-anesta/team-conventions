@@ -135,28 +135,49 @@ class Player(Unit):
 		accelX = 0
 		accelY = 0
 		
+		soundcheck = False#necessary due to the structure of our if else statements
+		#we are currently experiencing technical difficulties with this check.  please wait while we attempt to restore the quality of your audio experience
 		if self.controlScheme.keyDown(LEFT):
 			if not self.controlScheme.keyDown(RIGHT):
+				#print "left is down"
 				accelX = 1
-				#include sound
 				self.thrustSound.setLoop(True)
-				self.thrustSound.play()
+				if self.thrustSound.status() is not self.thrustSound.PLAYING:
+					#print "test left"
+					self.thrustSound.play()
+					soundcheck = True
+					#print "value after left is " + str(soundcheck)
 		elif self.controlScheme.keyDown(RIGHT):
+			#print "right is down"
 			accelX = -1
 			self.thrustSound.setLoop(True)
-			self.thrustSound.play()
+			if self.thrustSound.status() is not self.thrustSound.PLAYING:
+				#print "test right"
+				self.thrustSound.play()
+				soundcheck = True
+				#print "value after right is " + str(soundcheck)
 		if self.controlScheme.keyDown(UP):
 			if not self.controlScheme.keyDown(DOWN):
+				#print "up is down"
 				accelY = 1
 				self.thrustSound.setLoop(True)
-				self.thrustSound.play()
+				if self.thrustSound.status() is not self.thrustSound.PLAYING:
+					self.thrustSound.play()
+				else:
+					pass
 		elif self.controlScheme.keyDown(DOWN):
+			#print "down is down"
 			accelY = -1
 			self.thrustSound.setLoop(True)
-			self.thrustSound.play()
+			if self.thrustSound.status() is not self.thrustSound.PLAYING:
+				self.thrustSound.play()
 		else:
-			if self.thrustSound.status() == self.thrustSound.PLAYING:
+			#print soundcheck#for some reason we miss left or right key down events every second frame, this is causing sound to reset for left and right every second frame.  not sure what to do
+			if self.thrustSound.status() == self.thrustSound.PLAYING and not soundcheck:
+				#print "check"
 				self.thrustSound.stop()
+		
+		#then soundcheck goes out of scope
 		
 		if accelX != 0 or accelY != 0:
 			#accelX and accelY swapped because of the coordinate system
@@ -193,19 +214,31 @@ class Player(Unit):
 		if self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
 			self.attack(PUSH, time)
 			#include sound
-			self.electricSound.play()
+			#self.electricSound.play()
+			if self.electricSound.status() is not self.electricSound.PLAYING:
+				#self.electricSound.setTime(self.electricSound.getTime())#reset to the current time and play it from there
+				self.electricSound.play()
 		elif self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
 			self.attack(PULL, time)
 			#include sound
-			self.magnetSound.setLoop(True)
-			self.magnetSound.play()
+			#self.magnetSound.setLoop(True)
+			if self.magnetSound.status() is not self.magnetSound.PLAYING:
+				#self.magnetSound.setTime(self.magnetSound.getTime())
+				self.magnetSound.play()
+				
 		else:
 			self.sustainedAttack = False
 			#self.target = None
 			if self.electricSound.status() == self.electricSound.PLAYING:
+				#self.electricSound.setTime(float(0))#for some reason this is not resetting the time
+				#print self.electricSound.getTime()
 				self.electricSound.stop()
 			if self.magnetSound.status() == self.magnetSound.PLAYING:
+				#self.magnetSound.setTime(float(0))#for some reason this is not resetting the time
+				#print self.magnetSound.getTime()
 				self.magnetSound.stop()
+				
+		#i am of the opinion that sound is somehow completely borked here
 		
 		#automatically regenerate energy
 		self.energy += self.energyRegen * time
