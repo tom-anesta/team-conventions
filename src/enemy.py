@@ -19,10 +19,10 @@ class Enemy(Unit):
 	
 	def die(self, game):
 		self.deathSound.play()
-		game.enemies.remove(self)
-		
+		self.game.enemies.remove(self)
+		Unit.die(self)
 	
-	def takeDamage(self, num, game):
+	def takeDamage(self, num):
 		Unit.takeDamage(num)
 		if self.health <= 0:
 			self.die(game)
