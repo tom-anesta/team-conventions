@@ -56,6 +56,9 @@ class Player(Unit):
 		headLampRightnode.setHpr(105, 0, 0)#reverse completely because our model is backwards
 		game.render.setLight(headLampRightnode)
 		
+		self.health = 100
+		self.mass = 15
+		self.collisionAttackPower = 0
 		
 		#the currently active weapon
 		self.currentWeapon = AREA
@@ -74,10 +77,10 @@ class Player(Unit):
 						   AREA:self.energyRegen + 50}
 		
 		#the strength of a sustained attack per unit of energy used
-		self.magnetStrength = {NARROW:0.5, AREA:20}
+		self.magnetStrength = {NARROW:0.5, AREA:10}
 		
 		#the energy cost of a burst attack with a given weapon
-		self.burstCost = {NARROW:0, AREA:600}
+		self.burstCost = {NARROW:0, AREA:0}
 		
 		#the strength of a burst attack with a given weapon
 		#(yes, the area value really does have to be this high)
@@ -185,9 +188,6 @@ class Player(Unit):
 		self.move(time)
 		Unit.update(self, time)
 	
-	def collideWithObject(self, obj):
-		Unit.collideWithObject(obj)
-	
 	def targetEnemy(self):
 		"""Either selects a new targeted enemy or wipes the current one, depending on player action"""
 		if self.currentWeapon == AREA or (not self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL)):
@@ -252,3 +252,7 @@ class Player(Unit):
 			self.currentWeapon = AREA
 		else:
 			self.currentWeapon = NARROW
+	
+	def die(self):
+		print "Player died; resetting health"
+		self.health = 100
