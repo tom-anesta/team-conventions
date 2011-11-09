@@ -37,6 +37,5 @@ TERRAIN_OBJECT = "terrain_object"#text used to designate that the text following
 BEGIN_WAVE = "BEGINWAVE"
 END_WAVE = "ENDWAVE"
 RUSH_ENEMY = "rush_enemy"
-ENEMY = "enemy"
 DRONE_ENEMY = "drone_enemy"
 
