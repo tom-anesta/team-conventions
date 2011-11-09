@@ -592,17 +592,14 @@ class Game(ShowBase):
 		while((len(self.eSpawnList) > 0) and self.eSpawnList[0]["time"] < self.globalTime):
 			for val in self.eSpawnList[0]["enemies"]:
 				if val["type"] == RUSH_ENEMY:
-					print val["type"]
 					#add an enemy
 					tempEnemy = RushEnemy(self, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
 				elif val["type"] == DRONE_ENEMY:
-					print val["type"]
 					#add an enemy
 					tempEnemy = DroneEnemy(self, self.player, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
 				elif val["type"] == SHOOTING_ENEMY:
-					print val["type"]
 					#add an enemy
 					tempEnemy = ShootingEnemy(self, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)

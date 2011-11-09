@@ -140,14 +140,11 @@ class Player(Unit):
 		#we are currently experiencing technical difficulties with this check.  please wait while we attempt to restore the quality of your audio experience
 		if self.controlScheme.keyDown(LEFT):
 			if not self.controlScheme.keyDown(RIGHT):
-				#print "left is down"
 				accelX = 1
 		elif self.controlScheme.keyDown(RIGHT):
-			#print "right is down"
 			accelX = -1
 		if self.controlScheme.keyDown(UP):
 			if not self.controlScheme.keyDown(DOWN):
-				#print "up is down"
 				accelY = 1
 				self.thrustSound.setLoop(True)
 				if self.thrustSound.status() is not self.thrustSound.PLAYING:
@@ -155,15 +152,13 @@ class Player(Unit):
 				else:
 					pass
 		elif self.controlScheme.keyDown(DOWN):
-			#print "down is down"
 			accelY = -1
 			self.thrustSound.setLoop(True)
 			if self.thrustSound.status() is not self.thrustSound.PLAYING:
 				self.thrustSound.play()
 		else:
-			#print soundcheck#for some reason we miss left or right key down events every second frame, this is causing sound to reset for left and right every second frame.  not sure what to do
+			#for some reason we miss left or right key down events every second frame, this is causing sound to reset for left and right every second frame.  not sure what to do
 			if self.thrustSound.status() == self.thrustSound.PLAYING and not soundcheck:
-				#print "check"
 				self.thrustSound.stop()
 		
 		#then soundcheck goes out of scope
@@ -221,11 +216,9 @@ class Player(Unit):
 			#self.target = None
 			if self.electricSound.status() == self.electricSound.PLAYING:
 				#self.electricSound.setTime(float(0))#for some reason this is not resetting the time
-				#print self.electricSound.getTime()
 				self.electricSound.stop()
 			if self.magnetSound.status() == self.magnetSound.PLAYING:
 				#self.magnetSound.setTime(float(0))#for some reason this is not resetting the time
-				#print self.magnetSound.getTime()
 				self.magnetSound.stop()
 				
 		#i am of the opinion that sound is somehow completely borked here
