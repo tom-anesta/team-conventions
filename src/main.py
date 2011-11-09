@@ -524,7 +524,8 @@ class Game(ShowBase):
 		Unit.collideWithObstacle(self.actors[fromName])
 	
 	def handleBarIntoCollision(self, entry):
-		pass
+		fromName = entry.getFromNodePath().getParent().getName()
+		Unit.collideWithObstacle(self.actors[fromName])
 	
 	def gameOver(self):
 		pass
