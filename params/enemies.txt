@@ -1,4 +1,4 @@
-BEGINWAVE%%%700
+BEGINWAVE%%%14300
 drone_enemy%%%15,15,0
 drone_enemy%%%20,-10,0
 shooting_enemy%%%10,10,0
