@@ -76,14 +76,14 @@ class Player(Unit):
 						   AREA:self.energyRegen + 50}
 		
 		#the strength of a sustained attack per unit of energy used
-		self.magnetStrength = {NARROW:0.5, AREA:20}
+		self.magnetStrength = {NARROW:1, AREA:20}
 		
 		#the energy cost of a burst attack with a given weapon
 		self.burstCost = {NARROW:0, AREA:600}
 		
 		#the strength of a burst attack with a given weapon
 		#(yes, the area value really does have to be this high)
-		self.burstStrength = {NARROW:50, AREA:7000}
+		self.burstStrength = {NARROW:90, AREA:7000}
 		
 		#the enemy that the narrow weapon has locked on to
 		self.target = None
@@ -222,7 +222,7 @@ class Player(Unit):
 		self.energy -= energyUsed
 	
 	def narrowAttack(self, polarity, force):
-		"""Performs a narrow attack on the targeted enemy (and all enemies in between and beyond?)"""
+		"""Performs a narrow attack on the targeted enemy"""
 		
 		if polarity == PULL:
 			force *= -1
@@ -242,9 +242,9 @@ class Player(Unit):
 		for enemy in self.game.enemies:
 			distSquared = (self.getPos() - enemy.getPos()).lengthSquared()
 			if polarity == PULL:
-				distSquared = max(750, distSquared) / 5
+				distSquared = max(450, distSquared) / 2
 			else:
-				distSquared = max(650, distSquared) / 5
+				distSquared = max(350, distSquared) / 2
 			
 			enemy.applyForceFrom(force / distSquared, self.getPos())
 	

@@ -18,8 +18,6 @@ import math
 
 class Unit(Actor):
 	gravity = 30
-	speedThreshold = 15
-	units = []
 	
 	def __init__(self, models = None, anims = None, sphereString = "**/CollisionSphere", game = None, xStart = 0, yStart = 0, zStart = 0, radius = 3):
 		Actor.__init__(self, models, anims)
@@ -38,25 +36,16 @@ class Unit(Actor):
 		#define the position that will be treated as the center of the map
 		self.wCenter = Point3(0, 0, 0)
 		
-		#register this unit
-		#Unit.units.append(self)
-		
 		#the radius of the sphere around this
 		self.radius = 3.5
 		
 		#the base damage this unit deals upon collision
 		self.collisionAttackPower = 1
 		
-		#if the acceleration this applies to the other unit equals this, it
-		#will deal exactly collisionAttackPower damage; if the acceleration
-		#is (for example) 2.5 times this, it will deal 2.5 * collisionAttackPower
-		#if the acceleration is less, no damage is dealt
-		self.accelerationDamageThreshold = 5
-		
 		#set up Panda's collisions
 		#first the pusher
 
-		cSphere = CollisionSphere((0,0,1), 2)
+		cSphere = CollisionSphere((0, 0, 1), 2)
 		cNode = CollisionNode("unit")
 		cNode.addSolid(cSphere)
 		cNode.setIntoCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
@@ -72,9 +61,6 @@ class Unit(Actor):
 		self.collisionPusher.addInPattern("%fn-into-%in")
 		self.collisionPusher.addOutPattern("fn-out-%in")
 		game.cTrav.addCollider(self.collisionNodePath, self.collisionPusher)
-		
-		
-		
 		
 		#check for colllisions with the ground
 		self.groundRay = CollisionRay()
@@ -98,10 +84,6 @@ class Unit(Actor):
 		
 		#finally set the python tag
 		self.setPythonTag("unit", self)
-	
-	def registerCollider(self, collisionTraverser):#this may be deprecated by the use of putting the collision registering in init
-		#collisionTraverser.addCollider(self.collisionNodePath, self.collisionHandler)
-		pass
 	
 	def applyForceFrom(self, magnitude, sourcePosition):
 		forceVector = self.getPos() - sourcePosition
@@ -130,7 +112,7 @@ class Unit(Actor):
 			self.die()
 	
 	def die(self):
-		Unit.units.remove(self)
+		self.game.actors[self.getName()] = None
 		self.delete()
 	
 	def turn(self, magnitude):
@@ -148,39 +130,50 @@ class Unit(Actor):
 		#self.setPos(self.getPos() + self.vel * time)
 		self.setFluidPos(self.getPos() + self.vel * time)
 		self.setZ(max(-100, self.getZ()))
+	
+#	def checkCollisions(self, time):
+#		for otherUnit in Unit.units:
+#			if otherUnit != self:
+#				offsetVector = self.getPos() - otherUnit.getPos()
+#				offsetDistSquared = offsetVector.lengthSquared()
+#				combinedRadiusSquared = (self.radius + otherUnit.radius) ** 2
+#				
+#				if offsetDistSquared <= combinedRadiusSquared:
+#					offsetVector.normalize()
+#					offsetVector *= (self.radius + otherUnit.radius) / 2
+#					
+#					centerOfMass = (self.getPos() + otherUnit.getPos()) * 0.5
+#					
+#					self.setPos(centerOfMass + offsetVector)
+#					otherUnit.setPos(centerOfMass - offsetVector)
+#					
+#					#update the units' velocities, and apply damage based
+#					#on the impulse
+#					time = max(0.01, time)
+#					
+#					selfNewVel = (self.getPos() - self.prevPosition) * (1 / time)
+#					selfAccel = (selfNewVel - self.vel).length()
+#					self.vel = selfNewVel
+#					
+#					if selfAccel > otherUnit.accelerationDamageThreshold:
+#						pass
+#					
+#					otherUnit.vel = (otherUnit.getPos() - otherUnit.prevPosition) * (1 / time)
+	
+	def collideWithUnit(self, other):
+		velDiff = self.vel - other.vel
 		
-		self.checkCollisions(time)
+		if velDiff.lengthSquared() > 450:
+			Unit.takeDamage(self, other.collisionAttackPower)
+			Unit.takeDamage(other, self.collisionAttackPower)
+		
+		self.vel *= 0.8
+		other.vel *= 0.8
 	
-	
-	def checkCollisions(self, time):
-		for otherUnit in Unit.units:
-			if otherUnit != self:
-				offsetVector = self.getPos() - otherUnit.getPos()
-				offsetDistSquared = offsetVector.lengthSquared()
-				combinedRadiusSquared = (self.radius + otherUnit.radius) ** 2
-				
-				if offsetDistSquared <= combinedRadiusSquared:
-					offsetVector.normalize()
-					offsetVector *= (self.radius + otherUnit.radius) / 2
-					
-					centerOfMass = (self.getPos() + otherUnit.getPos()) * 0.5
-					
-					self.setPos(centerOfMass + offsetVector)
-					otherUnit.setPos(centerOfMass - offsetVector)
-					
-					#update the units' velocities, and apply damage based
-					#on the impulse
-					time = max(0.01, time)
-					
-					selfNewVel = (self.getPos() - self.prevPosition) * (1 / time)
-					selfAccel = (selfNewVel - self.vel).length()
-					self.vel = selfNewVel
-					
-					if selfAccel > otherUnit.accelerationDamageThreshold:
-						pass
-					
-					otherUnit.vel = (otherUnit.getPos() - otherUnit.prevPosition) * (1 / time)
-					
+	def collideWithObstacle(self):
+		if self.vel.lengthSquared() > 500:
+			Unit.takeDamage(self, max(1, self.collisionAttackPower))
+		self.vel *= 0.5
 	
 	def terrainCollisionCheck(self):
 		entries = []

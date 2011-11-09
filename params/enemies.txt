@@ -1,8 +1,3 @@
-BEGINWAVE%%%5
-shooting_enemy%%%-20,0,300
-shooting_enemy%%%40,50,300
-shooting_enemy%%%20,80,300
-ENDWAVE
 BEGINWAVE%%%200
 rush_enemy%%%15,15,0
 rush_enemy%%%20,-10,0
