@@ -1,6 +1,8 @@
 from enemy import Enemy
 from bullet import Bullet
 import math
+from constants import *
+import random
 
 from pandac.PandaModules import Point3
 
@@ -9,23 +11,29 @@ class ShootingEnemy(Enemy):
 		models = MODELS_PATH + "HovercraftOne"
 		anims = None
 		Enemy.__init__(self, models, anims, "**/enemyCollisionSphere", game, xStart, yStart, zStart)
-		self.cooldownLength = 5
-		self.cooldownleft = self.cooldownLength
-		self.preferedDistanceFromPlayer = 15
+		self.cooldownLength = random.randint(6, 8)
+		self.cooldownLeft = self.cooldownLength
+		self.preferedDistanceFromPlayer = random.randint(30, 70)
+		self.clockwise = random.choice((True, False))
 	
 	def shoot(self, player):
-		self.game.projectiles.append(Bullet(self.game, game.render, player.getPos() - self.getPos()))
-		
+		bullet = Bullet(self.game, self.game.render, player.getPos() - self.getPos())
+		self.game.projectiles.append(bullet)
+		bullet.setPos(self.getPos())
+	
 	def update(self, time):
 		player = self.game.player
 		
 		angle = math.atan2(self.getY() - player.getY(), \
 							self.getX() - player.getX())
-		angle += math.pi/8
+		if self.clockwise:
+			angle -= math.pi / 8
+		else:
+			angle += math.pi / 8
 		
 		targetPoint = Point3(player.getX() + self.preferedDistanceFromPlayer * math.cos(angle), \
 							player.getY() + self.preferedDistanceFromPlayer * math.sin(angle), self.getZ())
-		self.applyForceFrom(-2, targetPoint)
+		self.applyForceFrom(-1, targetPoint)
 		
 		Enemy.update(self, time)
 		

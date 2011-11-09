@@ -42,8 +42,11 @@ class Game(ShowBase):
 		#setup your collision event handlers, apparently needs a direct object
 		
 		self.do = DirectObject()
-		self.do.accept('unit-into-unit', self.handleUnitFromCollision)
-		self.do.accept('unit-out-unit', self.handleUnitIntoCollision)
+		self.do.accept('unit-into-unit', self.handleUnitIntoCollision)
+		self.do.accept('unit-out-unit', self.handleUnitOutCollision)
+		self.do.accept('unit-into-cube', self.handleCubeIntoCollision)
+		self.do.accept('unit-into-wing', self.handleWingIntoCollision)
+		self.do.accept('unit-into-bar', self.handleBarIntoCollision)
 		
 		#get window properties
 		self.winProps = WindowProperties()
@@ -53,6 +56,7 @@ class Game(ShowBase):
 		
 		self.winProps = base.win.getProperties()
 		self.screenHeight = self.winProps.getYSize()
+		
 		
 		#set up the control scheme
 		self.controlScheme = ControlScheme(base.mouseWatcherNode, base.win, \
@@ -186,13 +190,13 @@ class Game(ShowBase):
 				self.environment.setHpr(float(hprVal[0]), float(hprVal[1]), float(hprVal[2]))
 				
 				
-			elif list[0] == TERRAIN_OBJECT:
+			elif list[0] == TERRAIN_CUBE:
 				#choose the model
 				modelVal = list[1]
 				modelVal = (MODELS_PATH + modelVal)
 				#load the model
 				obstacle = self.loader.loadModel(modelVal)
-				self.obstacles.append(obstacle)
+				
 				obstacle.reparentTo(render)
 				#set scale
 				scaleVal = list[2].split(',')
@@ -202,6 +206,60 @@ class Game(ShowBase):
 				obstacle.setPos(float(locVal[0]), float(locVal[1]), float(locVal[2]))#the we have our object
 				hprVal = list[4].split(',')
 				obstacle.setHpr(float(hprVal[0]), float(hprVal[1]), float(hprVal[2]))
+				
+				#set up collisions
+				unitCollision = obstacle.find("**/CubeBlock")
+				unitCollision.node().setName("cube")
+				obstacle.setCollideMask(BitMask32.allOff())
+				unitCollision.setCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
+				
+				self.obstacles.append(obstacle)
+				
+			elif list[0] == TERRAIN_WING:
+				modelVal = list[1]
+				modelVal = (MODELS_PATH + modelVal)
+				#load the model
+				obstacle = self.loader.loadModel(modelVal)
+				
+				obstacle.reparentTo(render)
+				#set scale
+				scaleVal = list[2].split(',')
+				obstacle.setScale(float(scaleVal[0]), float(scaleVal[1]), float(scaleVal[2]))
+				#set location
+				locVal = list[3].split(',')
+				obstacle.setPos(float(locVal[0]), float(locVal[1]), float(locVal[2]))#the we have our object
+				hprVal = list[4].split(',')
+				obstacle.setHpr(float(hprVal[0]), float(hprVal[1]), float(hprVal[2]))
+				
+				#set up collisions
+				unitCollision = obstacle.find("**/wingCollider")
+				unitCollision.node().setName("wing")
+				obstacle.setCollideMask(BitMask32.allOff())
+				unitCollision.setCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
+				
+				self.obstacles.append(obstacle)
+				
+			elif list[0] == TERRAIN_BAR:
+				modelVal = list[1]
+				modelVal = (MODELS_PATH + modelVal)
+				#load the model
+				obstacle = self.loader.loadModel(modelVal)
+				
+				obstacle.reparentTo(render)
+				#set scale
+				scaleVal = list[2].split(',')
+				obstacle.setScale(float(scaleVal[0]), float(scaleVal[1]), float(scaleVal[2]))
+				#set location
+				locVal = list[3].split(',')
+				obstacle.setPos(float(locVal[0]), float(locVal[1]), float(locVal[2]))#the we have our object
+				hprVal = list[4].split(',')
+				obstacle.setHpr(float(hprVal[0]), float(hprVal[1]), float(hprVal[2]))
+				
+				#set up collisions
+				unitCollision = obstacle.find("**/metalBarCollisionCube")
+				unitCollision.node().setName("bar")
+				obstacle.setCollideMask(BitMask32.allOff())
+				unitCollision.setCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
 				
 			else:
 				print "FATAL ERROR READING FILE"
@@ -308,8 +366,8 @@ class Game(ShowBase):
 		self.updateCamera(time)
 		for enemy in self.enemies:
 			enemy.update(time)
-		#for projectile in self.projectiles:
-		#	projectile.update(time)
+		for projectile in self.projectiles:
+			projectile.update(time)
 			
 		#check for basic terrain collisions
 		self.player.terrainCollisionCheck()
@@ -346,7 +404,6 @@ class Game(ShowBase):
 		tempEnemy.reparentTo(self.unitNodePath)
 		tempEnemy.nodePath = self.render.find("enemy1")
 		self.actors["enemy" + numString] = tempEnemy
-		#tempEnemy.registerCollider(self.cTrav)
 		self.nextEnemy = self.nextEnemy + 1
 		self.enemies.append(tempEnemy)
 		
@@ -480,10 +537,19 @@ class Game(ShowBase):
 	#END ATTEMPT AT AUTO-TARGETING
 	
 	def handleUnitIntoCollision(self, entry):
-		print "collision occurred into"
+		pass
 		
-	def handleUnitFromCollision(self, entry):
-		print "collision occured from"
+	def handleUnitOutCollision(self, entry):
+		pass
+		
+	def handleWingIntoCollision(self, entry):
+		pass
+		
+	def handleCubeIntoCollision(self, entry):
+		pass
+		
+	def handleBarIntoCollision(self, entry):
+		pass
 	
 	def gameOver(self):
 		pass
