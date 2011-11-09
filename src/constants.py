@@ -32,7 +32,8 @@ TEXTURES_PATH = "../lib/textures/"
 TEXT_DELIMITER = "%%%"
 #codes for reading terrain from text file
 TERRAIN_OUTER = "terrain_outer"#text used to designate that the text following it is the parameters for creating the background terrain
-TERRAIN_CUBE = "terrain_cube"#text used to designate that the text following it is the parameters for creating a static terrain object within the terrain
+TERRAIN_CUBE = "terrain_cube"#text used to designate that the text following it is the parameters for creating a cubic fuselage object within the terrain
+TERRAIN_WING = "terrain_wing"#text used to designate that the text following it is the parameters for creating a wing object within the terrain
 #codes for reading enemies
 BEGIN_WAVE = "BEGINWAVE"
 END_WAVE = "ENDWAVE"
