@@ -132,6 +132,9 @@ class Game(ShowBase):
 		self.cameraHOffset = 45
 		self.cameraVOffset = 10
 		
+		#add the collision sound
+		self.collisionSound = self.loader.loadSfx(SFX_PATH + "collide.wav")
+		
 		#register the update task
 		self.taskMgr.add(self.updateGame, "updateGame")
 		
@@ -545,6 +548,8 @@ class Game(ShowBase):
 			fromName = entry.getFromNodePath().getParent().getName()
 			intoName = entry.getIntoNodePath().getParent().getName()
 			Unit.collideWithUnit(self.actors[intoName], self.actors[fromName])
+			if (fromName == "player" or introName == "player") and self.collisionSound.status() is not self.collisionSound.PLAYING:
+				self.collisionSound.play()
 		except:
 			pass
 	
@@ -554,14 +559,20 @@ class Game(ShowBase):
 	def handleWingIntoCollision(self, entry):
 		fromName = entry.getFromNodePath().getParent().getName()
 		Unit.collideWithObstacle(self.actors[fromName])
+		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+			self.collisionSound.play()
 	
 	def handleCubeIntoCollision(self, entry):
 		fromName = entry.getFromNodePath().getParent().getName()
 		Unit.collideWithObstacle(self.actors[fromName])
+		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+			self.collisionSound.play()
 	
 	def handleBarIntoCollision(self, entry):
 		fromName = entry.getFromNodePath().getParent().getName()
 		Unit.collideWithObstacle(self.actors[fromName])
+		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+			self.collisionSound.play()
 	
 	def gameOver(self):
 		pass

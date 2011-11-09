@@ -141,21 +141,9 @@ class Player(Unit):
 			if not self.controlScheme.keyDown(RIGHT):
 				#print "left is down"
 				accelX = 1
-				self.thrustSound.setLoop(True)
-				if self.thrustSound.status() is not self.thrustSound.PLAYING:
-					#print "test left"
-					self.thrustSound.play()
-					soundcheck = True
-					#print "value after left is " + str(soundcheck)
 		elif self.controlScheme.keyDown(RIGHT):
 			#print "right is down"
 			accelX = -1
-			self.thrustSound.setLoop(True)
-			if self.thrustSound.status() is not self.thrustSound.PLAYING:
-				#print "test right"
-				self.thrustSound.play()
-				soundcheck = True
-				#print "value after right is " + str(soundcheck)
 		if self.controlScheme.keyDown(UP):
 			if not self.controlScheme.keyDown(DOWN):
 				#print "up is down"

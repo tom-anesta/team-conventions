@@ -51,7 +51,7 @@ class Unit(Actor):
 		cNode.setIntoCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
 		cNode.setFromCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
 		self.collisionNodePath = self.attachNewNode(cNode)
-		self.collisionNodePath.show()
+		#self.collisionNodePath.show()
 		
 		#set pattern for event sent on collision
 		# "%in" is substituted with the name of the into object, "%fn" is substituted with the name of the from object
