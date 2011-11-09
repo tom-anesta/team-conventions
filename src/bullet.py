@@ -16,7 +16,7 @@ from projectile import Projectile
 
 class Bullet(Projectile):
 	def __init__(self, game = None, parent = None, vel = Vec3()):
-		models = MODELS_PATH + "SleekCraft"
+		models = MODELS_PATH + "Bullet"
 		anims = {}
 		
 		Projectile.__init__(self, models, anims, "**/CollisionSphere", game, parent, parent.getPos(), vel)
