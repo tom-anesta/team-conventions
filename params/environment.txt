@@ -8,6 +8,10 @@ terrain_cube%%%MetalTowerBlock%%%10,10,10%%%155,155,-5%%%0,35,0
 terrain_cube%%%MetalTowerBlock%%%10,10,10%%%-20,-230,-28%%%11,11,11
 terrain_wing%%%wing%%%5,5,5%%%40,40,-28%%%0,0,0
 terrain_bar%%%MetalBar%%%4,4,4%%%70,70,-18%%%13,8,0
-terrain_bar%%%MetalBar%%%4,4,4%%%-150,145,-17%%%48,30,9
+terrain_bar%%%MetalBar%%%10,10,10%%%-100,-100,-15%%%0,0,0
+terrain_bar%%%MetalBar%%%10,10,10%%%-150,-100,-15%%%0,0,0
+terrain_bar%%%MetalBar%%%10,10,10%%%-100,-150,-15%%%0,0,0
+terrain_bar%%%MetalBar%%%10,10,10%%%-150,-150,-15%%%0,0,0
+terrain_bar%%%MetalBar%%%4,4,4%%%-150,145,-17%%%48,30,9q
 terrain_shards%%%MetalShards%%%3,3,3%%%200,-98,-35%%%-32,15,-10
 terrain_shards%%%MetalShards%%%3,3,3%%%-250,-50,-35%%%-23,40,5
