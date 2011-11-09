@@ -19,8 +19,8 @@ NARROW = "narrow"
 AREA = "area"
 
 #for movement
-MAX_HEIGHT = 55#the max height that you can go up, the floor is around -15, it's a float value so it's misleading sometimes
-GROUND_REPULSION_MULTIPLIER = 0.3
+MAX_HEIGHT = 55 #the max height that you can go up, the floor is around -15, it's a float value so it's misleading sometimes
+GROUND_REPULSION_MULTIPLIER = 0.1
 
 #paths
 MODELS_PATH = "../lib/models/"
