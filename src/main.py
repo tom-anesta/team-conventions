@@ -149,16 +149,14 @@ class Game(ShowBase):
 	def setupGUI(self):
 		GUIFont = loader.loadFont(FONTS_PATH+'orbitron-black.ttf')
 		
-		"""
-		self.energyBarText = TextNode('node name')
-		self.energyBarText.setText("Energy: "+str((100*self.player.energy/self.player.maxEnergy))+"%")
-		self.energyBarText.setAlign(TextNode.ALeft)
-		self.energyBarText.setFont(GUIFont)
+		self.debugText = TextNode('node name')
+		self.debugText.setText("")
+		self.debugText.setAlign(TextNode.ALeft)
+		self.debugText.setFont(GUIFont)
 		
-		textNodePath = aspect2d.attachNewNode(self.energyBarText)
-		textNodePath.setScale(0.08)
-		textNodePath.setPos(-1.3333, 0, 1)
-		"""
+		dTextNodePath = aspect2d.attachNewNode(self.debugBarText)
+		dTextNodePath.setScale(0.08)
+		dTextNodePath.setPos(-1.3333, 0, 1)
 		
 		#image is 365 x 187
 		self.attackModeImage = OnscreenImage()
