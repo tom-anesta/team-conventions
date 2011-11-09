@@ -95,6 +95,9 @@ class Unit(Actor):
 		
 		self.nodePath = None
 		self.shootable = True
+		
+		#finally set the python tag
+		self.setPythonTag("unit", self)
 	
 	def registerCollider(self, collisionTraverser):#this may be deprecated by the use of putting the collision registering in init
 		#collisionTraverser.addCollider(self.collisionNodePath, self.collisionHandler)
@@ -142,7 +145,8 @@ class Unit(Actor):
 		
 		self.prevPosition = self.getPos()
 		
-		self.setPos(self.getPos() + self.vel * time)
+		#self.setPos(self.getPos() + self.vel * time)
+		self.setFluidPos(self.getPos() + self.vel * time)
 		self.setZ(max(-100, self.getZ()))
 		
 		self.checkCollisions(time)

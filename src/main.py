@@ -92,6 +92,9 @@ class Game(ShowBase):
 		traverser = CollisionTraverser()
 		base.cTrav = traverser#run every frame
 		self.cTrav = base.cTrav
+		#set the check for units accidentally passing through level geometry
+		self.cTrav.setRespectPrevTransform(True)
+		
 		self.cTrav.showCollisions(self.render)
 		#self.cTrav.showCollisions(self.unitNodePath)#show the collisions
 		
@@ -333,6 +336,7 @@ class Game(ShowBase):
 	def updateGame(self, task):
 		self.globalTime = self.globalTime + task.time
 		elapsedTime = task.time - self.previousFrameTime
+		#base.resetPrevTransform(render)#for our high intensity collision detection
 		
 		if self.controlScheme.keyDown(QUIT):
 			exit(0)
@@ -345,6 +349,7 @@ class Game(ShowBase):
 			self.updateGameComponents(time)
 			
 			self.cTrav.traverse(render)
+			
 			self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
@@ -515,7 +520,14 @@ class Game(ShowBase):
 		pass
 		
 	def handleCubeIntoCollision(self, entry):
-		pass
+		#val = entry.getFromNodePath()
+		#object = val.getParent().getPythonTag("unit")#should be the correct value
+		#if object == None:
+		#	print "aaaaaaaaaa"
+		#else
+		#object.vel.set(0, 0, 0)
+		#object.accel.set(0, 0, object.)
+		#pass
 		
 	def handleBarIntoCollision(self, entry):
 		pass
