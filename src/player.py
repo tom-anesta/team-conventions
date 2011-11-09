@@ -20,6 +20,11 @@ class Player(Unit):
 		self.camera = camera
 		self.game = game
 		
+		#set up sounds
+		self.thrustSound = game.loader.loadSfx(SFX_PATH + "thrust.wav")
+		self.electricSound = game.loader.loadSfx(SFX_PATH + "electricity.wav")
+		self.magnetSound = game.loader.loadSfx(SFX_PATH + "magnet.wav")
+		
 		#set up the collisions in unit
 		
 		#set up the headlamp specific to the model
@@ -129,16 +134,29 @@ class Player(Unit):
 		#find the direction of acceleration (0 means forward, not right)
 		accelX = 0
 		accelY = 0
+		
 		if self.controlScheme.keyDown(LEFT):
 			if not self.controlScheme.keyDown(RIGHT):
 				accelX = 1
+				#include sound
+				self.thrustSound.setLoop(True)
+				self.thrustSound.play()
 		elif self.controlScheme.keyDown(RIGHT):
 			accelX = -1
+			self.thrustSound.setLoop(True)
+			self.thrustSound.play()
 		if self.controlScheme.keyDown(UP):
 			if not self.controlScheme.keyDown(DOWN):
 				accelY = 1
+				self.thrustSound.setLoop(True)
+				self.thrustSound.play()
 		elif self.controlScheme.keyDown(DOWN):
 			accelY = -1
+			self.thrustSound.setLoop(True)
+			self.thrustSound.play()
+		else:
+			if self.thrustSound.status() == self.thrustSound.PLAYING:
+				self.thrustSound.stop()
 		
 		if accelX != 0 or accelY != 0:
 			#accelX and accelY swapped because of the coordinate system
@@ -174,11 +192,20 @@ class Player(Unit):
 		#check for attack keys
 		if self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL):
 			self.attack(PUSH, time)
+			#include sound
+			self.electricSound.play()
 		elif self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
 			self.attack(PULL, time)
+			#include sound
+			self.magnetSound.setLoop(True)
+			self.magnetSound.play()
 		else:
 			self.sustainedAttack = False
 			#self.target = None
+			if self.electricSound.status() == self.electricSound.PLAYING:
+				self.electricSound.stop()
+			if self.magnetSound.status() == self.magnetSound.PLAYING:
+				self.magnetSound.stop()
 		
 		#automatically regenerate energy
 		self.energy += self.energyRegen * time
