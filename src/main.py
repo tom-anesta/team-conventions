@@ -149,6 +149,9 @@ class Game(ShowBase):
 
 		# configure the entire GUI
 		self.setupGUI()
+
+		# configure the title screen
+		self.setupTitleScreen()
 	
 	def setupGUI(self):
 		GUIFont = loader.loadFont(FONTS_PATH + 'orbitron-black.ttf')
@@ -230,6 +233,28 @@ class Game(ShowBase):
 		hBarNodePath = aspect2d.attachNewNode(self.healthBarImage.node())
 		hBarNodePath.setScale(.400, 0, .0475)
 		hBarNodePath.setPos(0.85, 0, 0.88)
+	
+	def setupTitleScreen(self):
+		self.titleScreenIsActive = True
+		
+		#image is 800 x 600
+		self.titleImage = OnscreenImage()
+		self.titleImage.setImage(GUI_PATH + "title.png")
+		
+		titleNodePath = aspect2d.attachNewNode(self.titleImage.node())
+		titleNodePath.setScale(1.33333, 0, 1)
+		titleNodePath.setPos(0, 0, 0)
+	
+	def updateTitleScreen(self):
+		if (self.controlScheme.keyDown(PUSH) or self.controlScheme.keyDown(PULL) or self.controlScheme.keyDown(SWITCH)) and self.titleScreenIsActive:
+			print self.controlScheme.keyMap
+			self.titleImage.hide()
+			self.titleScreenIsActive = False
+		elif self.titleScreenIsActive:
+			self.titleImage.setImage(GUI_PATH + "title.png")
+			self.globalTime=0
+		else:
+			pass
 	
 	def calculateBarImage(self, level):
 		if level == 0:
@@ -538,14 +563,16 @@ class Game(ShowBase):
 		#and you're done
 	
 	def updateGame(self, task):
-		self.globalTime = self.globalTime + task.time
-		elapsedTime = task.time - self.previousFrameTime
-		#base.resetPrevTransform(render)#for our high intensity collision detection
+		
+		if not self.titleScreenIsActive:
+			self.globalTime = self.globalTime + task.time
+			elapsedTime = task.time - self.previousFrameTime
+			#base.resetPrevTransform(render)#for our high intensity collision detection
 		
 		if self.controlScheme.keyDown(QUIT):
 			exit(0)
 		
-		if not self.paused:
+		if not self.paused and not self.titleScreenIsActive:
 			time = elapsedTime
 			while time > 0.02:
 				self.updateGameComponents(0.02)
@@ -564,6 +591,7 @@ class Game(ShowBase):
 			self.pauseWasPressed = False
 		
 		self.updateGUI()
+		self.updateTitleScreen()
 		
 		self.previousFrameTime = task.time
 		
