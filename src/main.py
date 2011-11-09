@@ -25,6 +25,7 @@ from player import Player
 #from projectile import Projectile
 #from bullet import Bullet
 from rushEnemy import RushEnemy
+from droneEnemy import DroneEnemy
 from constants import *
 from controlScheme import ControlScheme
 
@@ -235,6 +236,15 @@ class Game(ShowBase):
 				currEnem["yVal"] = float(pos[1])
 				currEnem["zVal"] = float(pos[2])
 				currwave["enemies"].append(dict(currEnem))#copy
+			elif val[0] == DRONE_ENEMY:
+				currEnem = dict()
+				pos = []
+				pos = val[1].split(',')#get the three values for spawning, not floats
+				currEnem["type"] = DRONE_ENEMY
+				currEnem["xVal"] = float(pos[0])
+				currEnem["yVal"] = float(pos[1])
+				currEnem["zVal"] = float(pos[2])
+				currwave["enemies"].append(dict(currEnem))#copy
 			elif val[0] == END_WAVE:#then we are done with that wave
 				self.eSpawnList.append(dict(currwave))#copy
 			else:
@@ -295,6 +305,11 @@ class Game(ShowBase):
 					print "rush enemy"
 					#add an enemy
 					tempEnemy = RushEnemy(self, val["xVal"], val["yVal"], val["zVal"])
+					self.configureEnemy(tempEnemy)
+				elif val["type"] == DRONE_ENEMY:
+					print "drone enemy"
+					#add an enemy
+					tempEnemy = DroneEnemy(self, self.player, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
 				else: 
 					pass

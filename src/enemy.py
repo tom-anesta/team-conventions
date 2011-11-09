@@ -11,6 +11,8 @@ class Enemy(Unit):
 		self.randomMovementMax = 30 * 7
 		self.minRandomVel = 200
 		self.maxRandomVel = 600
+		
+		self.pointValue = 5
 	
 	def absorbMagnetism(self, field, game):
 		self.changeDirectionRelative((0, field, field), game.player.getPos(), game.camera)
