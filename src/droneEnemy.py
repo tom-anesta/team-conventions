@@ -9,6 +9,8 @@ class DroneEnemy(Enemy):
 		Enemy.__init__(self, models, anims, "**/enemyCollisionSphere", game, xStart, yStart, zStart)
 		self.player = player
 		
+		self.pointValue = 1
+		
 	def update(self, time):
 		self.applyForceFrom(-3, self.player.getPos())
 		
