@@ -54,6 +54,7 @@ class Game(ShowBase):
 		self.winProps = base.win.getProperties()
 		self.screenHeight = self.winProps.getYSize()
 		
+		
 		#set up the control scheme
 		self.controlScheme = ControlScheme(base.mouseWatcherNode, base.win, \
 										[LEFT, RIGHT, UP, DOWN, PAUSE, PULL, PUSH, SWITCH, QUIT])
