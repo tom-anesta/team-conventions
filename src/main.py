@@ -153,7 +153,8 @@ class Game(ShowBase):
 	def setupGUI(self):
 		GUIFont = loader.loadFont(FONTS_PATH + 'orbitron-black.ttf')
 		
-		self.debugText = TextNode('node name')
+		"""
+		self.debugText = TextNode('debug')
 		self.debugText.setText("")
 		self.debugText.setAlign(TextNode.ALeft)
 		self.debugText.setFont(GUIFont)
@@ -161,6 +162,20 @@ class Game(ShowBase):
 		dTextNodePath = aspect2d.attachNewNode(self.debugText)
 		dTextNodePath.setScale(0.075)
 		dTextNodePath.setPos(-1.2, 0, -0.9)
+		"""
+		
+		self.introText = TextNode('intro')
+		self.introText.setText("")
+		self.introText.setAlign(TextNode.ALeft)
+		self.introText.setFont(GUIFont)
+		self.introText.setCardColor(0.1, 0.1, 0.1, 0.6)
+		self.introText.setCardAsMargin(0.5, 0.5, 0.5, 0.5)
+		self.introText.setCardDecal(True)
+		self.introText.setWordwrap(30.0)
+		
+		self.iTextNodePath = aspect2d.attachNewNode(self.introText)
+		self.iTextNodePath.setScale(0.075)
+		self.iTextNodePath.setPos(-1.2, 0, -0.7)
 		
 		#image is 365 x 187
 		self.attackModeImage = OnscreenImage()
@@ -214,8 +229,11 @@ class Game(ShowBase):
 		return level
 	
 	def updateGUI(self):
+		"""
+		self.debugText.setText("Energy: "+str((100*self.player.energy/self.player.maxEnergy))+"%, Health: "+str((100*self.player.health/self.player.maxHealth)))
+		"""
 		
-		self.debugText.setText("Energy: " + str((100 * self.player.energy / self.player.maxEnergy)) + "%, Health: " + str((100 * self.player.health / self.player.maxHealth)))
+		self.updateIntro()
 		
 		if self.player.currentWeapon == AREA:
 			modeImg = "mode-area"
@@ -232,6 +250,33 @@ class Game(ShowBase):
 		healthLevel = self.calculateBarImage((100 * (self.player.health / self.player.maxHealth)) // 10)
 		self.healthBarImage.setImage(GUI_PATH + "health-bar-" + healthLevel + ".png")
 		self.healthBarImage.setTransparency(1)
+	
+	def updateIntro(self):
+		if self.introText is None:
+			pass
+		elif self.globalTime>=14300 and self.introText is not None:
+			self.iTextNodePath.removeNode()
+			self.introText = None
+		elif self.globalTime<300:		#0-300
+			self.introText.setText("Hey are you receiving? Good.")
+		elif self.globalTime<800:	#300-800
+			self.introText.setText("We recently uncovered the location of an old cruiser wreck from the war.")
+		elif self.globalTime<1500:	#800-1500
+			self.introText.setText("You're gonna go in there and get the little bits of it that are still worth salvaging.")
+		elif self.globalTime<2900:	#1500-2900
+			self.introText.setText("Be aware though, this job may not be quite as simple as a grab-and-run. The coordinates have been leaked to some of our old enemies.")
+		elif self.globalTime<4200:	#2900-4200
+			self.introText.setText("To give you an edge, we've made a few upgrades to your electromagnetic grapple.")
+		elif self.globalTime<5300:	#4200-5300
+			self.introText.setText("Pull enemies inwards with the right mouse button.")
+		elif self.globalTime<6400:	#5300-6400
+			self.introText.setText("Push enemies away with the left mouse button.")
+		elif self.globalTime<8500:	#6400-8500
+			self.introText.setText("Toggle between your range and narrow electromagnet with the middle mouse button (or spacebar).")
+		elif self.globalTime<13300:	#8500-13300
+			self.introText.setText("You can give a solid kick to anything straight in front of you or just push everything around you away. Try and throw 'em into each other or other wreckage to finish 'em off for good.")
+		elif self.globalTime<14300:	#13300-14300
+			self.introText.setText("After all, the more salvage left over, the better. Out.")
 	
 	def loadLevelGeom(self, filename):
 		filename = os.path.abspath(filename)
