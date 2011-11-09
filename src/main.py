@@ -185,13 +185,13 @@ class Game(ShowBase):
 				self.environment.setHpr(float(hprVal[0]), float(hprVal[1]), float(hprVal[2]))
 				
 				
-			elif list[0] == TERRAIN_OBJECT:
+			elif list[0] == TERRAIN_CUBE:
 				#choose the model
 				modelVal = list[1]
 				modelVal = (MODELS_PATH + modelVal)
 				#load the model
 				obstacle = self.loader.loadModel(modelVal)
-				self.obstacles.append(obstacle)
+				
 				obstacle.reparentTo(render)
 				#set scale
 				scaleVal = list[2].split(',')
@@ -201,6 +201,13 @@ class Game(ShowBase):
 				obstacle.setPos(float(locVal[0]), float(locVal[1]), float(locVal[2]))#the we have our object
 				hprVal = list[4].split(',')
 				obstacle.setHpr(float(hprVal[0]), float(hprVal[1]), float(hprVal[2]))
+				
+				#set up collisions
+				unitCollision = obstacle.find("**/CubeBlock")
+				obstacle.setCollideMask(BitMask32.allOff())
+				unitCollision.setCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
+				
+				self.obstacles.append(obstacle)
 				
 			else:
 				print "FATAL ERROR READING FILE"
