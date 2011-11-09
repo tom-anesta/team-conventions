@@ -38,3 +38,9 @@ BEGIN_WAVE = "BEGINWAVE"
 END_WAVE = "ENDWAVE"
 RUSH_ENEMY = "rush_enemy"
 
+#collision groups, make sure are power of two
+TERRAIN_RAY_MASK = 4
+PLAYER_ENEMY_OBJECTS = 8
+
+
+

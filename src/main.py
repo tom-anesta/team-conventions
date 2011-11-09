@@ -81,6 +81,7 @@ class Game(ShowBase):
 		traverser = CollisionTraverser()
 		base.cTrav = traverser#run every frame
 		self.cTrav = base.cTrav
+		self.cTrav.showCollisions(self.render)
 		#self.cTrav.showCollisions(self.unitNodePath)#show the collisions
 		
 		#load terrain and enemies
@@ -103,7 +104,7 @@ class Game(ShowBase):
 		self.player.nodePath = self.render.find("player")
 		self.actors["player"] = self.player
 		
-		#this should be gone soon
+		#this should be gone soon, can probably delete now because 
 		'''
 		#add an enemy
 		self.tempEnemy = RushEnemy(self, -20, 0, 0)
@@ -197,6 +198,8 @@ class Game(ShowBase):
 				#and move it up a bit to allow the character to float above the crater
 				self.craterCollision = self.environment.find("**/craterCollisionPlane")
 				self.craterCollision.setZ(self.environment.getZ() + 0.15)
+				self.environment.setCollideMask(BitMask32.allOff())
+				self.craterCollision.setCollideMask(BitMask32(TERRAIN_RAY_MASK))
 				
 				#self.environment.find( #.find("craterCollisionPlane").setZ(self.environment.getZ() + 10)
 				
@@ -359,7 +362,7 @@ class Game(ShowBase):
 		tempEnemy.reparentTo(self.unitNodePath)
 		tempEnemy.nodePath = self.render.find("enemy1")
 		self.actors["enemy"+numString] = tempEnemy
-		tempEnemy.registerCollider(self.cTrav)
+		#tempEnemy.registerCollider(self.cTrav)
 		self.nextEnemy = self.nextEnemy + 1
 		self.enemies.append(tempEnemy)
 		

@@ -5,6 +5,7 @@ from pandac.PandaModules import Vec3
 from pandac.PandaModules import Point3
 from pandac.PandaModules import CollisionNode
 from pandac.PandaModules import CollisionSphere
+from pandac.PandaModules import CollisionHandlerEvent
 
 #from pandac.PandaModules import CollisionHandlerPusher
 from panda3d.core import CollisionHandlerQueue
@@ -42,6 +43,7 @@ class Unit(Actor):
 		#self.collisionNodePath = self.attachNewNode(CollisionNode('cNode'))
 		#self.collisionNodePath.node().addSolid(CollisionSphere(0, 0, 0, radius))
 		#first the pusher
+		'''
 		self.collisionNodePath = self.find(sphereString)
 		if self.collisionNodePath.isEmpty():
 			self.collisionNodePath = self.find("**/enemyCollisionSphere")
@@ -55,9 +57,26 @@ class Unit(Actor):
 		#build our collision pusher
 		self.collisionHandler = CollisionHandlerPusher()
 		self.collisionHandler.addCollider(self.collisionNodePath, self)
+		'''
 		
-		#self.groundSphereHandler = CollisionHandlerQueue()
-		#game.cTrav.addCollider(self.collisionNodePath, self.groundSphereHandler)
+		
+		cSphere = CollisionSphere((0,0,1), 2)
+		cNode = CollisionNode("panda")
+		cNode.addSolid(cSphere)
+		cNode.setIntoCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
+		cNode.setFromCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
+		self.collisionNodePath = self.attachNewNode(cNode)
+		self.collisionNodePath.show()
+		#registers a from object with the traverser with a corresponding handler
+		
+		#set pattern for event sent on collision
+		# "%in" is substituted with the name of the into object
+		self.collisionHandler = CollisionHandlerEvent()
+		self.collisionHandler.setInPattern("impacted-%in")
+		game.cTrav.addCollider(self.collisionNodePath, self.collisionHandler)
+		
+		
+		
 		
 		#check for colllisions with the ground
 		self.groundRay = CollisionRay()
@@ -65,7 +84,7 @@ class Unit(Actor):
 		self.groundRay.setDirection(0,0,-1)
 		self.groundCol = CollisionNode('unitRay')
 		self.groundCol.addSolid(self.groundRay)
-		self.groundCol.setFromCollideMask(BitMask32.bit(0))
+		self.groundCol.setFromCollideMask(BitMask32(TERRAIN_RAY_MASK))
 		self.groundCol.setIntoCollideMask(BitMask32.allOff())
 		self.groundColNode = self.attachNewNode(self.groundCol)
 		self.groundHandler = CollisionHandlerQueue()
@@ -80,7 +99,7 @@ class Unit(Actor):
 		self.nodePath = None
 		self.shootable = True
 	
-	def registerCollider(self, collisionTraverser):
+	def registerCollider(self, collisionTraverser):#this may be deprecated by the use of putting the collision registering in init
 		collisionTraverser.addCollider(self.collisionNodePath, self.collisionHandler)
 		pass
 	
