@@ -27,6 +27,8 @@ MODELS_PATH = "../lib/models/"
 SFX_PATH = "../lib/sfx/"
 PARAMS_PATH = "../params/"
 TEXTURES_PATH = "../lib/textures/"
+FONTS_PATH = "../lib/fonts/"
+GUI_PATH = "../lib/gui/"
 
 #for reading from text file
 TEXT_DELIMITER = "%%%"
@@ -35,6 +37,7 @@ TERRAIN_OUTER = "terrain_outer"#text used to designate that the text following i
 TERRAIN_CUBE = "terrain_cube"#text used to designate that the text following it is the parameters for creating a cubic fuselage object within the terrain
 TERRAIN_WING = "terrain_wing"#text used to designate that the text following it is the parameters for creating a wing object within the terrain
 TERRAIN_BAR = "terrain_bar"
+TERRAIN_SHARDS = "terrain_shards"
 #codes for reading enemies
 BEGIN_WAVE = "BEGINWAVE"
 END_WAVE = "ENDWAVE"
