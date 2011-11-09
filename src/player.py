@@ -34,6 +34,28 @@ class Player(Unit):
 		headLampMainnode.setHpr(-180, 0, 0)#reverse completely because our model is backwards
 		game.render.setLight(headLampMainnode)
 		
+		headLampLeft = Spotlight('headLampLeft')
+		#headLampLeft.showFrustum()
+		headLampLeft.setColor(VBase4(0.6, 0.6, 0.6, 1))
+		llens = PerspectiveLens()
+		headLampLeft.setLens(llens)
+		llens.setNearFar(0.25, 500)
+		headLampLeftnode = self.attachNewNode(headLampLeft)
+		headLampLeftnode.setPos(self.find("**/LightCubeLeft").getPos())
+		headLampLeftnode.setHpr(-105, 0, 0)#reverse completely because our model is backwards
+		game.render.setLight(headLampLeftnode)
+		
+		headLampRight = Spotlight('headLampRight')
+		#headLampRight.showFrustum()
+		headLampRight.setColor(VBase4(0.6, 0.6, 0.6, 1))
+		rlens = PerspectiveLens()
+		rlens.setNearFar(0.25, 500)
+		headLampRight.setLens(rlens)
+		headLampRightnode = self.attachNewNode(headLampRight)
+		headLampRightnode.setPos(self.find("**/LightCubeRight").getPos())
+		headLampRightnode.setHpr(105, 0, 0)#reverse completely because our model is backwards
+		game.render.setLight(headLampRightnode)
+		
 		self.health = 100
 		self.collisionAttackPower = 0
 		
@@ -54,10 +76,10 @@ class Player(Unit):
 						   AREA:self.energyRegen + 50}
 		
 		#the strength of a sustained attack per unit of energy used
-		self.magnetStrength = {NARROW:0.5, AREA:10}
+		self.magnetStrength = {NARROW:0.5, AREA:20}
 		
 		#the energy cost of a burst attack with a given weapon
-		self.burstCost = {NARROW:0, AREA:0}
+		self.burstCost = {NARROW:0, AREA:600}
 		
 		#the strength of a burst attack with a given weapon
 		#(yes, the area value really does have to be this high)
@@ -165,6 +187,9 @@ class Player(Unit):
 		self.move(time)
 		Unit.update(self, time)
 	
+	def collideWithObject(self, obj):
+		Unit.collideWithObject(obj)
+	
 	def targetEnemy(self):
 		"""Either selects a new targeted enemy or wipes the current one, depending on player action"""
 		if self.currentWeapon == AREA or (not self.controlScheme.keyDown(PUSH) and not self.controlScheme.keyDown(PULL)):
@@ -229,7 +254,3 @@ class Player(Unit):
 			self.currentWeapon = AREA
 		else:
 			self.currentWeapon = NARROW
-	
-	def die(self):
-		print "Player died; resetting health"
-		self.health = 100

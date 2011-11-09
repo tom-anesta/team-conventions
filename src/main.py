@@ -15,6 +15,7 @@ from pandac.PandaModules import PointLight
 from pandac.PandaModules import Vec4
 from pandac.PandaModules import NodePath
 from pandac.PandaModules import Point2
+from direct.showbase.DirectObject import DirectObject
 from panda3d.core import CollisionRay, CollisionNode, GeomNode, CollisionTraverser
 from panda3d.core import CollisionHandlerQueue, CollisionSphere, BitMask32
 from math import pi, sin, cos, sqrt, pow, atan2
@@ -22,8 +23,8 @@ from pandac.PandaModules import BitMask32
 
 from unit import Unit
 from player import Player
-#from projectile import Projectile
-#from bullet import Bullet
+from projectile import Projectile
+from bullet import Bullet
 from rushEnemy import RushEnemy
 from droneEnemy import DroneEnemy
 from shootingEnemy import ShootingEnemy
@@ -37,6 +38,12 @@ class Game(ShowBase):
 		#start the time
 		self.globalTime = 0
 		self.nextEnemy = 1
+		
+		#setup your collision event handlers, apparently needs a direct object
+		
+		self.do = DirectObject()
+		self.do.accept('unit-into-unit', self.handleUnitFromCollision)
+		self.do.accept('unit-out-unit', self.handleUnitIntoCollision)
 		
 		#get window properties
 		self.winProps = WindowProperties()
@@ -81,6 +88,7 @@ class Game(ShowBase):
 		traverser = CollisionTraverser()
 		base.cTrav = traverser#run every frame
 		self.cTrav = base.cTrav
+		self.cTrav.showCollisions(self.render)
 		#self.cTrav.showCollisions(self.unitNodePath)#show the collisions
 		
 		#load terrain and enemies
@@ -102,6 +110,7 @@ class Game(ShowBase):
 		self.player.reparentTo(self.unitNodePath)
 		self.player.nodePath = self.render.find("player")
 		self.actors["player"] = self.player
+		
 		
 		#add some lights
 		topLight = DirectionalLight("top light")
@@ -161,6 +170,8 @@ class Game(ShowBase):
 				#and move it up a bit to allow the character to float above the crater
 				self.craterCollision = self.environment.find("**/craterCollisionPlane")
 				self.craterCollision.setZ(self.environment.getZ() + 0.15)
+				self.environment.setCollideMask(BitMask32.allOff())
+				self.craterCollision.setCollideMask(BitMask32(TERRAIN_RAY_MASK))
 				
 				#self.environment.find( #.find("craterCollisionPlane").setZ(self.environment.getZ() + 10)
 				
@@ -297,8 +308,8 @@ class Game(ShowBase):
 		self.updateCamera(time)
 		for enemy in self.enemies:
 			enemy.update(time)
-		for projectile in self.projectiles:
-			projectile.update(time)
+		#for projectile in self.projectiles:
+		#	projectile.update(time)
 			
 		#check for basic terrain collisions
 		self.player.terrainCollisionCheck()
@@ -335,7 +346,7 @@ class Game(ShowBase):
 		tempEnemy.reparentTo(self.unitNodePath)
 		tempEnemy.nodePath = self.render.find("enemy1")
 		self.actors["enemy" + numString] = tempEnemy
-		tempEnemy.registerCollider(self.cTrav)
+		#tempEnemy.registerCollider(self.cTrav)
 		self.nextEnemy = self.nextEnemy + 1
 		self.enemies.append(tempEnemy)
 		
@@ -436,6 +447,12 @@ class Game(ShowBase):
 		#if you want to show collisions for debugging turn this on
 		#self.mPickerTraverser.showCollisions(self.render)
 	#END ATTEMPT AT AUTO-TARGETING
+	
+	def handleUnitIntoCollision(self, entry):
+		print "collision occurred into"
+		
+	def handleUnitFromCollision(self, entry):
+		print "collision occured from"
 	
 	def gameOver(self):
 		pass

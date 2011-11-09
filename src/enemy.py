@@ -8,17 +8,19 @@ class Enemy(Unit):
 		
 		self.randomMovement = 0
 		self.randomMovementMax = 30 * 7
-		self.minRandomVel = 200
-		self.maxRandomVel = 600
-		
-		self.pointValue = 5
+		self.minRandomVel = 1000
+		self.maxRandomVel = 2000
 	
 	def absorbMagnetism(self, field, game):
 		self.changeDirectionRelative((0, field, field), game.player.getPos(), game.camera)
 	
-	def die(self):
-		self.game.enemies.remove(self)
-		Unit.die(self)
+	def die(self, game):
+		game.enemies.remove(self)
+	
+	def takeDamage(self, num, game):
+		Unit.takeDamage(num)
+		if self.health <= 0:
+			self.die(game)
 	
 	def collideEnemy(self, enemy, game):
 		if self.vel.length > 7 or enemy.vel.length > 7:
