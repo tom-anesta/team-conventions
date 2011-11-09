@@ -15,10 +15,7 @@ class Enemy(Unit):
 		self.minRandomVel = 1000
 		self.maxRandomVel = 2000
 	
-	def absorbMagnetism(self, field, game):
-		self.changeDirectionRelative((0, field, field), game.player.getPos(), game.camera)
-	
-	def die(self, game):
+	def die(self):
 		self.deathSound.play()
 		self.game.enemies.remove(self)
 		Unit.die(self)
@@ -34,10 +31,4 @@ class Enemy(Unit):
 			enemy.takeDamage(enemy.vel.length, game)
 	
 	def update(self, time):
-		newTime = time * 1000000
-		
-		if math.floor(newTime % self.randomMovementMax) == 0:
-			self.accel.setX(random.choice(range(-self.maxRandomVel, -self.minRandomVel) + range(self.minRandomVel, self.maxRandomVel + 1)))
-			self.accel.setY(random.choice(range(-self.maxRandomVel, -self.minRandomVel) + range(self.minRandomVel, self.maxRandomVel + 1)))
-		
 		Unit.update(self, time)

@@ -1,7 +1,8 @@
-BEGINWAVE%%%100
+BEGINWAVE%%%700
 drone_enemy%%%15,15,0
 drone_enemy%%%20,-10,0
-shooting_enemy%%%7,7,0
-drone_enemy%%%10,10,0
-drone_enemy%%%20,15,0
+shooting_enemy%%%10,10,0
+shooting_enemy%%%5,10,0
+rush_enemy%%%20,15,0
+rush_enemy%%%7,7,0
 ENDWAVE

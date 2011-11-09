@@ -32,6 +32,7 @@ from droneEnemy import DroneEnemy
 from shootingEnemy import ShootingEnemy
 from constants import *
 from controlScheme import ControlScheme
+import random
 
 class Game(ShowBase):
 	def __init__(self):
@@ -52,7 +53,7 @@ class Game(ShowBase):
 		
 		#get window properties
 		self.winProps = WindowProperties()
-		self.winProps.setFullscreen(True)
+		#self.winProps.setFullscreen(True)
 		self.winProps.setCursorHidden(True)
 		base.win.requestProperties(self.winProps)
 		
@@ -143,11 +144,14 @@ class Game(ShowBase):
 		#add targeting to the world
 		self.setupTargeting()
 		
+		#seed the random number generator
+		random.seed()
+
 		# configure the entire GUI
 		self.setupGUI()
 	
 	def setupGUI(self):
-		GUIFont = loader.loadFont(FONTS_PATH+'orbitron-black.ttf')
+		GUIFont = loader.loadFont(FONTS_PATH + 'orbitron-black.ttf')
 		
 		"""
 		self.debugText = TextNode('debug')
@@ -175,7 +179,7 @@ class Game(ShowBase):
 		
 		#image is 365 x 187
 		self.attackModeImage = OnscreenImage()
-		self.attackModeImage.setImage(GUI_PATH+"mode-area.png")
+		self.attackModeImage.setImage(GUI_PATH + "mode-area.png")
 		self.attackModeImage.setTransparency(1)
 		
 		modeNodePath = aspect2d.attachNewNode(self.attackModeImage.node())
@@ -183,7 +187,7 @@ class Game(ShowBase):
 		modeNodePath.setPos(-1.13, 0, 0.88)
 		
 		self.energyBarImage = OnscreenImage()
-		self.energyBarImage.setImage(GUI_PATH+"energy-bar-full.png")
+		self.energyBarImage.setImage(GUI_PATH + "energy-bar-full.png")
 		self.energyBarImage.setTransparency(1)
 		
 		eBarNodePath = aspect2d.attachNewNode(self.energyBarImage.node())
@@ -191,7 +195,7 @@ class Game(ShowBase):
 		eBarNodePath.setPos(-0.66, 0, 0.88)
 		
 		self.healthBarImage = OnscreenImage()
-		self.healthBarImage.setImage(GUI_PATH+"health-bar-full.png")
+		self.healthBarImage.setImage(GUI_PATH + "health-bar-full.png")
 		self.healthBarImage.setTransparency(1)
 		
 		hBarNodePath = aspect2d.attachNewNode(self.healthBarImage.node())
@@ -199,52 +203,57 @@ class Game(ShowBase):
 		hBarNodePath.setPos(0.85, 0, 0.88)
 	
 	def calculateBarImage(self, level):
-		if level==0:
-			level="empty"
-		elif level==10:
-			level="full"
-		elif level==1:
-			level="1"
-		elif level==2:
-			level="2"
-		elif level==3:
-			level="3"
-		elif level==4:
-			level="4"
-		elif level==5:
-			level="5"
-		elif level==6:
-			level="6"
-		elif level==7:
-			level="7"
-		elif level==8:
-			level="8"
-		elif level==9:
-			level="9"
+		if level == 0:
+			level = "empty"
+		elif level == 10:
+			level = "full"
+		elif level == 1:
+			level = "1"
+		elif level == 2:
+			level = "2"
+		elif level == 3:
+			level = "3"
+		elif level == 4:
+			level = "4"
+		elif level == 5:
+			level = "5"
+		elif level == 6:
+			level = "6"
+		elif level == 7:
+			level = "7"
+		elif level == 8:
+			level = "8"
+		elif level == 9:
+			level = "9"
 		
 		return level
 	
 	def updateGUI(self):
+<<<<<<< HEAD
 		"""
 		self.debugText.setText("Energy: "+str((100*self.player.energy/self.player.maxEnergy))+"%, Health: "+str((100*self.player.health/self.player.maxHealth)))
 		"""
 		
 		self.updateIntro()
+=======
+		
+		self.debugText.setText("Energy: " + str((100 * self.player.energy / self.player.maxEnergy)) + "%, Health: " + str((100 * self.player.health / self.player.maxHealth)))
+>>>>>>> 8dbf2575758693a9a833adfddcc2262ef4702114
 		
 		if self.player.currentWeapon == AREA:
 			modeImg = "mode-area"
 		elif self.player.currentWeapon == NARROW:
 			modeImg = "mode-narrow"
 		
-		energyLevel = self.calculateBarImage((100*(self.player.energy/self.player.maxEnergy)) // 10)
-		self.energyBarImage.setImage(GUI_PATH+"energy-bar-"+energyLevel+".png")
+		energyLevel = self.calculateBarImage((100 * (self.player.energy / self.player.maxEnergy)) // 10)
+		self.energyBarImage.setImage(GUI_PATH + "energy-bar-" + energyLevel + ".png")
 		self.energyBarImage.setTransparency(1)
 		
-		self.attackModeImage.setImage(GUI_PATH+modeImg+".png")
+		self.attackModeImage.setImage(GUI_PATH + modeImg + ".png")
 		self.attackModeImage.setTransparency(1)
 		
-		healthLevel = self.calculateBarImage((100*(self.player.health/self.player.maxHealth)) // 10)
-		self.healthBarImage.setImage(GUI_PATH+"health-bar-"+healthLevel+".png")
+		healthLevel = self.calculateBarImage((100 * (self.player.health / self.player.maxHealth)) // 10)
+		self.healthBarImage.setImage(GUI_PATH + "health-bar-" + healthLevel + ".png")
 		self.healthBarImage.setTransparency(1)
 	
 	def updateIntro(self):
@@ -545,14 +554,17 @@ class Game(ShowBase):
 		while((len(self.eSpawnList) > 0) and self.eSpawnList[0]["time"] < self.globalTime):
 			for val in self.eSpawnList[0]["enemies"]:
 				if val["type"] == RUSH_ENEMY:
+					print val["type"]
 					#add an enemy
 					tempEnemy = RushEnemy(self, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
 				elif val["type"] == DRONE_ENEMY:
+					print val["type"]
 					#add an enemy
 					tempEnemy = DroneEnemy(self, self.player, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
 				elif val["type"] == SHOOTING_ENEMY:
+					print val["type"]
 					#add an enemy
 					tempEnemy = ShootingEnemy(self, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
@@ -630,7 +642,7 @@ class Game(ShowBase):
 		#Since we are using collision detection to do picking, we set it up 
 		#any other collision detection system with a traverser and a handler
 		self.mPickerTraverser = CollisionTraverser()            #Make a traverser
-		self.mPickerTraverser.showCollisions(self.unitNodePath)
+		#self.mPickerTraverser.showCollisions(self.unitNodePath)
 		self.mCollisionQue = CollisionHandlerQueue()
 
 		#create a collision solid ray to detect against
@@ -698,17 +710,13 @@ class Game(ShowBase):
 		self.mPickerTraverser.addCollider(self.mPickNP3, self.mCollisionQue)
 		self.mPickerTraverser.addCollider(self.mPickNP4, self.mCollisionQue)
 		self.mPickerTraverser.addCollider(self.mPickNP5, self.mCollisionQue)
-		#self.cTrav.addCollider(self.mPickNP, self.mCollisionQue)
-		#if you want to show collisions for debugging turn this on
-		#self.mPickerTraverser.showCollisions(self.render)
-	#END ATTEMPT AT AUTO-TARGETING
 	
 	def handleUnitIntoCollision(self, entry):
 		try:
 			fromName = entry.getFromNodePath().getParent().getName()
 			intoName = entry.getIntoNodePath().getParent().getName()
 			Unit.collideWithUnit(self.actors[intoName], self.actors[fromName])
-			if (fromName == "player" or introName == "player") and self.collisionSound.status() is not self.collisionSound.PLAYING:
+			if (fromName == "player" or intoName == "player") and self.collisionSound.status() is not self.collisionSound.PLAYING:
 				self.collisionSound.play()
 		except:
 			pass
