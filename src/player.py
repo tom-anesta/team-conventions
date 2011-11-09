@@ -61,8 +61,8 @@ class Player(Unit):
 		headLampRightnode.setHpr(105, 0, 0)#reverse completely because our model is backwards
 		game.render.setLight(headLampRightnode)
 		
-		self.health = 100
-		self.maxHealth = 100
+		self.maxHealth = 50
+		self.health = self.maxHealth
 		self.collisionAttackPower = 0
 		
 		#the currently active weapon
@@ -75,11 +75,11 @@ class Player(Unit):
 		self.energy = self.maxEnergy
 		
 		#the amount of energy that is restored each second
-		self.energyRegen = 1000
+		self.energyRegen = 300
 		
 		#the energy cost of attacking with a given weapon for one second
-		self.magnetCost = {NARROW:self.energyRegen + 30,
-						   AREA:self.energyRegen + 50}
+		self.magnetCost = {NARROW:self.energyRegen + 100,
+						   AREA:self.energyRegen + 120}
 		
 		#the strength of a sustained attack per unit of energy used
 		self.magnetStrength = {NARROW:1, AREA:20}
@@ -206,6 +206,7 @@ class Player(Unit):
 			#self.electricSound.play()
 			if self.electricSound.status() is not self.electricSound.PLAYING:
 				#self.electricSound.setTime(self.electricSound.getTime())#reset to the current time and play it from there
+				self.electricSound.setVolume(.1)
 				self.electricSound.play()
 		elif self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
 			self.attack(PULL, time)
@@ -303,3 +304,7 @@ class Player(Unit):
 			self.currentWeapon = AREA
 		else:
 			self.currentWeapon = NARROW
+	
+	def die(self):
+		self.game.gameOver()
+		self.health = self.maxHealth

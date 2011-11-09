@@ -10,7 +10,7 @@ class RushEnemy(Enemy):
 		Enemy.__init__(self, models, anims, "**/enemyCollisionSphere", game, xStart, yStart, zStart)
 		
 		self.maxSpeed = 5
-		self.randomMovementMax = random.randint(30 * 7, 40 * 7)
+		self.randomMovementMax = random.randint(7 * 7, 10 * 7)
 	
 	def update(self, time):
 		newTime = time * 1000000
@@ -21,4 +21,8 @@ class RushEnemy(Enemy):
 		Enemy.update(self, time)
 	
 	def rush(self, player):
-		self.applyForceFrom(-5, player.getPos())
+		self.applyForceFrom(-100, player.getPos())
+		
+		angle = math.atan2(player.getY() - self.getY(), \
+							player.getX() - self.getX())
+		self.setH(angle * 180 / math.pi)
