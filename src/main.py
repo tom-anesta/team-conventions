@@ -50,7 +50,7 @@ class Game(ShowBase):
 		
 		#get window properties
 		self.winProps = WindowProperties()
-		#self.winProps.setFullscreen(True)
+		self.winProps.setFullscreen(True)
 		self.winProps.setCursorHidden(True)
 		base.win.requestProperties(self.winProps)
 		
@@ -91,7 +91,10 @@ class Game(ShowBase):
 		traverser = CollisionTraverser()
 		base.cTrav = traverser#run every frame
 		self.cTrav = base.cTrav
-		self.cTrav.showCollisions(self.render)
+		#set the check for units accidentally passing through level geometry
+		self.cTrav.setRespectPrevTransform(True)
+		
+		#self.cTrav.showCollisions(self.render)
 		#self.cTrav.showCollisions(self.unitNodePath)#show the collisions
 		
 		#load terrain and enemies
@@ -332,6 +335,7 @@ class Game(ShowBase):
 	def updateGame(self, task):
 		self.globalTime = self.globalTime + task.time
 		elapsedTime = task.time - self.previousFrameTime
+		#base.resetPrevTransform(render)#for our high intensity collision detection
 		
 		if self.controlScheme.keyDown(QUIT):
 			exit(0)
@@ -344,6 +348,7 @@ class Game(ShowBase):
 			self.updateGameComponents(time)
 			
 			self.cTrav.traverse(render)
+			
 			self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:

@@ -81,6 +81,9 @@ class Unit(Actor):
 		
 		self.nodePath = None
 		self.shootable = True
+		
+		#finally set the python tag
+		self.setPythonTag("unit", self)
 	
 	def applyForceFrom(self, magnitude, sourcePosition):
 		forceVector = self.getPos() - sourcePosition
@@ -124,7 +127,8 @@ class Unit(Actor):
 		
 		self.prevPosition = self.getPos()
 		
-		self.setPos(self.getPos() + self.vel * time)
+		#self.setPos(self.getPos() + self.vel * time)
+		self.setFluidPos(self.getPos() + self.vel * time)
 		self.setZ(max(-100, self.getZ()))
 	
 #	def checkCollisions(self, time):
