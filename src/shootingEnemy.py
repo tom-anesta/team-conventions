@@ -14,6 +14,7 @@ class ShootingEnemy(Enemy):
 		self.cooldownLength = random.randint(6, 8)
 		self.cooldownLeft = self.cooldownLength
 		self.preferedDistanceFromPlayer = random.randint(30, 70)
+		self.clockwise = random.choice((True, False))
 	
 	def shoot(self, player):
 		bullet = Bullet(self.game, self.game.render, player.getPos() - self.getPos())
@@ -25,7 +26,10 @@ class ShootingEnemy(Enemy):
 		
 		angle = math.atan2(self.getY() - player.getY(), \
 							self.getX() - player.getX())
-		angle += math.pi / 8
+		if self.clockwise:
+			angle -= math.pi / 8
+		else:
+			angle += math.pi / 8
 		
 		targetPoint = Point3(player.getX() + self.preferedDistanceFromPlayer * math.cos(angle), \
 							player.getY() + self.preferedDistanceFromPlayer * math.sin(angle), self.getZ())
