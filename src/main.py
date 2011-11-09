@@ -32,6 +32,7 @@ from droneEnemy import DroneEnemy
 from shootingEnemy import ShootingEnemy
 from constants import *
 from controlScheme import ControlScheme
+import random
 
 class Game(ShowBase):
 	def __init__(self):
@@ -143,6 +144,9 @@ class Game(ShowBase):
 		#add targeting to the world
 		self.setupTargeting()
 		
+		#seed the random number generator
+		random.seed()
+
 		# configure the entire GUI
 		self.setupGUI()
 	
@@ -183,6 +187,32 @@ class Game(ShowBase):
 		hBarNodePath.setScale(.400, 0, .0475)
 		hBarNodePath.setPos(0.85, 0, 0.88)
 	
+	def calculateBarImage(self, level):
+		if level==0:
+			level="empty"
+		elif level==10:
+			level="full"
+		elif level==1:
+			level="1"
+		elif level==2:
+			level="2"
+		elif level==3:
+			level="3"
+		elif level==4:
+			level="4"
+		elif level==5:
+			level="5"
+		elif level==6:
+			level="6"
+		elif level==7:
+			level="7"
+		elif level==8:
+			level="8"
+		elif level==9:
+			level="9"
+		
+		return level
+	
 	def updateGUI(self):
 		
 		self.debugText.setText("Energy: "+str((100*self.player.energy/self.player.maxEnergy))+"%, Health: "+str((100*self.player.health/self.player.maxHealth)))
@@ -192,8 +222,16 @@ class Game(ShowBase):
 		elif self.player.currentWeapon == NARROW:
 			modeImg = "mode-narrow"
 		
+		energyLevel = self.calculateBarImage((100*(self.player.energy/self.player.maxEnergy)) // 10)
+		self.energyBarImage.setImage(GUI_PATH+"energy-bar-"+energyLevel+".png")
+		self.energyBarImage.setTransparency(1)
+		
 		self.attackModeImage.setImage(GUI_PATH+modeImg+".png")
 		self.attackModeImage.setTransparency(1)
+		
+		healthLevel = self.calculateBarImage((100*(self.player.health/self.player.maxHealth)) // 10)
+		self.healthBarImage.setImage(GUI_PATH+"health-bar-"+healthLevel+".png")
+		self.healthBarImage.setTransparency(1)
 	
 	def loadLevelGeom(self, filename):
 		filename = os.path.abspath(filename)
@@ -466,14 +504,17 @@ class Game(ShowBase):
 		while((len(self.eSpawnList) > 0) and self.eSpawnList[0]["time"] < self.globalTime):
 			for val in self.eSpawnList[0]["enemies"]:
 				if val["type"] == RUSH_ENEMY:
+					print val["type"]
 					#add an enemy
 					tempEnemy = RushEnemy(self, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
 				elif val["type"] == DRONE_ENEMY:
+					print val["type"]
 					#add an enemy
 					tempEnemy = DroneEnemy(self, self.player, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
 				elif val["type"] == SHOOTING_ENEMY:
+					print val["type"]
 					#add an enemy
 					tempEnemy = ShootingEnemy(self, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
@@ -537,8 +578,11 @@ class Game(ShowBase):
 						return None
 					
 					#if the object is shootable, set it as the target
-					if self.actors[name].shootable:
-						return self.actors[name]
+					try:
+						if self.actors[name].shootable:
+							return self.actors[name]
+					except:
+						continue
 		
 		return None
 	
@@ -626,7 +670,7 @@ class Game(ShowBase):
 			fromName = entry.getFromNodePath().getParent().getName()
 			intoName = entry.getIntoNodePath().getParent().getName()
 			Unit.collideWithUnit(self.actors[intoName], self.actors[fromName])
-			if (fromName == "player" or introName == "player") and self.collisionSound.status() is not self.collisionSound.PLAYING:
+			if (fromName == "player" or intoName == "player") and self.collisionSound.status() is not self.collisionSound.PLAYING:
 				self.collisionSound.play()
 		except:
 			pass

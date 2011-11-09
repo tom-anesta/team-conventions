@@ -7,6 +7,7 @@ class DroneEnemy(Enemy):
 		models = MODELS_PATH + "HovercraftOne"
 		anims = None
 		Enemy.__init__(self, models, anims, "**/enemyCollisionSphere", game, xStart, yStart, zStart)
+		
 	
 		self.pointValue = 1
 		self.player = player

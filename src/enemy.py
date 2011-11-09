@@ -35,6 +35,7 @@ class Enemy(Unit):
 	
 	def update(self, time):
 		newTime = time * 1000000
+		print "this is a test"
 		
 		if math.floor(newTime % self.randomMovementMax) == 0:
 			self.accel.setX(random.choice(range(-self.maxRandomVel, -self.minRandomVel) + range(self.minRandomVel, self.maxRandomVel + 1)))
