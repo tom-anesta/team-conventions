@@ -44,6 +44,9 @@ class Game(ShowBase):
 		self.do = DirectObject()
 		self.do.accept('unit-into-unit', self.handleUnitIntoCollision)
 		self.do.accept('unit-out-unit', self.handleUnitOutCollision)
+		self.do.accept('unit-into-cube', self.handleCubeIntoCollision)
+		self.do.accept('unit-into-wing', self.handleWingIntoCollision)
+		self.do.accept('unit-into-bar', self.handleBarIntoCollision)
 		
 		#get window properties
 		self.winProps = WindowProperties()
@@ -206,6 +209,7 @@ class Game(ShowBase):
 				
 				#set up collisions
 				unitCollision = obstacle.find("**/CubeBlock")
+				unitCollision.node().setName("cube")
 				obstacle.setCollideMask(BitMask32.allOff())
 				unitCollision.setCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
 				
@@ -229,10 +233,33 @@ class Game(ShowBase):
 				
 				#set up collisions
 				unitCollision = obstacle.find("**/wingCollider")
+				unitCollision.node().setName("wing")
 				obstacle.setCollideMask(BitMask32.allOff())
 				unitCollision.setCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
 				
 				self.obstacles.append(obstacle)
+				
+			elif list[0] == TERRAIN_BAR:
+				modelVal = list[1]
+				modelVal = (MODELS_PATH + modelVal)
+				#load the model
+				obstacle = self.loader.loadModel(modelVal)
+				
+				obstacle.reparentTo(render)
+				#set scale
+				scaleVal = list[2].split(',')
+				obstacle.setScale(float(scaleVal[0]), float(scaleVal[1]), float(scaleVal[2]))
+				#set location
+				locVal = list[3].split(',')
+				obstacle.setPos(float(locVal[0]), float(locVal[1]), float(locVal[2]))#the we have our object
+				hprVal = list[4].split(',')
+				obstacle.setHpr(float(hprVal[0]), float(hprVal[1]), float(hprVal[2]))
+				
+				#set up collisions
+				unitCollision = obstacle.find("**/metalBarCollisionCube")
+				unitCollision.node().setName("bar")
+				obstacle.setCollideMask(BitMask32.allOff())
+				unitCollision.setCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
 				
 			else:
 				print "FATAL ERROR READING FILE"
@@ -482,7 +509,16 @@ class Game(ShowBase):
 		pass
 		
 	def handleUnitOutCollision(self, entry):
-		print "collision occured from"
+		pass
+		
+	def handleWingIntoCollision(self, entry):
+		pass
+		
+	def handleCubeIntoCollision(self, entry):
+		pass
+		
+	def handleBarIntoCollision(self, entry):
+		pass
 	
 	def gameOver(self):
 		pass
