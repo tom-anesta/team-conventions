@@ -154,9 +154,9 @@ class Game(ShowBase):
 		self.debugText.setAlign(TextNode.ALeft)
 		self.debugText.setFont(GUIFont)
 		
-		dTextNodePath = aspect2d.attachNewNode(self.debugBarText)
-		dTextNodePath.setScale(0.08)
-		dTextNodePath.setPos(-1.3333, 0, 1)
+		dTextNodePath = aspect2d.attachNewNode(self.debugText)
+		dTextNodePath.setScale(0.075)
+		dTextNodePath.setPos(-1.2, 0, -0.9)
 		
 		#image is 365 x 187
 		self.attackModeImage = OnscreenImage()
@@ -184,6 +184,8 @@ class Game(ShowBase):
 		hBarNodePath.setPos(0.85, 0, 0.88)
 	
 	def updateGUI(self):
+		
+		self.debugText.setText("Energy: "+str((100*self.player.energy/self.player.maxEnergy))+"%, Health: "+str((100*self.player.health/self.player.maxHealth)))
 		
 		if self.player.currentWeapon == AREA:
 			modeImg = "mode-area"
