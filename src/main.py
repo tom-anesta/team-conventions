@@ -164,6 +164,7 @@ class Game(ShowBase):
 		dTextNodePath.setPos(-1.2, 0, -0.9)
 		"""
 		
+		#INTRO
 		self.introText = TextNode('intro')
 		self.introText.setText("")
 		self.introText.setAlign(TextNode.ALeft)
@@ -177,6 +178,34 @@ class Game(ShowBase):
 		self.iTextNodePath.setScale(0.075)
 		self.iTextNodePath.setPos(-1.2, 0, -0.7)
 		
+		#image is 171 x 323
+		self.leftMouseImage = OnscreenImage()
+		self.leftMouseImage.setImage(GUI_PATH + "mouse-icon-left.png")
+		self.leftMouseImage.setTransparency(1)
+		self.leftMousePath = aspect2d.attachNewNode(self.leftMouseImage.node())
+		
+		self.rightMouseImage = OnscreenImage()
+		self.rightMouseImage.setImage(GUI_PATH + "mouse-icon-right.png")
+		self.rightMouseImage.setTransparency(1)
+		self.rightMousePath = aspect2d.attachNewNode(self.rightMouseImage.node())
+		
+		self.middleMouseImage = OnscreenImage()
+		self.middleMouseImage.setImage(GUI_PATH + "mouse-icon-middle.png")
+		self.middleMouseImage.setTransparency(1)
+		self.middleMousePath = aspect2d.attachNewNode(self.middleMouseImage.node())
+		
+		self.leftMousePath.setScale(.105882, 0, .2)
+		self.leftMousePath.setPos(1.1, 0, -0.75)
+		self.rightMousePath.setScale(.105882, 0, .2)
+		self.rightMousePath.setPos(1.1, 0, -0.75)
+		self.middleMousePath.setScale(.105882, 0, .2)
+		self.middleMousePath.setPos(1.1, 0, -0.75)
+		
+		self.leftMousePath.hide()
+		self.rightMousePath.hide()
+		self.middleMousePath.hide()
+		
+		#HUD
 		#image is 365 x 187
 		self.attackModeImage = OnscreenImage()
 		self.attackModeImage.setImage(GUI_PATH + "mode-area.png")
@@ -269,12 +298,24 @@ class Game(ShowBase):
 			self.introText.setText("To give you an edge, we've made a few upgrades to your electromagnetic grapple.")
 		elif self.globalTime<5300:	#4200-5300
 			self.introText.setText("Pull enemies inwards with the right mouse button.")
+			self.leftMousePath.hide()
+			self.rightMousePath.show()
+			self.middleMousePath.hide()
 		elif self.globalTime<6400:	#5300-6400
 			self.introText.setText("Push enemies away with the left mouse button.")
+			self.leftMousePath.show()
+			self.rightMousePath.hide()
+			self.middleMousePath.hide()
 		elif self.globalTime<8500:	#6400-8500
 			self.introText.setText("Toggle between your range and narrow electromagnet with the middle mouse button (or spacebar).")
+			self.leftMousePath.hide()
+			self.rightMousePath.hide()
+			self.middleMousePath.show()
 		elif self.globalTime<13300:	#8500-13300
 			self.introText.setText("You can give a solid kick to anything straight in front of you or just push everything around you away. Try and throw 'em into each other or other wreckage to finish 'em off for good.")
+			self.leftMousePath.hide()
+			self.rightMousePath.hide()
+			self.middleMousePath.hide()
 		elif self.globalTime<14300:	#13300-14300
 			self.introText.setText("After all, the more salvage left over, the better. Out.")
 	
