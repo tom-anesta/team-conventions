@@ -206,6 +206,7 @@ class Player(Unit):
 			#self.electricSound.play()
 			if self.electricSound.status() is not self.electricSound.PLAYING:
 				#self.electricSound.setTime(self.electricSound.getTime())#reset to the current time and play it from there
+				self.electricSound.setVolume(.1)
 				self.electricSound.play()
 		elif self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
 			self.attack(PULL, time)
