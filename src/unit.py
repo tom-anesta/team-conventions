@@ -1,3 +1,5 @@
+from __future__ import division
+
 from constants import *
 from direct.actor.Actor import Actor
 from pandac.PandaModules import ActorNode
@@ -8,20 +10,17 @@ from pandac.PandaModules import CollisionSphere
 
 #from pandac.PandaModules import CollisionHandlerPusher
 from panda3d.core import CollisionHandlerQueue
-
 from pandac.PandaModules import CollisionRay
-
-
 from pandac.PandaModules import CollisionHandlerPusher
 from pandac.PandaModules import BitMask32
 import math
 
 class Unit(Actor):
 	gravity = 20
+	speedThreshold = 15
+	units = []
 	
-	
-	
-	def __init__(self, models = None, anims = None, sphereString="**/CollisionSphere", game = None, xStart=0, yStart=0, zStart=0, radius = 3):
+	def __init__(self, models = None, anims = None, sphereString = "**/CollisionSphere", game = None, xStart = 0, yStart = 0, zStart = 0, radius = 3):
 		Actor.__init__(self, models, anims)
 		
 		self.game = game
@@ -31,24 +30,32 @@ class Unit(Actor):
 		
 		#set up the position
 		self.setPos(xStart, yStart, zStart)
+		self.prevPosition = self.getPos()
 		#self.lastPosition = Point3()
 		self.vel = Vec3()
 		self.accel = Vec3(0, 0, -Unit.gravity)
 		#define the position that will be treated as the center of the map
 		self.wCenter = Point3(0, 0, 0)
 		
-		#set up collision handling
+		#register this unit
+		Unit.units.append(self)
 		
+		#the radius of the sphere around this
+		self.radius = 3.5
+		
+		#determines how easily this unit
+		self.mass = 10
+		
+		#the damage this deals to other units upon collision when the 
+		self.collisionAttackPower = 1
+		
+		#set up Panda's collision handling
 		#self.collisionNodePath = self.attachNewNode(CollisionNode('cNode'))
 		#self.collisionNodePath.node().addSolid(CollisionSphere(0, 0, 0, radius))
 		#first the pusher
 		self.collisionNodePath = self.find(sphereString)
 		if self.collisionNodePath.isEmpty():
 			self.collisionNodePath = self.find("**/enemyCollisionSphere")
-		if self.collisionNodePath.isEmpty():
-			print "aaaaaaa"
-		else:
-			print "okay"
 		self.collisionNodePath.node().setFromCollideMask(BitMask32.bit(0))
 		self.collisionNodePath.node().setIntoCollideMask(BitMask32.bit(0))
 		
@@ -61,8 +68,8 @@ class Unit(Actor):
 		
 		#check for colllisions with the ground
 		self.groundRay = CollisionRay()
-		self.groundRay.setOrigin(0,0,4000)
-		self.groundRay.setDirection(0,0,-1)
+		self.groundRay.setOrigin(0, 0, 4000)
+		self.groundRay.setDirection(0, 0, -1)
 		self.groundCol = CollisionNode('unitRay')
 		self.groundCol.addSolid(self.groundRay)
 		self.groundCol.setFromCollideMask(BitMask32.bit(0))
@@ -70,7 +77,6 @@ class Unit(Actor):
 		self.groundColNode = self.attachNewNode(self.groundCol)
 		self.groundHandler = CollisionHandlerQueue()
 		game.cTrav.addCollider(self.groundColNode, self.groundHandler)
-		
 		
 		#can be thought of as the inverse of the unit's mass
 		self.accelMultiplier = 45
@@ -81,7 +87,7 @@ class Unit(Actor):
 		self.shootable = True
 	
 	def registerCollider(self, collisionTraverser):
-		collisionTraverser.addCollider(self.collisionNodePath, self.collisionHandler)
+		#collisionTraverser.addCollider(self.collisionNodePath, self.collisionHandler)
 		pass
 	
 	def applyForceFrom(self, magnitude, sourcePosition):
@@ -106,10 +112,13 @@ class Unit(Actor):
 
 	def takeDamage(self, num):
 		self.health -= num
+		
+		if self.health <= 0:
+			self.die()
 	
-	def collideObstacle(self):
-		if (self.vel.length > 7):
-			self.takeDamage(self.vel.length)
+	def die(self):
+		Unit.units.remove(self)
+		self.delete()
 	
 	def turn(self, magnitude):
 		pass
@@ -121,15 +130,38 @@ class Unit(Actor):
 		if not self.disableFriction:
 			self.vel -= self.vel * (self.friction * time)
 		
-		position = self.getPos()
-		position += self.vel * time
-		position.setZ(max(-100, position.getZ()))
+		self.prevPosition = self.getPos()
 		
+		self.setPos(self.getPos() + self.vel * time)
+		self.setZ(max(-100, self.getZ()))
 		
-		self.setPos(position.getX(), position.getY(), position.getZ())
+		self.checkCollisions(time)
 	
-	def collideWithObject(self, obj):
-		print type(obj)
+	def checkCollisions(self, time):
+		for otherUnit in Unit.units:
+			if otherUnit != self:
+				offsetVector = self.getPos() - otherUnit.getPos()
+				offsetDistSquared = offsetVector.lengthSquared()
+				combinedRadiusSquared = (self.radius + otherUnit.radius) ** 2
+				
+				if offsetDistSquared <= combinedRadiusSquared:
+					invTotalMass = 1 / (self.mass + otherUnit.mass)
+					
+					offsetVector.normalize()
+					offsetVector *= self.radius + otherUnit.radius
+					
+					centerOfMass = (self.getPos() * self.mass + otherUnit.getPos() * otherUnit.mass) \
+									* invTotalMass
+					
+					selfOffset = offsetVector * (self.mass * invTotalMass)
+					otherOffset = offsetVector * (-otherUnit.mass * invTotalMass)
+					
+					self.setPos(centerOfMass + selfOffset)
+					otherUnit.setPos(centerOfMass + otherOffset)
+					
+					if time != 0:
+						self.vel = (self.getPos() - self.prevPosition) * (1 / time)
+						otherUnit.vel = (otherUnit.getPos() - otherUnit.prevPosition) * (1 / time)
 	
 	def terrainCollisionCheck(self):
 		entries = []
@@ -143,10 +175,10 @@ class Unit(Actor):
 				if entry.getIntoNode().getName() == "craterCollisionPlane":
 					zVal = entry.getSurfacePoint(render).getZ()
 					if zVal >= MAX_HEIGHT:#apply a force toward the center
-						self.applyForce(self.wCenter - Point3( (self.getX()*GROUND_REPULSION_MULTIPLIER), (self.getY()*GROUND_REPULSION_MULTIPLIER), 0))
+						self.applyForce(self.wCenter - Point3((self.getX() * GROUND_REPULSION_MULTIPLIER), (self.getY() * GROUND_REPULSION_MULTIPLIER), 0))
 						'''
-							this is a little bit hackish, what is done is that a force in the x and y direction is created proportional to your distance from the origin.  this will only 
-							work effectively if the crater is xy centered in the environment
+						this is a little bit hackish, what is done is that a force in the x and y direction is created proportional to your distance from the origin.  this will only 
+						work effectively if the crater is xy centered in the environment
 						'''
 					else:
 						self.setZ(max(zVal, self.getZ()))

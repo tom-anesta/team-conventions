@@ -3,25 +3,23 @@ import random
 import math
 
 class Enemy(Unit):
-	def __init__(self, models = None, anims = None, sphereString=None, game=None, xStart=0, yStart=0, zStart=0):
+	def __init__(self, models = None, anims = None, sphereString = None, game = None, xStart = 0, yStart = 0, zStart = 0):
 		print sphereString
 		Unit.__init__(self, models, anims, sphereString, game, xStart, yStart, zStart)
 		
 		self.randomMovement = 0
 		self.randomMovementMax = 30 * 7
-		self.minRandomVel = 1000
-		self.maxRandomVel = 2000
+		self.minRandomVel = 200
+		self.maxRandomVel = 600
+		
+		self.pointValue = 5
 	
 	def absorbMagnetism(self, field, game):
 		self.changeDirectionRelative((0, field, field), game.player.getPos(), game.camera)
 	
-	def die(self, game):
-		game.enemies.remove(self)
-	
-	def takeDamage(self, num, game):
-		Unit.takeDamage(num)
-		if self.health <= 0:
-			self.die(game)
+	def die(self):
+		self.game.enemies.remove(self)
+		Unit.die(self)
 	
 	def collideEnemy(self, enemy, game):
 		if self.vel.length > 7 or enemy.vel.length > 7:
