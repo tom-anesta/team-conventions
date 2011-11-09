@@ -21,6 +21,7 @@ class Projectile(Actor):
 		
 		self.damage = 1
 		self.parent = parent
+		self.reparentTo(parent)
 		
 		self.radius = 0.4
 		
@@ -57,10 +58,6 @@ class Projectile(Actor):
 		if offsetDistSquared <= combinedRadiusSquared:
 			player.takeDamage(self.damage)
 			self.die()
-	
-	def collideWithEnemy(self, obj):
-		obj.takeDamage(self.damage)
-		self.die()
 	
 	def collideWithEnvironment(self):
 		self.die()

@@ -7,6 +7,7 @@ from pandac.PandaModules import Vec3
 from pandac.PandaModules import Point3
 from pandac.PandaModules import CollisionNode
 from pandac.PandaModules import CollisionSphere
+from pandac.PandaModules import CollisionHandlerEvent
 
 #from pandac.PandaModules import CollisionHandlerPusher
 from panda3d.core import CollisionHandlerQueue
@@ -38,7 +39,7 @@ class Unit(Actor):
 		self.wCenter = Point3(0, 0, 0)
 		
 		#register this unit
-		Unit.units.append(self)
+		#Unit.units.append(self)
 		
 		#the radius of the sphere around this
 		self.radius = 3.5
@@ -52,22 +53,28 @@ class Unit(Actor):
 		#if the acceleration is less, no damage is dealt
 		self.accelerationDamageThreshold = 5
 		
-		#set up Panda's collision handling
-		#self.collisionNodePath = self.attachNewNode(CollisionNode('cNode'))
-		#self.collisionNodePath.node().addSolid(CollisionSphere(0, 0, 0, radius))
+		#set up Panda's collisions
 		#first the pusher
-#		self.collisionNodePath = self.find(sphereString)
-#		if self.collisionNodePath.isEmpty():
-#			self.collisionNodePath = self.find("**/enemyCollisionSphere")
-#		self.collisionNodePath.node().setFromCollideMask(BitMask32.bit(0))
-#		self.collisionNodePath.node().setIntoCollideMask(BitMask32.bit(0))
-#		
-#		#build our collision pusher
-#		self.collisionHandler = CollisionHandlerPusher()
-#		self.collisionHandler.addCollider(self.collisionNodePath, self)
+
+		cSphere = CollisionSphere((0,0,1), 2)
+		cNode = CollisionNode("unit")
+		cNode.addSolid(cSphere)
+		cNode.setIntoCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
+		cNode.setFromCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
+		self.collisionNodePath = self.attachNewNode(cNode)
+		self.collisionNodePath.show()
 		
-		#self.groundSphereHandler = CollisionHandlerQueue()
-		#game.cTrav.addCollider(self.collisionNodePath, self.groundSphereHandler)
+		#set pattern for event sent on collision
+		# "%in" is substituted with the name of the into object, "%fn" is substituted with the name of the from object
+		#do the collision pusher
+		self.collisionPusher = CollisionHandlerPusher()
+		self.collisionPusher.addCollider(self.collisionNodePath, self)
+		self.collisionPusher.addInPattern("%fn-into-%in")
+		self.collisionPusher.addOutPattern("fn-out-%in")
+		game.cTrav.addCollider(self.collisionNodePath, self.collisionPusher)
+		
+		
+		
 		
 		#check for colllisions with the ground
 		self.groundRay = CollisionRay()
@@ -75,7 +82,7 @@ class Unit(Actor):
 		self.groundRay.setDirection(0, 0, -1)
 		self.groundCol = CollisionNode('unitRay')
 		self.groundCol.addSolid(self.groundRay)
-		self.groundCol.setFromCollideMask(BitMask32.bit(0))
+		self.groundCol.setFromCollideMask(BitMask32(TERRAIN_RAY_MASK))
 		self.groundCol.setIntoCollideMask(BitMask32.allOff())
 		self.groundColNode = self.attachNewNode(self.groundCol)
 		self.groundHandler = CollisionHandlerQueue()
@@ -89,7 +96,7 @@ class Unit(Actor):
 		self.nodePath = None
 		self.shootable = True
 	
-	def registerCollider(self, collisionTraverser):
+	def registerCollider(self, collisionTraverser):#this may be deprecated by the use of putting the collision registering in init
 		#collisionTraverser.addCollider(self.collisionNodePath, self.collisionHandler)
 		pass
 	
@@ -139,6 +146,7 @@ class Unit(Actor):
 		self.setZ(max(-100, self.getZ()))
 		
 		self.checkCollisions(time)
+	
 	
 	def checkCollisions(self, time):
 		for otherUnit in Unit.units:

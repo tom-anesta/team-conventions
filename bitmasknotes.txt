@@ -1,0 +1,28 @@
+notes on bitmasks
+
+probably want everythin in same from and into collision bitmasks
+
+only using spheres for 
+
+any thing else that the spheres collide with to same bitmask
+
+they had different object types so they had the player one bucket, a character, a projectile
+
+into will be whatever you set as the from
+
+level geometry you want it to be on a different bitmask from sphere that you match to rays then get performance increase
+
+bitmask is int 32
+
+all zeros or ones
+
+<< left shift it by x you are talking about xth bit
+
+you use bitwise and or or to worry about it
+
+you are just going to be using different collision sets
+
+just use power of two integers for no overlap
+
+if we bitwised or two power of two integers together then collisions would be betwen both of them
+
