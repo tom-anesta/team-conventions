@@ -22,9 +22,10 @@ from pandac.PandaModules import BitMask32
 
 from unit import Unit
 from player import Player
-#from projectile import Projectile
-#from bullet import Bullet
+from projectile import Projectile
+from bullet import Bullet
 from rushEnemy import RushEnemy
+from droneEnemy import DroneEnemy
 from constants import *
 from controlScheme import ControlScheme
 
@@ -34,9 +35,7 @@ class Game(ShowBase):
 		
 		#start the time
 		self.globalTime = 0
-		self.nextEnemy =1
-		
-		
+		self.nextEnemy = 1
 		
 		#get window properties
 		self.winProps = WindowProperties()
@@ -66,7 +65,7 @@ class Game(ShowBase):
 		#object lists
 		self.enemies = []
 		self.obstacles = []
-		#self.projectiles = []
+		self.projectiles = []
 		#list of enemies to be spawned
 		self.eSpawnList = []
 		
@@ -104,50 +103,16 @@ class Game(ShowBase):
 		self.player.nodePath = self.render.find("player")
 		self.actors["player"] = self.player
 		
-		#this should be gone soon, can probably delete now because 
 		'''
-		#add an enemy
-		self.tempEnemy = RushEnemy(self, -20, 0, 0)
-		#self.tempEnemy.setPos(-20, 0, 0)
-		self.tempEnemy.setName("enemy1")
-		self.tempEnemy.reparentTo(self.unitNodePath)
-		self.tempEnemy.nodePath = self.render.find("enemy1")
-		self.actors["enemy1"] = self.tempEnemy
-		
-		self.tempEnemy2 = RushEnemy(self, 40, 50, 0)
-		#self.tempEnemy2.setPos(40, 50, 0)
-		self.tempEnemy2.setName("enemy2")
-		self.tempEnemy2.reparentTo(self.unitNodePath)
-		self.tempEnemy2.nodePath = self.render.find("enemy2")
-		self.actors["enemy2"] = self.tempEnemy2
-		
-		self.tempEnemy3 = RushEnemy(self, 20, 80, 0)
-		#self.tempEnemy3.setPos(20, 80, 0)
-		self.tempEnemy3.setName("enemy3")
-		self.tempEnemy3.reparentTo(self.unitNodePath)
-		self.tempEnemy3.nodePath = self.render.find("enemy3")
-		self.actors["enemy3"] = self.tempEnemy3
-		
-		self.enemies.append(self.tempEnemy)
-		self.enemies.append(self.tempEnemy2)
-		self.enemies.append(self.tempEnemy3)
-		
-		#ADD A BULLET - TEMPORARY TEST
-		self.projectiles.append(Bullet(self, self.tempEnemy, Vec3(1,1,0)))
-		
-		for enemy in self.enemies:
-			enemy.registerCollider(self.cTrav)
-		'''
-		
 		#add some lights
 		topLight = DirectionalLight("top light")
 		#topLight.setColor(Vec4(255/255, 253/255, 222/255, 1))
-		topLight.setColor(Vec4(30/255, 30/255, 30/255, 1))
+		topLight.setColor(Vec4(60 / 255, 60 / 255, 60 / 255, 1))
 		topLight.setDirection(Vec3(0, -90, 0))
 		self.render.setLight(self.render.attachNewNode(topLight))
 		
 		ambientLight = AmbientLight("ambient light")
-		ambientLight.setColor(Vec4(0.1, 0.1, 0.1, 1))
+		ambientLight.setColor(Vec4(0.6, 0.6, 0.6, 1))
 		self.render.setLight(self.render.attachNewNode(ambientLight))
 		
 		#the distance the camera is from the player
@@ -261,9 +226,7 @@ class Game(ShowBase):
 		
 		print "populating enemy waves"
 		
-		
 		for val in textFileList:
-			print val
 			if val[0] == BEGIN_WAVE:
 				currwave = dict()
 				currwave["time"] = float(val[1])#set your time
@@ -277,26 +240,23 @@ class Game(ShowBase):
 				currEnem["yVal"] = float(pos[1])
 				currEnem["zVal"] = float(pos[2])
 				currwave["enemies"].append(dict(currEnem))#copy
+			elif val[0] == DRONE_ENEMY:
+				currEnem = dict()
+				pos = []
+				pos = val[1].split(',')#get the three values for spawning, not floats
+				currEnem["type"] = DRONE_ENEMY
+				currEnem["xVal"] = float(pos[0])
+				currEnem["yVal"] = float(pos[1])
+				currEnem["zVal"] = float(pos[2])
+				currwave["enemies"].append(dict(currEnem))#copy
 			elif val[0] == END_WAVE:#then we are done with that wave
 				self.eSpawnList.append(dict(currwave))#copy
-				print len(self.eSpawnList)
-				print "test"
 			else:
 				pass#then something was stupid
 			
 		#now sort your waves with lowest time first	
 		self.eSpawnList.sort(key = lambda object: object["time"])
 		#and you're done
-		
-		i = 0
-		'''
-		while i != len(self.eSpawnList):
-			print i
-			print self.eSpawnList[i]["time"]
-			for val in self.eSpawnList[i]["enemies"]:
-				print val["type"]
-			i = i+1
-		'''
 	
 	def updateGame(self, task):
 		self.globalTime = self.globalTime + task.time
@@ -336,19 +296,24 @@ class Game(ShowBase):
 		self.player.update(time)
 		for enemy in self.enemies:
 			enemy.terrainCollisionCheck()
-		#for projectile in self.projectiles:
-		#	projectile.terrainCollisionCheck()
+		for projectile in self.projectiles:
+			projectile.terrainCollisionCheck()
 		
 		self.cTrav.traverse(render)
 		
 		
 	def spawnEnemies(self):#now we spawn our enemies
-		while(( len(self.eSpawnList) > 0) and self.eSpawnList[0]["time"] < self.globalTime):
+		while((len(self.eSpawnList) > 0) and self.eSpawnList[0]["time"] < self.globalTime):
 			for val in self.eSpawnList[0]["enemies"]:
 				if val["type"] == RUSH_ENEMY:
 					print "rush enemy"
 					#add an enemy
 					tempEnemy = RushEnemy(self, val["xVal"], val["yVal"], val["zVal"])
+					self.configureEnemy(tempEnemy)
+				elif val["type"] == DRONE_ENEMY:
+					print "drone enemy"
+					#add an enemy
+					tempEnemy = DroneEnemy(self, self.player, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
 				else: 
 					pass
@@ -358,10 +323,10 @@ class Game(ShowBase):
 	
 	def configureEnemy(self, tempEnemy):#after making an enemy configure it for the game
 		numString = str(self.nextEnemy)
-		tempEnemy.setName("enemy"+numString)
+		tempEnemy.setName("enemy" + numString)
 		tempEnemy.reparentTo(self.unitNodePath)
 		tempEnemy.nodePath = self.render.find("enemy1")
-		self.actors["enemy"+numString] = tempEnemy
+		self.actors["enemy" + numString] = tempEnemy
 		#tempEnemy.registerCollider(self.cTrav)
 		self.nextEnemy = self.nextEnemy + 1
 		self.enemies.append(tempEnemy)
