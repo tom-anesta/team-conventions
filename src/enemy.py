@@ -4,7 +4,6 @@ import math
 
 class Enemy(Unit):
 	def __init__(self, models = None, anims = None, sphereString = None, game = None, xStart = 0, yStart = 0, zStart = 0):
-		print sphereString
 		Unit.__init__(self, models, anims, sphereString, game, xStart, yStart, zStart)
 		
 		self.randomMovement = 0
