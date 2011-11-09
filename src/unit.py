@@ -56,7 +56,7 @@ class Unit(Actor):
 		#set up Panda's collisions
 		#first the pusher
 
-		cSphere = CollisionSphere((0,0,1), 2)
+		cSphere = CollisionSphere((0, 0, 1), 2)
 		cNode = CollisionNode("unit")
 		cNode.addSolid(cSphere)
 		cNode.setIntoCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
@@ -72,9 +72,6 @@ class Unit(Actor):
 		self.collisionPusher.addInPattern("%fn-into-%in")
 		self.collisionPusher.addOutPattern("fn-out-%in")
 		game.cTrav.addCollider(self.collisionNodePath, self.collisionPusher)
-		
-		
-		
 		
 		#check for colllisions with the ground
 		self.groundRay = CollisionRay()
@@ -146,7 +143,6 @@ class Unit(Actor):
 		self.setZ(max(-100, self.getZ()))
 		
 		self.checkCollisions(time)
-	
 	
 	def checkCollisions(self, time):
 		for otherUnit in Unit.units:

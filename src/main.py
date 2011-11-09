@@ -47,7 +47,7 @@ class Game(ShowBase):
 		
 		#get window properties
 		self.winProps = WindowProperties()
-		self.winProps.setFullscreen(True)
+		#self.winProps.setFullscreen(True)
 		self.winProps.setCursorHidden(True)
 		base.win.requestProperties(self.winProps)
 		
@@ -451,7 +451,9 @@ class Game(ShowBase):
 		pass
 		
 	def handleUnitFromCollision(self, entry):
-		pass
+		overlapSquared = (entry.getSurfacePoint(render) - entry.getInteriorPoint(render)).lengthSquared()
+		if overlapSquared > 3:
+			print overlapSquared
 	
 	def gameOver(self):
 		pass
