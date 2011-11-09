@@ -633,7 +633,7 @@ class Game(ShowBase):
 			fromName = entry.getFromNodePath().getParent().getName()
 			intoName = entry.getIntoNodePath().getParent().getName()
 			Unit.collideWithUnit(self.actors[intoName], self.actors[fromName])
-			if (fromName == "player" or introName == "player") and self.collisionSound.status() is not self.collisionSound.PLAYING:
+			if (fromName == "player" or intoName == "player") and self.collisionSound.status() is not self.collisionSound.PLAYING:
 				self.collisionSound.play()
 		except:
 			pass
