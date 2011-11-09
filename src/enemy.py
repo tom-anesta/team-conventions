@@ -6,6 +6,9 @@ class Enemy(Unit):
 	def __init__(self, models = None, anims = None, sphereString = None, game = None, xStart = 0, yStart = 0, zStart = 0):
 		Unit.__init__(self, models, anims, sphereString, game, xStart, yStart, zStart)
 		
+		#set up sounds
+		self.deathSound = game.loader.loadSfx("lib/sounds/enemy_death.wav")
+		
 		self.randomMovement = 0
 		self.randomMovementMax = 30 * 7
 		self.minRandomVel = 1000
@@ -15,7 +18,9 @@ class Enemy(Unit):
 		self.changeDirectionRelative((0, field, field), game.player.getPos(), game.camera)
 	
 	def die(self, game):
+		self.deathSound.play()
 		game.enemies.remove(self)
+		
 	
 	def takeDamage(self, num, game):
 		Unit.takeDamage(num)
