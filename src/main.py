@@ -106,13 +106,12 @@ class Game(ShowBase):
 		'''
 		#add some lights
 		topLight = DirectionalLight("top light")
-		#topLight.setColor(Vec4(255/255, 253/255, 222/255, 1))
-		topLight.setColor(Vec4(60 / 255, 60 / 255, 60 / 255, 1))
+		topLight.setColor(Vec4(0.5, 0.5, 0.5, 1))
 		topLight.setDirection(Vec3(0, -90, 0))
 		self.render.setLight(self.render.attachNewNode(topLight))
 		
 		ambientLight = AmbientLight("ambient light")
-		ambientLight.setColor(Vec4(0.6, 0.6, 0.6, 1))
+		ambientLight.setColor(Vec4(0.5, 0.5, 0.5, 1))
 		self.render.setLight(self.render.attachNewNode(ambientLight))
 		
 		#the distance the camera is from the player
@@ -224,8 +223,6 @@ class Game(ShowBase):
 		currwave["enemies"] = []
 		currEnem = dict()
 		
-		print "populating enemy waves"
-		
 		for val in textFileList:
 			if val[0] == BEGIN_WAVE:
 				currwave = dict()
@@ -266,7 +263,13 @@ class Game(ShowBase):
 			exit(0)
 		
 		if not self.paused:
-			self.updateGameComponents(elapsedTime)
+			time = elapsedTime
+			while time > 0.02:
+				self.updateGameComponents(0.02)
+				time -= 0.02
+			self.updateGameComponents(time)
+			
+			self.cTrav.traverse(render)
 			self.spawnEnemies()#globalTime is available
 		if self.controlScheme.keyDown(PAUSE):
 			if not self.pauseWasPressed:
@@ -299,19 +302,14 @@ class Game(ShowBase):
 		for projectile in self.projectiles:
 			projectile.terrainCollisionCheck()
 		
-		self.cTrav.traverse(render)
-		
-		
 	def spawnEnemies(self):#now we spawn our enemies
 		while((len(self.eSpawnList) > 0) and self.eSpawnList[0]["time"] < self.globalTime):
 			for val in self.eSpawnList[0]["enemies"]:
 				if val["type"] == RUSH_ENEMY:
-					print "rush enemy"
 					#add an enemy
 					tempEnemy = RushEnemy(self, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
 				elif val["type"] == DRONE_ENEMY:
-					print "drone enemy"
 					#add an enemy
 					tempEnemy = DroneEnemy(self, self.player, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)

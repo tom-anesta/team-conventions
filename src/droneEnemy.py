@@ -5,5 +5,10 @@ class droneEnemy(Enemy):
 		models = None
 		anims = None
 		Enemy.__init__(self, models, anims)
+	
+		self.pointValue = 1
 		
-		self.maxSpeed = 5
+	def update(self, time):
+		self.applyForceFrom(-0.1, self.player.getPos())
+		
+		Unit.update(self, time)

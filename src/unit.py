@@ -17,7 +17,7 @@ from pandac.PandaModules import BitMask32
 import math
 
 class Unit(Actor):
-	gravity = 20
+	gravity = 30
 	speedThreshold = 15
 	units = []
 	
@@ -44,29 +44,20 @@ class Unit(Actor):
 		#the radius of the sphere around this
 		self.radius = 3.5
 		
-		#determines how easily this unit
-		self.mass = 10
-		
-		#the damage this deals to other units upon collision when the 
+		#the base damage this unit deals upon collision
 		self.collisionAttackPower = 1
+		
+		#if the acceleration this applies to the other unit equals this, it
+		#will deal exactly collisionAttackPower damage; if the acceleration
+		#is (for example) 2.5 times this, it will deal 2.5 * collisionAttackPower
+		#if the acceleration is less, no damage is dealt
+		self.accelerationDamageThreshold = 5
 		
 		#set up Panda's collision handling
 		#self.collisionNodePath = self.attachNewNode(CollisionNode('cNode'))
 		#self.collisionNodePath.node().addSolid(CollisionSphere(0, 0, 0, radius))
 		#first the pusher
-		'''
-		self.collisionNodePath = self.find(sphereString)
-		if self.collisionNodePath.isEmpty():
-			self.collisionNodePath = self.find("**/enemyCollisionSphere")
-		self.collisionNodePath.node().setFromCollideMask(BitMask32.bit(0))
-		self.collisionNodePath.node().setIntoCollideMask(BitMask32.bit(0))
-		
-		#build our collision pusher
-		self.collisionHandler = CollisionHandlerPusher()
-		self.collisionHandler.addCollider(self.collisionNodePath, self)
-		'''
-		
-		
+
 		cSphere = CollisionSphere((0,0,1), 2)
 		cNode = CollisionNode("panda")
 		cNode.addSolid(cSphere)
@@ -154,7 +145,8 @@ class Unit(Actor):
 		self.setPos(self.getPos() + self.vel * time)
 		self.setZ(max(-100, self.getZ()))
 		
-		self.checkCollisions(time)
+		#self.checkCollisions(time)
+	
 	
 	def checkCollisions(self, time):
 		for otherUnit in Unit.units:
@@ -164,23 +156,27 @@ class Unit(Actor):
 				combinedRadiusSquared = (self.radius + otherUnit.radius) ** 2
 				
 				if offsetDistSquared <= combinedRadiusSquared:
-					invTotalMass = 1 / (self.mass + otherUnit.mass)
-					
 					offsetVector.normalize()
-					offsetVector *= self.radius + otherUnit.radius
+					offsetVector *= (self.radius + otherUnit.radius) / 2
 					
-					centerOfMass = (self.getPos() * self.mass + otherUnit.getPos() * otherUnit.mass) \
-									* invTotalMass
+					centerOfMass = (self.getPos() + otherUnit.getPos()) * 0.5
 					
-					selfOffset = offsetVector * (self.mass * invTotalMass)
-					otherOffset = offsetVector * (-otherUnit.mass * invTotalMass)
+					self.setPos(centerOfMass + offsetVector)
+					otherUnit.setPos(centerOfMass - offsetVector)
 					
-					self.setPos(centerOfMass + selfOffset)
-					otherUnit.setPos(centerOfMass + otherOffset)
+					#update the units' velocities, and apply damage based
+					#on the impulse
+					time = max(0.01, time)
 					
-					if time != 0:
-						self.vel = (self.getPos() - self.prevPosition) * (1 / time)
-						otherUnit.vel = (otherUnit.getPos() - otherUnit.prevPosition) * (1 / time)
+					selfNewVel = (self.getPos() - self.prevPosition) * (1 / time)
+					selfAccel = (selfNewVel - self.vel).length()
+					self.vel = selfNewVel
+					
+					if selfAccel > otherUnit.accelerationDamageThreshold:
+						pass
+					
+					otherUnit.vel = (otherUnit.getPos() - otherUnit.prevPosition) * (1 / time)
+					
 	
 	def terrainCollisionCheck(self):
 		entries = []
