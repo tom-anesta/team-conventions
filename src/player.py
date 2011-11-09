@@ -21,9 +21,9 @@ class Player(Unit):
 		self.game = game
 		
 		#set up sounds
-		self.thrustSound = game.loader.loadSfx("lib/sounds/thrust.wav")
-		self.electricSound = game.loader.loadSfx("lib/sounds/electricity.wav")
-		self.magnetSound = game.loader.loadSfx("lib/sounds/magnet.wav")
+		self.thrustSound = game.loader.loadSfx(SFX_PATH + "thrust.wav")
+		self.electricSound = game.loader.loadSfx(SFX_PATH + "electricity.wav")
+		self.magnetSound = game.loader.loadSfx(SFX_PATH + "magnet.wav")
 		
 		#set up the collisions in unit
 		
@@ -154,10 +154,7 @@ class Player(Unit):
 			accelY = -1
 			self.thrustSound.setLoop(True)
 			self.thrustSound.play()
-		if not (self.controlScheme.keyDown(LEFT) and \
-				self.controlScheme.keyDown(RIGHT) and \
-				self.controlScheme.keyDown(UP) and \
-				self.controlScheme.keyDown(DOWN)):
+		else:
 			if self.thrustSound.status() == self.thrustSound.PLAYING:
 				self.thrustSound.stop()
 		
@@ -200,7 +197,7 @@ class Player(Unit):
 		elif self.controlScheme.keyDown(PULL) and not self.controlScheme.keyDown(PUSH):
 			self.attack(PULL, time)
 			#include sound
-			self.magnetSound.SetLoop(True)
+			self.magnetSound.setLoop(True)
 			self.magnetSound.play()
 		else:
 			self.sustainedAttack = False
