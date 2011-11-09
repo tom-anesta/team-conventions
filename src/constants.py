@@ -27,6 +27,8 @@ MODELS_PATH = "../lib/models/"
 SFX_PATH = "../lib/sfx/"
 PARAMS_PATH = "../params/"
 TEXTURES_PATH = "../lib/textures/"
+FONTS_PATH = "../lib/fonts/"
+GUI_PATH = "../lib/gui/"
 
 #for reading from text file
 TEXT_DELIMITER = "%%%"

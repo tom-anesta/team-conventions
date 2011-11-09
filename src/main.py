@@ -20,6 +20,8 @@ from panda3d.core import CollisionRay, CollisionNode, GeomNode, CollisionTravers
 from panda3d.core import CollisionHandlerQueue, CollisionSphere, BitMask32
 from math import pi, sin, cos, sqrt, pow, atan2
 from pandac.PandaModules import BitMask32
+from pandac.PandaModules import TextNode
+from direct.gui.OnscreenImage import OnscreenImage
 
 from unit import Unit
 from player import Player
@@ -134,6 +136,58 @@ class Game(ShowBase):
 		
 		#add targeting to the world
 		self.setupTargeting()
+		
+		# configure the entire GUI
+		self.setupGUI()
+	
+	def setupGUI(self):
+		GUIFont = loader.loadFont(FONTS_PATH+'orbitron-black.ttf')
+		
+		"""
+		self.energyBarText = TextNode('node name')
+		self.energyBarText.setText("Energy: "+str((100*self.player.energy/self.player.maxEnergy))+"%")
+		self.energyBarText.setAlign(TextNode.ALeft)
+		self.energyBarText.setFont(GUIFont)
+		
+		textNodePath = aspect2d.attachNewNode(self.energyBarText)
+		textNodePath.setScale(0.08)
+		textNodePath.setPos(-1.3333, 0, 1)
+		"""
+		
+		#image is 365 x 187
+		self.attackModeImage = OnscreenImage()
+		self.attackModeImage.setImage(GUI_PATH+"mode-area.png")
+		self.attackModeImage.setTransparency(1)
+		
+		modeNodePath = aspect2d.attachNewNode(self.attackModeImage.node())
+		modeNodePath.setScale(.136631, 0, .07)
+		modeNodePath.setPos(-1.13, 0, 0.88)
+		
+		self.energyBarImage = OnscreenImage()
+		self.energyBarImage.setImage(GUI_PATH+"energy-bar-full.png")
+		self.energyBarImage.setTransparency(1)
+		
+		eBarNodePath = aspect2d.attachNewNode(self.energyBarImage.node())
+		eBarNodePath.setScale(.400, 0, .0475)
+		eBarNodePath.setPos(-0.66, 0, 0.88)
+		
+		self.healthBarImage = OnscreenImage()
+		self.healthBarImage.setImage(GUI_PATH+"health-bar-full.png")
+		self.healthBarImage.setTransparency(1)
+		
+		hBarNodePath = aspect2d.attachNewNode(self.healthBarImage.node())
+		hBarNodePath.setScale(.400, 0, .0475)
+		hBarNodePath.setPos(0.85, 0, 0.88)
+	
+	def updateGUI(self):
+		
+		if self.player.currentWeapon == AREA:
+			modeImg = "mode-area"
+		elif self.player.currentWeapon == NARROW:
+			modeImg = "mode-narrow"
+		
+		self.attackModeImage.setImage(GUI_PATH+modeImg+".png")
+		self.attackModeImage.setTransparency(1)
 	
 	def loadLevelGeom(self, filename):
 		filename = os.path.abspath(filename)
@@ -374,6 +428,8 @@ class Game(ShowBase):
 				self.pauseWasPressed = True
 		else:
 			self.pauseWasPressed = False
+		
+		self.updateGUI()
 		
 		self.previousFrameTime = task.time
 		
