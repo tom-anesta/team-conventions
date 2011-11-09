@@ -120,15 +120,14 @@ class Game(ShowBase):
 		self.player.nodePath = self.render.find("player")
 		self.actors["player"] = self.player
 		
-		
 		#add some lights
 		topLight = DirectionalLight("top light")
-		topLight.setColor(Vec4(0.5, 0.5, 0.5, 1))
+		topLight.setColor(Vec4(0.6, 0.6, 0.6, 1))
 		topLight.setDirection(Vec3(0, -90, 0))
 		self.render.setLight(self.render.attachNewNode(topLight))
 		
 		ambientLight = AmbientLight("ambient light")
-		ambientLight.setColor(Vec4(0.5, 0.5, 0.5, 1))
+		ambientLight.setColor(Vec4(0.4, 0.4, 0.4, 1))
 		self.render.setLight(self.render.attachNewNode(ambientLight))
 		
 		#the distance the camera is from the player
@@ -675,22 +674,31 @@ class Game(ShowBase):
 		pass
 	
 	def handleWingIntoCollision(self, entry):
-		fromName = entry.getFromNodePath().getParent().getName()
-		Unit.collideWithObstacle(self.actors[fromName])
-		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
-			self.collisionSound.play()
+		try:
+			fromName = entry.getFromNodePath().getParent().getName()
+			Unit.collideWithObstacle(self.actors[fromName])
+			if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+				self.collisionSound.play()
+		except:
+			pass
 	
 	def handleCubeIntoCollision(self, entry):
-		fromName = entry.getFromNodePath().getParent().getName()
-		Unit.collideWithObstacle(self.actors[fromName])
-		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
-			self.collisionSound.play()
+		try:
+			fromName = entry.getFromNodePath().getParent().getName()
+			Unit.collideWithObstacle(self.actors[fromName])
+			if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+				self.collisionSound.play()
+		except:
+			pass
 	
 	def handleBarIntoCollision(self, entry):
-		fromName = entry.getFromNodePath().getParent().getName()
-		Unit.collideWithObstacle(self.actors[fromName])
-		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
-			self.collisionSound.play()
+		try:
+			fromName = entry.getFromNodePath().getParent().getName()
+			Unit.collideWithObstacle(self.actors[fromName])
+			if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+				self.collisionSound.play()
+		except:
+			pass
 	
 	def gameOver(self):
 		pass

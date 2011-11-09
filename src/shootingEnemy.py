@@ -17,9 +17,10 @@ class ShootingEnemy(Enemy):
 		self.clockwise = random.choice((True, False))
 	
 	def shoot(self, player):
-		bullet = Bullet(self.game, self.game.render, player.getPos() - self.getPos())
-		self.game.projectiles.append(bullet)
-		bullet.setPos(self.getPos())
+		#bullet = Bullet(self.game, self.game.render, player.getPos() - self.getPos())
+		#self.game.projectiles.append(bullet)
+		#bullet.setPos(self.getPos())
+		pass
 	
 	def update(self, time):
 		player = self.game.player

@@ -40,7 +40,7 @@ class Unit(Actor):
 		self.radius = 3.5
 		
 		#the base damage this unit deals upon collision
-		self.collisionAttackPower = 5
+		self.collisionAttackPower = 2.5
 		
 		#set up Panda's collisions
 		#first the pusher
