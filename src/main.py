@@ -57,7 +57,6 @@ class Game(ShowBase):
 		self.winProps = base.win.getProperties()
 		self.screenHeight = self.winProps.getYSize()
 		
-		
 		#set up the control scheme
 		self.controlScheme = ControlScheme(base.mouseWatcherNode, base.win, \
 										[LEFT, RIGHT, UP, DOWN, PAUSE, PULL, PUSH, SWITCH, QUIT])
@@ -559,19 +558,27 @@ class Game(ShowBase):
 	#END ATTEMPT AT AUTO-TARGETING
 	
 	def handleUnitIntoCollision(self, entry):
-		pass
-		
+		try:
+			fromName = entry.getFromNodePath().getParent().getName()
+			intoName = entry.getIntoNodePath().getParent().getName()
+			Unit.collideWithUnit(self.actors[intoName], self.actors[fromName])
+		except:
+			pass
+	
 	def handleUnitOutCollision(self, entry):
 		pass
-		
+	
 	def handleWingIntoCollision(self, entry):
-		pass
-		
+		fromName = entry.getFromNodePath().getParent().getName()
+		Unit.collideWithObstacle(self.actors[fromName])
+	
 	def handleCubeIntoCollision(self, entry):
-		pass
-		
+		fromName = entry.getFromNodePath().getParent().getName()
+		Unit.collideWithObstacle(self.actors[fromName])
+	
 	def handleBarIntoCollision(self, entry):
-		pass
+		fromName = entry.getFromNodePath().getParent().getName()
+		Unit.collideWithObstacle(self.actors[fromName])
 	
 	def gameOver(self):
 		pass

@@ -13,7 +13,7 @@ class ShootingEnemy(Enemy):
 		Enemy.__init__(self, models, anims, "**/enemyCollisionSphere", game, xStart, yStart, zStart)
 		self.cooldownLength = random.randint(6, 8)
 		self.cooldownLeft = self.cooldownLength
-		self.preferedDistanceFromPlayer = random.randint(30, 70)
+		self.preferedDistanceFromPlayer = random.randint(20, 40)
 		self.clockwise = random.choice((True, False))
 	
 	def shoot(self, player):
@@ -33,7 +33,7 @@ class ShootingEnemy(Enemy):
 		
 		targetPoint = Point3(player.getX() + self.preferedDistanceFromPlayer * math.cos(angle), \
 							player.getY() + self.preferedDistanceFromPlayer * math.sin(angle), self.getZ())
-		self.applyForceFrom(-1, targetPoint)
+		self.applyForceFrom(-0.5, targetPoint)
 		
 		Enemy.update(self, time)
 		
