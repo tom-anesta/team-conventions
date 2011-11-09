@@ -229,16 +229,11 @@ class Game(ShowBase):
 		return level
 	
 	def updateGUI(self):
-<<<<<<< HEAD
 		"""
 		self.debugText.setText("Energy: "+str((100*self.player.energy/self.player.maxEnergy))+"%, Health: "+str((100*self.player.health/self.player.maxHealth)))
 		"""
 		
 		self.updateIntro()
-=======
-		
-		self.debugText.setText("Energy: " + str((100 * self.player.energy / self.player.maxEnergy)) + "%, Health: " + str((100 * self.player.health / self.player.maxHealth)))
->>>>>>> 8dbf2575758693a9a833adfddcc2262ef4702114
 		
 		if self.player.currentWeapon == AREA:
 			modeImg = "mode-area"
