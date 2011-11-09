@@ -261,6 +261,28 @@ class Game(ShowBase):
 				obstacle.setCollideMask(BitMask32.allOff())
 				unitCollision.setCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
 				
+			elif list[0] == TERRAIN_SHARDS:
+				modelVal = list[1]
+				modelVal = (MODELS_PATH + modelVal)
+				#load the model
+				obstacle = self.loader.loadModel(modelVal)
+				
+				obstacle.reparentTo(render)
+				#set scale
+				scaleVal = list[2].split(',')
+				obstacle.setScale(float(scaleVal[0]), float(scaleVal[1]), float(scaleVal[2]))
+				#set location
+				locVal = list[3].split(',')
+				obstacle.setPos(float(locVal[0]), float(locVal[1]), float(locVal[2]))#the we have our object
+				hprVal = list[4].split(',')
+				obstacle.setHpr(float(hprVal[0]), float(hprVal[1]), float(hprVal[2]))
+				
+				#set up collisions
+				unitCollision = obstacle.find("**/metalShardCollisionCube")
+				unitCollision.node().setName("shard")
+				obstacle.setCollideMask(BitMask32.allOff())
+				unitCollision.setCollideMask(BitMask32(PLAYER_ENEMY_OBJECTS))
+				
 			else:
 				print "FATAL ERROR READING FILE"
 				exit(1)
