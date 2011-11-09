@@ -76,7 +76,7 @@ class Player(Unit):
 						   AREA:self.energyRegen + 50}
 		
 		#the strength of a sustained attack per unit of energy used
-		self.magnetStrength = {NARROW:0.5, AREA:20}
+		self.magnetStrength = {NARROW:1, AREA:20}
 		
 		#the energy cost of a burst attack with a given weapon
 		self.burstCost = {NARROW:0, AREA:600}
@@ -222,7 +222,7 @@ class Player(Unit):
 		self.energy -= energyUsed
 	
 	def narrowAttack(self, polarity, force):
-		"""Performs a narrow attack on the targeted enemy (and all enemies in between and beyond?)"""
+		"""Performs a narrow attack on the targeted enemy"""
 		
 		if polarity == PULL:
 			force *= -1

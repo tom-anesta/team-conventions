@@ -444,13 +444,8 @@ class Game(ShowBase):
 				pickedObj = entry.getIntoNodePath()
 				
 				if not pickedObj.isEmpty():
-					
-					found = False
-					
-					if pickedObj.getName() != "enemyCollisionSphere":
-						continue
-					
-					name = pickedObj.getParent().getParent().getParent().getName()
+				
+					name = pickedObj.getParent().getName()
 					
 					if name == "render":
 						return None
@@ -467,18 +462,42 @@ class Game(ShowBase):
 		#Since we are using collision detection to do picking, we set it up 
 		#any other collision detection system with a traverser and a handler
 		self.mPickerTraverser = CollisionTraverser()            #Make a traverser
-		#self.mPickerTraverser.showCollisions(self.unitNodePath)
+		self.mPickerTraverser.showCollisions(self.unitNodePath)
 		self.mCollisionQue = CollisionHandlerQueue()
 
 		#create a collision solid ray to detect against
 		self.mPickRay = CollisionRay()
 		self.mPickRay.setOrigin(self.player.getPos(self.render))
 		self.mPickRay.setDirection(self.render.getRelativeVector(self.player, Vec3(0, 1, 0)))
+		self.mPickRay2 = CollisionRay()
+		self.mPickRay2.setOrigin(self.player.getPos(self.render))
+		self.mPickRay2.setDirection(self.render.getRelativeVector(self.player, Vec3(0.06, 1, 0)))
+		self.mPickRay3 = CollisionRay()
+		self.mPickRay3.setOrigin(self.player.getPos(self.render))
+		self.mPickRay3.setDirection(self.render.getRelativeVector(self.player, Vec3(-0.06, 1, 0)))
+		self.mPickRay4 = CollisionRay()
+		self.mPickRay4.setOrigin(self.player.getPos(self.render))
+		self.mPickRay4.setDirection(self.render.getRelativeVector(self.player, Vec3(0, 1, 0.06)))
+		self.mPickRay5 = CollisionRay()
+		self.mPickRay5.setOrigin(self.player.getPos(self.render))
+		self.mPickRay5.setDirection(self.render.getRelativeVector(self.player, Vec3(0, 1, -0.06)))
 
 		#create our collison Node to hold the ray
 		self.mPickNode = CollisionNode('pickRay')
 		self.mPickNode.setIntoCollideMask(BitMask32.allOff())
 		self.mPickNode.addSolid(self.mPickRay)
+		self.mPickNode2 = CollisionNode('pickRay2')
+		self.mPickNode2.setIntoCollideMask(BitMask32.allOff())
+		self.mPickNode2.addSolid(self.mPickRay2)
+		self.mPickNode3 = CollisionNode('pickRay3')
+		self.mPickNode3.setIntoCollideMask(BitMask32.allOff())
+		self.mPickNode3.addSolid(self.mPickRay3)
+		self.mPickNode4 = CollisionNode('pickRay4')
+		self.mPickNode4.setIntoCollideMask(BitMask32.allOff())
+		self.mPickNode4.addSolid(self.mPickRay4)
+		self.mPickNode5 = CollisionNode('pickRay5')
+		self.mPickNode5.setIntoCollideMask(BitMask32.allOff())
+		self.mPickNode5.addSolid(self.mPickRay5)
 
 		#Attach that node to the player since the ray will need to be positioned
 		#relative to it, returns a new nodepath		
@@ -486,6 +505,10 @@ class Game(ShowBase):
 		#this is inefficent but its for mouse picking only
 
 		self.mPickNP = self.player.attachNewNode(self.mPickNode)
+		self.mPickNP2 = self.player.attachNewNode(self.mPickNode2)
+		self.mPickNP3 = self.player.attachNewNode(self.mPickNode3)
+		self.mPickNP4 = self.player.attachNewNode(self.mPickNode4)
+		self.mPickNP5 = self.player.attachNewNode(self.mPickNode5)
 
 		#well use what panda calls the "from" node.  This is really a silly convention
 		#but from nodes are nodes that are active, while into nodes are usually passive environments
@@ -495,10 +518,18 @@ class Game(ShowBase):
 		#collision we could seperate it, we use bitmasks to determine what we check other objects against
 		#if they dont have a bitmask for bit 1 well skip them!
 		#self.mPickNode.setFromCollideMask(GeomNode.getDefaultCollideMask())
-		self.mPickNode.setFromCollideMask(BitMask32.bit(0))
+		self.mPickNode.setFromCollideMask(PLAYER_ENEMY_OBJECTS)
+		self.mPickNode2.setFromCollideMask(PLAYER_ENEMY_OBJECTS)
+		self.mPickNode3.setFromCollideMask(PLAYER_ENEMY_OBJECTS)
+		self.mPickNode4.setFromCollideMask(PLAYER_ENEMY_OBJECTS)
+		self.mPickNode5.setFromCollideMask(PLAYER_ENEMY_OBJECTS)
 
 		#Register the ray as something that can cause collisions
 		self.mPickerTraverser.addCollider(self.mPickNP, self.mCollisionQue)
+		self.mPickerTraverser.addCollider(self.mPickNP2, self.mCollisionQue)
+		self.mPickerTraverser.addCollider(self.mPickNP3, self.mCollisionQue)
+		self.mPickerTraverser.addCollider(self.mPickNP4, self.mCollisionQue)
+		self.mPickerTraverser.addCollider(self.mPickNP5, self.mCollisionQue)
 		#self.cTrav.addCollider(self.mPickNP, self.mCollisionQue)
 		#if you want to show collisions for debugging turn this on
 		#self.mPickerTraverser.showCollisions(self.render)
