@@ -120,14 +120,15 @@ class Game(ShowBase):
 		self.player.nodePath = self.render.find("player")
 		self.actors["player"] = self.player
 		
+		
 		#add some lights
 		topLight = DirectionalLight("top light")
-		topLight.setColor(Vec4(0.6, 0.6, 0.6, 1))
+		topLight.setColor(Vec4(0.5, 0.5, 0.5, 1))
 		topLight.setDirection(Vec3(0, -90, 0))
 		self.render.setLight(self.render.attachNewNode(topLight))
 		
 		ambientLight = AmbientLight("ambient light")
-		ambientLight.setColor(Vec4(0.4, 0.4, 0.4, 1))
+		ambientLight.setColor(Vec4(0.5, 0.5, 0.5, 1))
 		self.render.setLight(self.render.attachNewNode(ambientLight))
 		
 		#the distance the camera is from the player
@@ -174,7 +175,7 @@ class Game(ShowBase):
 		self.introText.setWordwrap(30.0)
 		
 		self.iTextNodePath = aspect2d.attachNewNode(self.introText)
-		self.iTextNodePath.setScale(0.075)
+		self.iTextNodePath.setScale(0.06)
 		self.iTextNodePath.setPos(-1.2, 0, -0.7)
 		
 		#image is 171 x 323
@@ -280,42 +281,44 @@ class Game(ShowBase):
 		self.healthBarImage.setTransparency(1)
 	
 	def updateIntro(self):
+		modifiedTime = self.globalTime/5
+		
 		if self.introText is None:
 			pass
-		elif self.globalTime>=14300 and self.introText is not None:
+		elif modifiedTime>=14300 and self.introText is not None:
 			self.iTextNodePath.removeNode()
 			self.introText = None
-		elif self.globalTime<300:		#0-300
-			self.introText.setText("Hey are you receiving? Good.")
-		elif self.globalTime<800:	#300-800
+		elif modifiedTime<300:		#0-300
+			self.introText.setText("Hey are you receiving?")
+		elif modifiedTime<800:	#300-800
 			self.introText.setText("We recently uncovered the location of an old cruiser wreck from the war.")
-		elif self.globalTime<1500:	#800-1500
+		elif modifiedTime<1500:	#800-1500
 			self.introText.setText("You're gonna go in there and get the little bits of it that are still worth salvaging.")
-		elif self.globalTime<2900:	#1500-2900
+		elif modifiedTime<2900:	#1500-2900
 			self.introText.setText("Be aware though, this job may not be quite as simple as a grab-and-run. The coordinates have been leaked to some of our old enemies.")
-		elif self.globalTime<4200:	#2900-4200
+		elif modifiedTime<4200:	#2900-4200
 			self.introText.setText("To give you an edge, we've made a few upgrades to your electromagnetic grapple.")
-		elif self.globalTime<5300:	#4200-5300
+		elif modifiedTime<5300:	#4200-5300
 			self.introText.setText("Pull enemies inwards with the right mouse button.")
 			self.leftMousePath.hide()
 			self.rightMousePath.show()
 			self.middleMousePath.hide()
-		elif self.globalTime<6400:	#5300-6400
+		elif modifiedTime<6400:	#5300-6400
 			self.introText.setText("Push enemies away with the left mouse button.")
 			self.leftMousePath.show()
 			self.rightMousePath.hide()
 			self.middleMousePath.hide()
-		elif self.globalTime<8500:	#6400-8500
+		elif modifiedTime<8500:	#6400-8500
 			self.introText.setText("Toggle between your range and narrow electromagnet with the middle mouse button (or spacebar).")
 			self.leftMousePath.hide()
 			self.rightMousePath.hide()
 			self.middleMousePath.show()
-		elif self.globalTime<13300:	#8500-13300
+		elif modifiedTime<13300:	#8500-13300
 			self.introText.setText("You can give a solid kick to anything straight in front of you or just push everything around you away. Try and throw 'em into each other or other wreckage to finish 'em off for good.")
 			self.leftMousePath.hide()
 			self.rightMousePath.hide()
 			self.middleMousePath.hide()
-		elif self.globalTime<14300:	#13300-14300
+		elif modifiedTime<14300:	#13300-14300
 			self.introText.setText("After all, the more salvage left over, the better. Out.")
 	
 	def loadLevelGeom(self, filename):
@@ -760,31 +763,22 @@ class Game(ShowBase):
 		pass
 	
 	def handleWingIntoCollision(self, entry):
-		try:
-			fromName = entry.getFromNodePath().getParent().getName()
-			Unit.collideWithObstacle(self.actors[fromName])
-			if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
-				self.collisionSound.play()
-		except:
-			pass
+		fromName = entry.getFromNodePath().getParent().getName()
+		Unit.collideWithObstacle(self.actors[fromName])
+		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+			self.collisionSound.play()
 	
 	def handleCubeIntoCollision(self, entry):
-		try:
-			fromName = entry.getFromNodePath().getParent().getName()
-			Unit.collideWithObstacle(self.actors[fromName])
-			if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
-				self.collisionSound.play()
-		except:
-			pass
+		fromName = entry.getFromNodePath().getParent().getName()
+		Unit.collideWithObstacle(self.actors[fromName])
+		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+			self.collisionSound.play()
 	
 	def handleBarIntoCollision(self, entry):
-		try:
-			fromName = entry.getFromNodePath().getParent().getName()
-			Unit.collideWithObstacle(self.actors[fromName])
-			if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
-				self.collisionSound.play()
-		except:
-			pass
+		fromName = entry.getFromNodePath().getParent().getName()
+		Unit.collideWithObstacle(self.actors[fromName])
+		if fromName == "player" and self.collisionSound.status() is not self.collisionSound.PLAYING:
+			self.collisionSound.play()
 	
 	def gameOver(self):
 		pass

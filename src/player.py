@@ -82,7 +82,7 @@ class Player(Unit):
 						   AREA:self.energyRegen + 120}
 		
 		#the strength of a sustained attack per unit of energy used
-		self.magnetStrength = {NARROW:1, AREA:20}
+		self.magnetStrength = {NARROW:2.5, AREA:20}
 		
 		#the energy cost of a burst attack with a given weapon
 		self.burstCost = {NARROW:0, AREA:600}
