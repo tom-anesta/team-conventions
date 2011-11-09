@@ -30,7 +30,7 @@ class Player(Unit):
 		#set up the headlamp specific to the model
 		headLampMain = Spotlight('headLampMain')
 		#headLampMain.showFrustum()
-		headLampMain.setColor(VBase4(1, 1, 1, 1))
+		headLampMain.setColor(VBase4(1.5, 1.5, 1.5, 1))
 		mlens = PerspectiveLens()
 		mlens.setNearFar(0.25, 1500)
 		headLampMain.setLens(mlens)

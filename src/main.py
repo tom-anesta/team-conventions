@@ -154,7 +154,7 @@ class Game(ShowBase):
 		self.setupTitleScreen()
 	
 	def setupGUI(self):
-		GUIFont = loader.loadFont(FONTS_PATH + 'orbitron-black.ttf')
+		GUIFont = loader.loadFont(FONTS_PATH + 'orbitron-medium.ttf')
 		
 		"""
 		self.debugText = TextNode('debug')
