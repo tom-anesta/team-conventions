@@ -50,7 +50,7 @@ class Game(ShowBase):
 		
 		#get window properties
 		self.winProps = WindowProperties()
-		self.winProps.setFullscreen(True)
+		#self.winProps.setFullscreen(True)
 		self.winProps.setCursorHidden(True)
 		base.win.requestProperties(self.winProps)
 		
