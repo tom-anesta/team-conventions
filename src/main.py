@@ -22,8 +22,8 @@ from pandac.PandaModules import BitMask32
 
 from unit import Unit
 from player import Player
-from projectile import Projectile
-from bullet import Bullet
+#from projectile import Projectile
+#from bullet import Bullet
 from rushEnemy import RushEnemy
 from constants import *
 from controlScheme import ControlScheme
@@ -66,7 +66,7 @@ class Game(ShowBase):
 		#object lists
 		self.enemies = []
 		self.obstacles = []
-		self.projectiles = []
+		#self.projectiles = []
 		#list of enemies to be spawned
 		self.eSpawnList = []
 		
@@ -325,16 +325,16 @@ class Game(ShowBase):
 		self.updateCamera(time)
 		for enemy in self.enemies:
 			enemy.update(time)
-		for projectile in self.projectiles:
-			projectile.update(time)
+		#for projectile in self.projectiles:
+		#	projectile.update(time)
 			
 		#check for basic terrain collisions
 		self.player.terrainCollisionCheck()
 		self.player.update(time)
 		for enemy in self.enemies:
 			enemy.terrainCollisionCheck()
-		for projectile in self.projectiles:
-			projectile.terrainCollisionCheck()
+		#for projectile in self.projectiles:
+		#	projectile.terrainCollisionCheck()
 		
 		self.cTrav.traverse(render)
 		
