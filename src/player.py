@@ -62,6 +62,7 @@ class Player(Unit):
 		game.render.setLight(headLampRightnode)
 		
 		self.health = 100
+		self.maxHealth = 100
 		self.collisionAttackPower = 0
 		
 		#the currently active weapon
