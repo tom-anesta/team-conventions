@@ -24,7 +24,7 @@ class Unit(Actor):
 		
 		self.game = game
 		
-		self.health = 10
+		self.health = 15
 		self.heightOffset = 3
 		
 		#set up the position
@@ -40,7 +40,7 @@ class Unit(Actor):
 		self.radius = 3.5
 		
 		#the base damage this unit deals upon collision
-		self.collisionAttackPower = 1
+		self.collisionAttackPower = 5
 		
 		#set up Panda's collisions
 		#first the pusher

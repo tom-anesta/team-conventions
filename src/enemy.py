@@ -15,7 +15,7 @@ class Enemy(Unit):
 		self.minRandomVel = 1000
 		self.maxRandomVel = 2000
 	
-	def die(self, game):
+	def die(self):
 		self.deathSound.play()
 		self.game.enemies.remove(self)
 		Unit.die(self)

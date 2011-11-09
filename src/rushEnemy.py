@@ -1,6 +1,7 @@
 from enemy import Enemy
 from constants import *
-from random import random
+import random
+import math
 
 class RushEnemy(Enemy):
 	def __init__(self, game, xStart = 0, yStart = 0, zStart = 0):

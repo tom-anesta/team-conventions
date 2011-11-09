@@ -32,6 +32,7 @@ from droneEnemy import DroneEnemy
 from shootingEnemy import ShootingEnemy
 from constants import *
 from controlScheme import ControlScheme
+import random
 
 class Game(ShowBase):
 	def __init__(self):
@@ -143,6 +144,9 @@ class Game(ShowBase):
 		#add targeting to the world
 		self.setupTargeting()
 		
+		#seed the random number generator
+		random.seed()
+
 		# configure the entire GUI
 		self.setupGUI()
 	
@@ -500,14 +504,17 @@ class Game(ShowBase):
 		while((len(self.eSpawnList) > 0) and self.eSpawnList[0]["time"] < self.globalTime):
 			for val in self.eSpawnList[0]["enemies"]:
 				if val["type"] == RUSH_ENEMY:
+					print val["type"]
 					#add an enemy
 					tempEnemy = RushEnemy(self, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
 				elif val["type"] == DRONE_ENEMY:
+					print val["type"]
 					#add an enemy
 					tempEnemy = DroneEnemy(self, self.player, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
 				elif val["type"] == SHOOTING_ENEMY:
+					print val["type"]
 					#add an enemy
 					tempEnemy = ShootingEnemy(self, val["xVal"], val["yVal"], val["zVal"])
 					self.configureEnemy(tempEnemy)
@@ -585,7 +592,7 @@ class Game(ShowBase):
 		#Since we are using collision detection to do picking, we set it up 
 		#any other collision detection system with a traverser and a handler
 		self.mPickerTraverser = CollisionTraverser()            #Make a traverser
-		self.mPickerTraverser.showCollisions(self.unitNodePath)
+		#self.mPickerTraverser.showCollisions(self.unitNodePath)
 		self.mCollisionQue = CollisionHandlerQueue()
 
 		#create a collision solid ray to detect against
